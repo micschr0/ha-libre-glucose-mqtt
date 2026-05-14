@@ -1,0 +1,31 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+.directory
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python (for any future helper scripts)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Misc
+*.log
+*.tmp
+*.bak

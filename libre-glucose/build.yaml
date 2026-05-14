@@ -8,5 +8,7 @@ build_from:
 
 args:
   # Tag the upstream gluco-hub release pulled in by the Dockerfile.
-  # Bump in lockstep with `version:` in config.yaml.
-  GLUCO_HUB_TAG: "2026.514.0"
+  # `develop` for now — gluco-hub-rs has not cut a public CalVer release
+  # yet, only the rolling `:develop` channel exists. Renovate will
+  # switch us to a stable tag once one is published.
+  GLUCO_HUB_TAG: "develop"

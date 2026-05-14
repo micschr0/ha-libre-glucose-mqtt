@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bashio
 # shellcheck shell=bash
 #
-# Entrypoint for ha-libre-glucose-mqtt. Reads add-on options from
+# Entrypoint for libre-glucose. Reads app options from
 # /data/options.json (via bashio::config) and the MQTT service info
 # provided by HA Supervisor (via bashio::services), then maps everything
 # onto the GLUCO_HUB__<SECTION>__<KEY> environment variables that
