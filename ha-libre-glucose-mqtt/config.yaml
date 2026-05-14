@@ -1,0 +1,76 @@
+# Home Assistant Supervisor add-on manifest.
+# Schema reference: https://developers.home-assistant.io/docs/add-ons/configuration
+#
+# This add-on is a thin wrapper around the upstream gluco-hub-rs container
+# image (https://github.com/micschr0/gluco-hub-rs). All polling, MQTT, and
+# discovery logic lives upstream; this file only translates HA add-on
+# options + the Mosquitto service hand-off into GLUCO_HUB__* env vars that
+# the Rust binary already understands.
+
+name: Libre Glucose MQTT Bridge
+slug: ha-libre-glucose-mqtt
+version: "2026.514.0"
+description: >-
+  Polls LibreLink Up glucose readings and publishes them to MQTT with
+  Home Assistant auto-discovery. Powered by gluco-hub-rs.
+url: https://github.com/micschr0/ha-libre-glucose-mqtt
+
+# gluco-hub-rs ships Multi-Arch manifests for linux/amd64 + linux/arm64
+# (see micschr0/gluco-hub-rs/.github/workflows/release.yml). Docker pulls
+# the right variant automatically — no {arch} substitution needed in
+# `image:` below.
+arch:
+  - amd64
+  - aarch64
+
+# NOTE: no `image:` key — the add-on ships a tiny Dockerfile that copies
+# the gluco-hub binary out of the upstream GHCR image onto a HA add-on
+# base image (which provides bashio + s6-overlay). First install builds
+# this on the Supervisor in ~30s; updates are layer-cached.
+
+# `init: false` tells s6-overlay to exec our run.sh directly. gluco-hub
+# is a long-running, well-behaved process and handles SIGTERM itself.
+init: false
+
+# Start with Home Assistant's other long-running services, after S3 (USB)
+# but before user automations.
+startup: services
+boot: auto
+
+# Hard dependency on the MQTT service (Mosquitto add-on). HA Supervisor
+# refuses to start this add-on when no MQTT service is registered, and
+# `bashio::services 'mqtt' '*'` returns credentials automatically.
+services:
+  - mqtt:need
+
+# /data is persisted across add-on updates by the Supervisor. The DLQ
+# writes batches here so unflushed readings survive restarts.
+map:
+  - data:rw
+
+# No ingress, no host network, no devices — the add-on talks outbound to
+# LibreLink Up over HTTPS and to the in-cluster MQTT broker only.
+
+options:
+  llu_email: ""
+  llu_password: ""
+  llu_region: "EU"
+  llu_patient_id: ""
+  llu_timezone: "UTC"
+  poll_interval_secs: 60
+  device_name: ""
+  topic_prefix: "gluco-hub/ha"
+  client_id: "gluco-hub-ha"
+  log_level: "info"
+
+schema:
+  llu_email: email
+  llu_password: password
+  llu_region: "list(AE|AP|AU|CA|DE|EU|EU2|FR|JP|US|LA|RU|CN)"
+  llu_patient_id: "str?"
+  llu_timezone: "str"
+  poll_interval_secs: "int(30,600)"
+  device_name: "str?"
+  topic_prefix: "str"
+  client_id: "match(^[A-Za-z0-9_-]{1,23}$)"
+  log_level: "list(trace|debug|info|warn|error)"
