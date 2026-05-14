@@ -30,9 +30,9 @@ jobs:
       # required files (icon.png / logo.png / DOCS.md / CHANGELOG.md
       # / translations / apparmor.txt when apparmor: true), warns on
       # deprecated keys.
-      - uses: frenck/action-addon-linter@4cc99ea3df5d3acdbb8be7c41b1b2dfff8cbc89f # v2.18
+      - uses: frenck/action-addon-linter@4d0965b4072596c4b2768a1d9eb6edd41d639a63 # v2.18.0
         with:
-          path: ./ha-libre-glucose-mqtt/
+          path: ./libre-glucose/
           community: false
 
   yamllint:
@@ -42,7 +42,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
-      - uses: frenck/action-yamllint@b9e3e64a92dc56cd915e21b09824b50ec00fbf80 # v1.5.0
+      - uses: frenck/action-yamllint@34b4bbcaeabedcfefad6adea8c5bbc42af0e2d47 # v1.5.0
 
   hadolint:
     name: Dockerfile lint
@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
       - uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
         with:
-          dockerfile: ha-libre-glucose-mqtt/Dockerfile
+          dockerfile: libre-glucose/Dockerfile
 
   shellcheck:
     name: Shell lint (run.sh + tests)
@@ -66,7 +66,10 @@ jobs:
         env:
           # run.sh is a bashio script (sourced /usr/bin/with-contenv
           # bashio), shellcheck should treat it as bash.
-          SHELLCHECK_OPTS: "-s bash -e SC1008"
+          # SC1091 = "Not following" — tests/test-run-sh.sh sources
+          # tests/mock-bashio.sh dynamically; we don't need shellcheck
+          # to follow that link for the lint pass.
+          SHELLCHECK_OPTS: "-s bash -e SC1008 -e SC1091"
         with:
           scandir: "."
           ignore_paths: "translations .github"
@@ -85,7 +88,7 @@ jobs:
       - name: Validate apparmor.txt (skip kernel load)
         run: |
           sudo apparmor_parser -Q -K \
-            ha-libre-glucose-mqtt/apparmor.txt
+            libre-glucose/apparmor.txt
           echo "apparmor.txt parses cleanly."
 
   docker-build:
@@ -100,24 +103,24 @@ jobs:
       - name: Build addon image (amd64)
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         with:
-          context: ./ha-libre-glucose-mqtt
+          context: ./libre-glucose
           platforms: linux/amd64
           push: false
           load: true
-          tags: ha-libre-glucose-mqtt:ci
+          tags: libre-glucose:ci
           build-args: |
             BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian:bookworm
-            GLUCO_HUB_TAG=2026.514.0
+            GLUCO_HUB_TAG=develop
             BUILD_ARCH=amd64
             BUILD_DATE=ci
             BUILD_DESCRIPTION=ci-smoke
-            BUILD_NAME=ha-libre-glucose-mqtt
+            BUILD_NAME=libre-glucose
             BUILD_REF=${{ github.sha }}
             BUILD_REPOSITORY=${{ github.repository }}
             BUILD_VERSION=ci
       - name: Inspect built image
         run: |
-          docker image inspect ha-libre-glucose-mqtt:ci \
+          docker image inspect libre-glucose:ci \
             --format 'OK: {{.RepoTags}} size={{.Size}}'
 
   env-mapping-smoke:
@@ -132,5 +135,8 @@ jobs:
         run: bash tests/test-run-sh.sh
       - name: Smoke-test gluco-hub check-config with the mocked env
         env:
-          GLUCO_HUB_TAG: "2026.514.0"
+          # `develop` channel: upstream gluco-hub-rs has not cut a CalVer
+          # release yet, so :develop is the only published tag. Renovate
+          # will switch us to a stable tag once one exists.
+          GLUCO_HUB_TAG: "develop"
         run: bash tests/test-check-config.sh

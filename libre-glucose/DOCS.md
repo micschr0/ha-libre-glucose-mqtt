@@ -1,8 +1,14 @@
 # Libre Glucose MQTT Bridge — Documentation
 
+> This is a Home Assistant **app** (formerly *add-on*; HA's developer
+> documentation renamed the concept in 2025). HA-Supervisor schema
+> fields, the official `home-assistant/addons` repository, and the
+> `frenck/action-addon-linter` CI helper still carry the old
+> "addon"/"add-on" name; that's intentional and not a typo.
+
 ## What it does
 
-This add-on runs [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs)
+This app runs [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs)
 in a container alongside Home Assistant. Every `poll_interval_secs`
 (default 60 s) it:
 
@@ -14,7 +20,7 @@ in a container alongside Home Assistant. Every `poll_interval_secs`
    auto-creates a sensor entity called **Glucose**.
 
 If the MQTT broker is unreachable, readings are queued in
-`/data/state` (persistent across add-on restarts and updates) and
+`/data/state` (persistent across app restarts and updates) and
 flushed on reconnect. Up to 10 000 readings — about 35 days at the
 default 5-minute LibreLink Up update raster — can be buffered.
 
@@ -23,7 +29,7 @@ default 5-minute LibreLink Up update raster — can be buffered.
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `llu_email` | string | *required* | LibreLink Up account email. |
-| `llu_password` | string | *required* | LibreLink Up account password. Stored only in the add-on options DB; never written to MQTT or logs. |
+| `llu_password` | string | *required* | LibreLink Up account password. Stored only in the app options DB; never written to MQTT or logs. |
 | `llu_region` | enum | `EU` | LibreLink Up regional API endpoint. Match your account — wrong region returns auth errors. Supported: `AE`, `AP`, `AU`, `CA`, `DE`, `EU`, `EU2`, `FR`, `JP`, `US`, `LA`, `RU`, `CN`. |
 | `llu_patient_id` | string | *empty* | If your account has multiple connections (e.g. multiple kids), set this to the specific patient's id. Empty = first connection. |
 | `llu_timezone` | IANA TZ | `UTC` | The patient's local timezone. LibreLink Up returns timestamps in local wall-clock time; without this hint they appear shifted by your offset. Examples: `Europe/Berlin`, `America/New_York`. |
@@ -60,22 +66,22 @@ Attributes (on the sensor entity):
 
 ## Troubleshooting
 
-**Add-on refuses to start with `No MQTT service available`.**
-Install the official **Mosquitto broker** add-on and configure the MQTT
+**App refuses to start with `No MQTT service available`.**
+Install the official **Mosquitto broker** app and configure the MQTT
 HA-integration (Settings → Devices & Services → Add Integration →
-MQTT). Then restart this add-on.
+MQTT). Then restart this app.
 
 **Sensor entity never appears in HA.**
 - Confirm Mosquitto is running and reachable.
-- Set `log_level` to `debug` and check the add-on log for an
+- Set `log_level` to `debug` and check the app log for an
   `mqtt sink configured` entry and `discovery_enabled = true`.
-- Check the discovery topic with the **MQTT** add-on's *Listen to topic*
+- Check the discovery topic with the **MQTT** app's *Listen to topic*
   feature: `homeassistant/sensor/+/config`. The bridge's discovery
-  message should appear within ~10 seconds of starting the add-on.
+  message should appear within ~10 seconds of starting the app.
 
 **LibreLink Up login fails with `[LLU003]`.**
 Wrong credentials, wrong region, or your password contains characters
-the add-on UI escaped incorrectly. Double-check region (it's the one
+the app UI escaped incorrectly. Double-check region (it's the one
 on your *LibreView* account, which may not match your physical
 location).
 
@@ -93,7 +99,7 @@ status.
 
 ## Disclaimer
 
-**This add-on is not a medical device.** It is a research and
+**This app is not a medical device.** It is a research and
 self-hosting tool. Do not use the values it reports for therapy
 decisions, insulin dosing, or diagnosis. The upstream `gluco-hub-rs`
 binary prints a `NOT FOR MEDICAL USE` banner on every start — see
@@ -106,7 +112,7 @@ LibreLink Up API
        │ HTTPS
        ▼
 ┌──────────────────────────────────────┐
-│ ha-libre-glucose-mqtt add-on         │
+│ libre-glucose app                    │
 │  ┌────────────────────────────────┐  │
 │  │ run.sh (bashio)                │  │
 │  │  • read /data/options.json     │  │
@@ -120,7 +126,7 @@ LibreLink Up API
 └──────────────────────────────────────┘
        │ MQTT (plaintext, internal)
        ▼
-   Mosquitto add-on
+   Mosquitto app
        │
        ▼
    Home Assistant entities
@@ -128,7 +134,7 @@ LibreLink Up API
 
 ## Reporting issues
 
-For add-on-specific problems (manifest, install, run.sh): file an issue
+For app-specific problems (manifest, install, run.sh): file an issue
 at [ha-libre-glucose-mqtt](https://github.com/micschr0/ha-libre-glucose-mqtt/issues).
 
 For polling / MQTT / LibreLink Up logic: file upstream at

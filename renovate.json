@@ -35,7 +35,7 @@
     {
       "description": "Keep the GLUCO_HUB_TAG ARG in the Dockerfile in lockstep with the upstream image tag.",
       "customType": "regex",
-      "managerFilePatterns": ["/ha-libre-glucose-mqtt/Dockerfile$/"],
+      "managerFilePatterns": ["/libre-glucose/Dockerfile$/"],
       "matchStrings": [
         "ARG GLUCO_HUB_TAG=(?<currentValue>[^\\s]+)"
       ],

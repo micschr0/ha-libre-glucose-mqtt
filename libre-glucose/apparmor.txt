@@ -1,8 +1,8 @@
 #include <tunables/global>
 
-# Profile name MUST match the add-on slug. Supervisor loads this file
+# Profile name MUST match the app slug. Supervisor loads this file
 # automatically when `apparmor: true` is set in config.yaml.
-profile ha-libre-glucose-mqtt flags=(attach_disconnected,mediate_deleted) {
+profile libre-glucose flags=(attach_disconnected,mediate_deleted) {
   #include <abstractions/base>
 
   # ---------------------------------------------------------------------
