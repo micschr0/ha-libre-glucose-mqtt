@@ -32,7 +32,7 @@ jobs:
       # deprecated keys.
       - uses: frenck/action-addon-linter@4cc99ea3df5d3acdbb8be7c41b1b2dfff8cbc89f # v2.18
         with:
-          path: ./ha-libre-glucose-mqtt/
+          path: ./libre-glucose/
           community: false
 
   yamllint:
@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
       - uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
         with:
-          dockerfile: ha-libre-glucose-mqtt/Dockerfile
+          dockerfile: libre-glucose/Dockerfile
 
   shellcheck:
     name: Shell lint (run.sh + tests)
@@ -85,7 +85,7 @@ jobs:
       - name: Validate apparmor.txt (skip kernel load)
         run: |
           sudo apparmor_parser -Q -K \
-            ha-libre-glucose-mqtt/apparmor.txt
+            libre-glucose/apparmor.txt
           echo "apparmor.txt parses cleanly."
 
   docker-build:
@@ -100,24 +100,24 @@ jobs:
       - name: Build addon image (amd64)
         uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
         with:
-          context: ./ha-libre-glucose-mqtt
+          context: ./libre-glucose
           platforms: linux/amd64
           push: false
           load: true
-          tags: ha-libre-glucose-mqtt:ci
+          tags: libre-glucose:ci
           build-args: |
             BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian:bookworm
             GLUCO_HUB_TAG=2026.514.0
             BUILD_ARCH=amd64
             BUILD_DATE=ci
             BUILD_DESCRIPTION=ci-smoke
-            BUILD_NAME=ha-libre-glucose-mqtt
+            BUILD_NAME=libre-glucose
             BUILD_REF=${{ github.sha }}
             BUILD_REPOSITORY=${{ github.repository }}
             BUILD_VERSION=ci
       - name: Inspect built image
         run: |
-          docker image inspect ha-libre-glucose-mqtt:ci \
+          docker image inspect libre-glucose:ci \
             --format 'OK: {{.RepoTags}} size={{.Size}}'
 
   env-mapping-smoke:

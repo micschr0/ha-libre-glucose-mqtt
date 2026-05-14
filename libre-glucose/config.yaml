@@ -8,7 +8,7 @@
 # the Rust binary already understands.
 
 name: Libre Glucose MQTT Bridge
-slug: ha-libre-glucose-mqtt
+slug: libre-glucose
 version: "2026.514.0"
 description: >-
   Polls LibreLink Up glucose readings and publishes them to MQTT with

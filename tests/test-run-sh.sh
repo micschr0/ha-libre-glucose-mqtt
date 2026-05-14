@@ -10,7 +10,7 @@ cd "$(dirname "$0")/.."
 
 # Use a unique writable directory in place of /data so the test does
 # not need root to create /data/state.
-TEST_STATE_PARENT="$(mktemp -d -t ha-libre-glucose-mqtt-test.XXXXXX)"
+TEST_STATE_PARENT="$(mktemp -d -t libre-glucose-test.XXXXXX)"
 trap 'rm -rf "${TEST_STATE_PARENT}"' EXIT
 
 # Build a version of run.sh that:
@@ -21,7 +21,7 @@ trap 'rm -rf "${TEST_STATE_PARENT}"' EXIT
 sed -e '1d' \
     -e "s|/data/state|${TEST_STATE_PARENT}/state|g" \
     -e 's|^exec /usr/local/bin/gluco-hub run.*|echo "EXEC_CAPTURED" >\&2|' \
-    ha-libre-glucose-mqtt/run.sh \
+    libre-glucose/run.sh \
     > /tmp/run-modified.sh
 
 # Run the mocked script in a subshell so `set -euo pipefail` inside

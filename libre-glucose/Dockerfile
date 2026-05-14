@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
 #
-# ha-libre-glucose-mqtt: Home Assistant Supervisor add-on wrapper around
-# gluco-hub-rs.
+# libre-glucose: Home Assistant Supervisor app (formerly add-on)
+# wrapper around gluco-hub-rs.
 #
 # Strategy: copy the pre-built gluco-hub binary out of the upstream
-# distroless image and lay it onto a HA-add-on Debian base (which ships
+# distroless image and lay it onto a HA-app Debian base (which ships
 # bashio + s6-overlay). The base is glibc-based to match the binary,
 # which is built against glibc in micschr0/gluco-hub-rs/Dockerfile.
 
