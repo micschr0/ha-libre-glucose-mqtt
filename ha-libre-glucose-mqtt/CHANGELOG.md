@@ -18,6 +18,19 @@ gluco-hub release it bundles.
 - MQTT auto-discovery enabled by default — sensor entity appears under
   the **Glucose Hub** device within ~10 seconds of starting.
 - Persistent DLQ at `/data/state` survives add-on restarts and updates.
+- Custom AppArmor profile (`apparmor.txt`) confines the add-on to
+  outbound HTTPS + MQTT and `/data` writes; capabilities are dropped to
+  the minimum needed. Earns +1 on the Supervisor security rating
+  (target rating: 6/6).
+- HA UI assets: `icon.png` (128×128), `logo.png` (250×100),
+  English + German translation files for all options.
+- Liveness probe via Supervisor watchdog
+  (`tcp://[HOST]:[PORT:8080]`) — the add-on auto-restarts on socket
+  hang.
+- CI: `frenck/action-addon-linter`, `yamllint`, `hadolint`,
+  `shellcheck` run on every PR.
+- Renovate config tracks the upstream `gluco-hub` image tag and the HA
+  Debian base images.
 
 ### Known limitations
 

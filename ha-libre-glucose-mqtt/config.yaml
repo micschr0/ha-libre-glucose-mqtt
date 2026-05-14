@@ -14,28 +14,39 @@ description: >-
   Polls LibreLink Up glucose readings and publishes them to MQTT with
   Home Assistant auto-discovery. Powered by gluco-hub-rs.
 url: https://github.com/micschr0/ha-libre-glucose-mqtt
+stage: stable
 
-# gluco-hub-rs ships Multi-Arch manifests for linux/amd64 + linux/arm64
-# (see micschr0/gluco-hub-rs/.github/workflows/release.yml). Docker pulls
-# the right variant automatically — no {arch} substitution needed in
-# `image:` below.
+# Minimum Home Assistant Core version. 2024.1 ships the addon_config map
+# type and the modern bashio::services API used by run.sh.
+homeassistant: "2024.1.0"
+
+# gluco-hub-rs ships multi-arch manifests for linux/amd64 + linux/arm64
+# (see micschr0/gluco-hub-rs/.github/workflows/release.yml). 32-bit ARM
+# is intentionally out of scope until upstream builds an armv7 target.
 arch:
   - amd64
   - aarch64
 
-# NOTE: no `image:` key — the add-on ships a tiny Dockerfile that copies
-# the gluco-hub binary out of the upstream GHCR image onto a HA add-on
-# base image (which provides bashio + s6-overlay). First install builds
-# this on the Supervisor in ~30s; updates are layer-cached.
+# Custom AppArmor profile — see apparmor.txt next to this file. `true`
+# tells the Supervisor to load `apparmor.txt` under the slug name; the
+# explicit profile drops capabilities and confines filesystem writes to
+# /data, which earns +1 on the Supervisor security rating.
+apparmor: true
 
 # `init: false` tells s6-overlay to exec our run.sh directly. gluco-hub
 # is a long-running, well-behaved process and handles SIGTERM itself.
 init: false
 
-# Start with Home Assistant's other long-running services, after S3 (USB)
-# but before user automations.
+# Start with Home Assistant's other long-running services, after USB
+# probes but before user automations.
 startup: services
 boot: auto
+
+# Liveness probe for the Supervisor watchdog: gluco-hub's HTTP API
+# binds to 0.0.0.0:8080 inside the container (no host-side port
+# exposure — we don't declare `ports:`), so the Supervisor restarts
+# the add-on automatically if the TCP socket stops accepting.
+watchdog: "tcp://[HOST]:[PORT:8080]"
 
 # Hard dependency on the MQTT service (Mosquitto add-on). HA Supervisor
 # refuses to start this add-on when no MQTT service is registered, and
@@ -48,8 +59,11 @@ services:
 map:
   - data:rw
 
-# No ingress, no host network, no devices — the add-on talks outbound to
-# LibreLink Up over HTTPS and to the in-cluster MQTT broker only.
+# No ingress, no host network, no devices, no privileged caps — the
+# add-on talks outbound to LibreLink Up over HTTPS and to the
+# in-cluster MQTT broker only. No `image:` either: a tiny Dockerfile
+# next to this file copies the gluco-hub binary onto a HA Debian base
+# (s6 + bashio), built on the Supervisor at install time.
 
 options:
   llu_email: ""

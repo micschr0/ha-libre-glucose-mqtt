@@ -1,0 +1,58 @@
+configuration:
+  llu_email:
+    name: LibreLink-Up-E-Mail
+    description: >-
+      Die E-Mail-Adresse deines LibreLink-Up-Kontos. Dieses Konto
+      empfängt die Freigaben vom Libre-2/3-Sensor-Träger.
+  llu_password:
+    name: LibreLink-Up-Passwort
+    description: >-
+      Das Passwort deines LibreLink-Up-Kontos. Wird nur in der
+      Add-on-Optionen-DB gespeichert, niemals in MQTT oder Logs
+      geschrieben.
+  llu_region:
+    name: LibreLink-Up-Region
+    description: >-
+      Der regionale API-Endpunkt, der zu deinem LibreView-Konto passt.
+      Die falsche Region führt zu Authentifizierungsfehlern.
+  llu_patient_id:
+    name: Patienten-ID (optional)
+    description: >-
+      Leer lassen, um die erste Verbindung im Konto zu nutzen. Setze
+      eine bestimmte Patienten-ID, wenn mehrere Personen sich das
+      Konto teilen (z. B. mehrere Kinder mit Sensoren).
+  llu_timezone:
+    name: Zeitzone des Patienten
+    description: >-
+      IANA-Zeitzonen-Name des Sensor-Trägers (z. B. Europe/Berlin).
+      LibreLink Up liefert Zeitstempel als lokale Wand-Uhrzeit ohne
+      Offset — ohne diesen Wert erscheinen Messwerte zeitlich
+      verschoben.
+  poll_interval_secs:
+    name: Poll-Intervall (Sekunden)
+    description: >-
+      Wie oft LibreLink Up nach neuen Messwerten gefragt wird.
+      LibreLink Up selbst aktualisiert nur ca. alle 60 s, daher ist 30
+      die praktische Untergrenze.
+  device_name:
+    name: Geräte-Anzeigename (optional)
+    description: >-
+      Anzeigename des Geräts in Home Assistant. Leer fällt auf
+      "Gluco Hub (<client_id>)" zurück.
+  topic_prefix:
+    name: MQTT-Topic-Präfix
+    description: >-
+      MQTT-Topic-Präfix; Messwerte werden auf <präfix>/glucose
+      veröffentlicht. Default gluco-hub/ha ist für eine einzelne
+      Instanz unkritisch.
+  client_id:
+    name: MQTT-Client-ID
+    description: >-
+      MQTT-Client-ID (1-23 Zeichen, Buchstaben/Ziffern/Bindestrich/
+      Unterstrich). Erscheint auch in der HA-Discovery-Unique-ID — ein
+      Wechsel verwaist zuvor publizierte Entitäten.
+  log_level:
+    name: Log-Level
+    description: >-
+      Log-Ausführlichkeit. "debug" hilft beim Troubleshooting von
+      LibreLink-Up-Login- oder MQTT-Discovery-Problemen.

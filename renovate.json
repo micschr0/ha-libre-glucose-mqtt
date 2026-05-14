@@ -1,0 +1,46 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    "helpers:pinGitHubActionDigestsToSemver",
+    ":semanticCommits"
+  ],
+  "timezone": "Europe/Berlin",
+  "schedule": ["before 6am on monday"],
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "description": "Group all GitHub Actions bumps into one PR.",
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions"
+    },
+    {
+      "description": "Group Home Assistant base-image bumps into one PR.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "ghcr.io/home-assistant/amd64-base-debian",
+        "ghcr.io/home-assistant/aarch64-base-debian"
+      ],
+      "groupName": "ha-base-images"
+    },
+    {
+      "description": "Track upstream gluco-hub releases — these drive the add-on's bundled binary version. Bumps require a CHANGELOG.md entry plus a version: change in config.yaml, so leave automerge off.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["ghcr.io/micschr0/gluco-hub"],
+      "groupName": "gluco-hub-upstream",
+      "automerge": false
+    }
+  ],
+  "customManagers": [
+    {
+      "description": "Keep the GLUCO_HUB_TAG ARG in the Dockerfile in lockstep with the upstream image tag.",
+      "customType": "regex",
+      "managerFilePatterns": ["/ha-libre-glucose-mqtt/Dockerfile$/"],
+      "matchStrings": [
+        "ARG GLUCO_HUB_TAG=(?<currentValue>[^\\s]+)"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "ghcr.io/micschr0/gluco-hub"
+    }
+  ]
+}

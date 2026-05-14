@@ -1,0 +1,82 @@
+#include <tunables/global>
+
+# Profile name MUST match the add-on slug. Supervisor loads this file
+# automatically when `apparmor: true` is set in config.yaml.
+profile ha-libre-glucose-mqtt flags=(attach_disconnected,mediate_deleted) {
+  #include <abstractions/base>
+
+  # ---------------------------------------------------------------------
+  # s6-overlay / bashio scaffolding (HA add-on base image)
+  # ---------------------------------------------------------------------
+  /init ix,
+  /bin/** ix,
+  /usr/bin/** ix,
+  /usr/sbin/** ix,
+  /usr/local/bin/** ix,
+  /run/{s6,s6-rc*,service}/** ix,
+  /package/** ix,
+  /command/** ix,
+  /etc/services.d/** rwix,
+  /etc/cont-init.d/** rwix,
+  /etc/cont-finish.d/** rwix,
+  /etc/s6-overlay/** rwix,
+  /run/{,**} rwk,
+  /dev/tty rw,
+
+  # Bashio helpers
+  /usr/lib/bashio/** ix,
+
+  # /data is the add-on's only writable persistent location (mapped by
+  # `map: [data:rw]` in config.yaml). The DLQ JSONL files live here.
+  /data/** rw,
+
+  # Read-only access to system libraries / certificates needed by the
+  # gluco-hub binary (glibc-linked, talks HTTPS via rustls).
+  /etc/ssl/certs/** r,
+  /etc/ca-certificates/** r,
+  /etc/resolv.conf r,
+  /etc/nsswitch.conf r,
+  /etc/hosts r,
+  /usr/share/zoneinfo/** r,
+
+  # Temporary files (used by config-crate parsing of options.json).
+  /tmp/** rwk,
+
+  # Devices used by the runtime.
+  /dev/null rw,
+  /dev/zero r,
+  /dev/random r,
+  /dev/urandom r,
+
+  # Capabilities — only what gluco-hub actually needs.
+  # No CAP_SYS_ADMIN, CAP_NET_ADMIN, CAP_DAC_*, no ptrace, no module loads.
+  capability dac_override,
+  capability net_bind_service,
+  capability setgid,
+  capability setuid,
+
+  # Signals (s6 supervises gluco-hub).
+  signal (send) set=(term,int,hup,cont,kill),
+  signal (receive) set=(term,int,hup,cont,kill),
+
+  # Network: outbound HTTPS to LibreLink Up + Nightscout, MQTT to the
+  # internal Mosquitto add-on. No raw sockets, no SCTP.
+  network inet stream,
+  network inet6 stream,
+  network unix stream,
+  # DNS resolution.
+  network inet dgram,
+  network inet6 dgram,
+
+  # Explicitly DENY common escape paths.
+  deny /proc/sys/kernel/** w,
+  deny /proc/kcore r,
+  deny /sys/kernel/** w,
+  deny /sys/firmware/** rwx,
+  deny mount,
+  deny umount,
+  deny ptrace,
+  deny capability sys_admin,
+  deny capability sys_module,
+  deny capability sys_rawio,
+}
