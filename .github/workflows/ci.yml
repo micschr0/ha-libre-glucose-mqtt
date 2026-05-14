@@ -35,6 +35,43 @@ jobs:
           path: ./libre-glucose/
           community: false
 
+  version-consistency:
+    name: Version drift check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
+      - name: Assert Dockerfile and build.yaml agree on upstream tag
+        # Two places carry the upstream gluco-hub image tag: the
+        # Dockerfile ARG and build.yaml's args.GLUCO_HUB_TAG. Both must
+        # always match — Renovate's customManagers (see renovate.json)
+        # bump them together. This check is the fail-safe in case one
+        # path silently breaks (regex drift, manual edit, …).
+        #
+        # config.yaml's `version:` is NOT compared here. In steady state
+        # (post-upstream-release) Renovate also bumps it to the same
+        # CalVer string, so all three align. But during pre-release the
+        # addon may carry a SemVer like "0.1.0-dev" while the image
+        # ARG points at the `:develop` rolling channel — that's a
+        # legitimate state, not drift.
+        run: |
+          set -euo pipefail
+          DOCKERFILE_TAG=$(grep -oP 'ARG GLUCO_HUB_TAG=\K\S+' \
+            libre-glucose/Dockerfile)
+          BUILD_TAG=$(grep -oP 'GLUCO_HUB_TAG:\s*"?\K[^"\s]+' \
+            libre-glucose/build.yaml)
+          CONFIG_VERSION=$(grep -oP '^version:\s*"?\K[^"\s]+' \
+            libre-glucose/config.yaml)
+          echo "Dockerfile GLUCO_HUB_TAG : $DOCKERFILE_TAG"
+          echo "build.yaml GLUCO_HUB_TAG : $BUILD_TAG"
+          echo "config.yaml version:      $CONFIG_VERSION  (informational)"
+          if [ "$DOCKERFILE_TAG" != "$BUILD_TAG" ]; then
+            echo "::error::Dockerfile and build.yaml disagree on GLUCO_HUB_TAG"
+            exit 1
+          fi
+          echo "OK: upstream-tag refs agree on $DOCKERFILE_TAG"
+
   yamllint:
     name: YAML lint
     runs-on: ubuntu-latest

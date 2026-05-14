@@ -132,6 +132,37 @@ LibreLink Up API
    Home Assistant entities
 ```
 
+## Maintenance — upgrading to a new gluco-hub release
+
+The add-on's `version:` (in `config.yaml`) intentionally mirrors the
+bundled upstream gluco-hub release tag exactly (in steady state, post
+upstream-release), so HA users can map a running app back to its
+upstream binary at a glance. Three files carry the tag:
+
+- `libre-glucose/Dockerfile` — `ARG GLUCO_HUB_TAG=...`
+- `libre-glucose/build.yaml` — `args.GLUCO_HUB_TAG: "..."`
+- `libre-glucose/config.yaml` — `version: "..."` (informational; may
+  carry a SemVer pre-release like `0.1.0-dev` while the upstream image
+  tag points at `:develop`)
+
+**Automated** — Renovate watches `ghcr.io/micschr0/gluco-hub`. When the
+upstream CI publishes a new CalVer tag, Renovate opens one PR (group
+`gluco-hub-upstream`) bumping all three values atomically. The CI's
+`version-consistency` job is the fail-safe — it rejects any commit
+where the three diverge.
+
+**Manual** — the maintainer reviews Renovate's PR, adds an `Added` or
+`Changed` entry under `## [Unreleased]` in `CHANGELOG.md` describing
+what users actually see (a new option, a behaviour change, …), and
+merges to `main`. The narrative is the only part Renovate cannot
+generate.
+
+**New upstream config fields** (e.g. a future `MqttSinkConfig` field):
+exposing them through this add-on's UI is a deliberate human decision
+— not every field belongs in the HA options panel. When wiring one up,
+touch `config.yaml` (option + schema), `run.sh` (export), both
+`translations/*.yaml`, and the `tests/` env-mapping assertions.
+
 ## Reporting issues
 
 For app-specific problems (manifest, install, run.sh): file an issue
