@@ -1,0 +1,12 @@
+# Per-arch base image. We use the Debian flavour because the upstream
+# gluco-hub binary is built against glibc (see micschr0/gluco-hub-rs
+# Dockerfile, distroless/cc-debian12 runtime). An Alpine base would
+# require a musl rebuild of gluco-hub.
+build_from:
+  amd64: ghcr.io/home-assistant/amd64-base-debian:bookworm
+  aarch64: ghcr.io/home-assistant/aarch64-base-debian:bookworm
+
+args:
+  # Tag the upstream gluco-hub release pulled in by the Dockerfile.
+  # Bump in lockstep with `version:` in config.yaml.
+  GLUCO_HUB_TAG: "2026.514.0"
