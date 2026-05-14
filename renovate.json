@@ -41,6 +41,26 @@
       ],
       "datasourceTemplate": "docker",
       "depNameTemplate": "ghcr.io/micschr0/gluco-hub"
+    },
+    {
+      "description": "Sync GLUCO_HUB_TAG in build.yaml with the Dockerfile ARG. Same depName as the Dockerfile manager so Renovate bundles both bumps into one PR.",
+      "customType": "regex",
+      "managerFilePatterns": ["/libre-glucose/build\\.yaml$/"],
+      "matchStrings": [
+        "GLUCO_HUB_TAG:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "ghcr.io/micschr0/gluco-hub"
+    },
+    {
+      "description": "Pin the add-on's own `version:` to the bundled gluco-hub upstream tag. Add-on CalVer mirrors the upstream release exactly so HA users can map a running add-on back to its upstream binary at a glance.",
+      "customType": "regex",
+      "managerFilePatterns": ["/libre-glucose/config\\.yaml$/"],
+      "matchStrings": [
+        "^version:\\s*[\"']?(?<currentValue>[^\"'\\s]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "ghcr.io/micschr0/gluco-hub"
     }
   ]
 }
