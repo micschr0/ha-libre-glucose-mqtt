@@ -36,6 +36,7 @@ bashio::config() {
         llu_timezone) echo "Europe/Berlin" ;;
         poll_interval_secs) echo "60" ;;
         device_name) echo "" ;;
+        glucose_unit) echo "mgdl" ;;
         topic_prefix) echo "gluco-hub/test" ;;
         client_id) echo "gluco-hub-test" ;;
         log_level) echo "info" ;;

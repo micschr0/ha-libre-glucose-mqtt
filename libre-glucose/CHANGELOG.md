@@ -7,6 +7,18 @@ gluco-hub release it bundles.
 
 ## [Unreleased]
 
+### Added
+
+- **`glucose_unit` option** (`mgdl` | `mmol`, default `mgdl`) — surfaces
+  the upstream `MqttSinkConfig::discovery_unit` field added in
+  gluco-hub-rs PR #17. Pick `mmol` for EU/UK readouts; the HA discovery
+  sensor entity then reports `mmol/L` directly instead of the
+  US-default `mg/dL`. The MQTT JSON wire payload is unchanged — both
+  `mgdl` and `mmol` fields are always emitted, so other subscribers
+  see the same JSON they did before. Pinned to the upstream `:develop`
+  channel until gluco-hub-rs cuts its first CalVer release; Renovate
+  will switch us to a stable tag once one exists.
+
 ### Changed
 
 - **Slug renamed** `ha-libre-glucose-mqtt` → `libre-glucose`. The repo

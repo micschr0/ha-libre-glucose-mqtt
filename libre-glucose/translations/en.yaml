@@ -37,6 +37,14 @@ configuration:
     description: >-
       Friendly name shown for the device in Home Assistant. Empty
       falls back to "Gluco Hub (<client_id>)".
+  glucose_unit:
+    name: Glucose unit
+    description: >-
+      Unit the Home Assistant sensor reports — "mgdl" for mg/dL or
+      "mmol" for mmol/L. The MQTT JSON payload always carries both
+      values, only the HA discovery entity is affected. Default is
+      "mgdl" for backward compatibility; choose "mmol" for EU/UK
+      readouts.
   topic_prefix:
     name: MQTT topic prefix
     description: >-
