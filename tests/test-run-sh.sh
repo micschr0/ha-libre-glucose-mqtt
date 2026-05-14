@@ -61,6 +61,7 @@ declare -A expected=(
     [GLUCO_HUB__SINK__MQTT__TLS]="false"
     [GLUCO_HUB__SINK__MQTT__DISCOVERY_ENABLED]="true"
     [GLUCO_HUB__SINK__MQTT__DISCOVERY_PREFIX]="homeassistant"
+    [GLUCO_HUB__SINK__MQTT__DISCOVERY_UNIT]="mgdl"
     [GLUCO_HUB__STATE__DIR]="${TEST_STATE_PARENT}/state"
     [RUST_LOG]="info"
     [GLUCO_HUB_LOG_PRETTY]="1"

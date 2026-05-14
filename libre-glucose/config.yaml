@@ -9,7 +9,7 @@
 
 name: Libre Glucose MQTT Bridge
 slug: libre-glucose
-version: "0.1.0-dev"
+version: "0.2.0-dev"
 description: >-
   Polls LibreLink Up glucose readings and publishes them to MQTT with
   Home Assistant auto-discovery. Powered by gluco-hub-rs.
@@ -69,6 +69,7 @@ options:
   llu_timezone: "UTC"
   poll_interval_secs: 60
   device_name: ""
+  glucose_unit: "mgdl"
   topic_prefix: "gluco-hub/ha"
   client_id: "gluco-hub-ha"
   log_level: "info"
@@ -81,6 +82,7 @@ schema:
   llu_timezone: "str"
   poll_interval_secs: "int(30,600)"
   device_name: "str?"
+  glucose_unit: "list(mgdl|mmol)"
   topic_prefix: "str"
   client_id: "match(^[A-Za-z0-9_-]{1,23}$)"
   log_level: "list(trace|debug|info|warn|error)"
