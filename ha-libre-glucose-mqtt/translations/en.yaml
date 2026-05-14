@@ -1,0 +1,55 @@
+configuration:
+  llu_email:
+    name: LibreLink Up email
+    description: >-
+      The email address of your LibreLink Up account. This is the
+      account that receives shares from the Libre 2/3 sensor wearer.
+  llu_password:
+    name: LibreLink Up password
+    description: >-
+      The password of your LibreLink Up account. Stored only in the
+      add-on options DB; never written to MQTT or logs.
+  llu_region:
+    name: LibreLink Up region
+    description: >-
+      The regional API endpoint matching your LibreView account.
+      The wrong region returns authentication errors.
+  llu_patient_id:
+    name: Patient ID (optional)
+    description: >-
+      Leave empty to use the first connection on the account. Set this
+      to a specific LibreLink Up patient id when multiple people share
+      the account (e.g. multiple children with sensors).
+  llu_timezone:
+    name: Patient timezone
+    description: >-
+      IANA timezone name of the sensor wearer (e.g. Europe/Berlin,
+      America/New_York). LibreLink Up returns timestamps as local
+      wall-clock time without an offset — without this, readings
+      appear shifted.
+  poll_interval_secs:
+    name: Poll interval (seconds)
+    description: >-
+      How often to ask LibreLink Up for new readings. LibreLink Up
+      itself updates every ~60 s, so 30 is the practical lower bound.
+  device_name:
+    name: Device display name (optional)
+    description: >-
+      Friendly name shown for the device in Home Assistant. Empty
+      falls back to "Gluco Hub (<client_id>)".
+  topic_prefix:
+    name: MQTT topic prefix
+    description: >-
+      MQTT topic prefix; readings publish to <prefix>/glucose. Default
+      is gluco-hub/ha which is safe for a single instance.
+  client_id:
+    name: MQTT client ID
+    description: >-
+      MQTT client id (1-23 characters, letters/digits/dash/underscore).
+      Also appears in the HA discovery unique-id, so changing it
+      orphans previously-published entities.
+  log_level:
+    name: Log level
+    description: >-
+      Logging verbosity. Use "debug" when troubleshooting LibreLink Up
+      login or MQTT-discovery issues.

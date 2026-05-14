@@ -58,11 +58,12 @@ fi
 # Poller
 export GLUCO_HUB__POLLER__INTERVAL_SECS="${POLL_INTERVAL_SECS}"
 
-# HTTP API stays bound to 127.0.0.1:8080 inside the container. The
-# add-on does not expose a port, so no network exposure occurs. A future
-# upstream patch ([http] enabled = false) will let us disable this
-# entirely; for now, the idle listener costs ~negligible RAM.
-export GLUCO_HUB__HTTP__BIND="127.0.0.1:8080"
+# HTTP API binds to 0.0.0.0:8080 inside the container so the HA
+# Supervisor watchdog (config.yaml: watchdog: tcp://[HOST]:[PORT:8080])
+# can probe it. The add-on does not declare `ports:`, so the listener
+# stays on the internal hassio bridge network — not reachable from the
+# host or external network.
+export GLUCO_HUB__HTTP__BIND="0.0.0.0:8080"
 
 # Sink — MQTT (Mosquitto add-on internal, plaintext, with HA discovery)
 export GLUCO_HUB__SINK__MQTT__BROKER_HOST="${MQTT_HOST}"
