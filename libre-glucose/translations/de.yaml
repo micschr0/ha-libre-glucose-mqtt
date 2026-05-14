@@ -39,6 +39,14 @@ configuration:
     description: >-
       Anzeigename des Geräts in Home Assistant. Leer fällt auf
       "Gluco Hub (<client_id>)" zurück.
+  glucose_unit:
+    name: Glukose-Einheit
+    description: >-
+      Einheit, in der der Home-Assistant-Sensor Messwerte meldet —
+      "mgdl" für mg/dL oder "mmol" für mmol/L. Die MQTT-JSON-Payload
+      enthält stets beide Werte, betroffen ist nur die HA-Discovery-
+      Entität. Default ist "mgdl" aus Kompatibilitätsgründen; für
+      EU/UK-Anzeige "mmol" wählen.
   topic_prefix:
     name: MQTT-Topic-Präfix
     description: >-
