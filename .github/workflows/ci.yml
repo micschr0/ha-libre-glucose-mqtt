@@ -56,7 +56,7 @@ jobs:
           dockerfile: ha-libre-glucose-mqtt/Dockerfile
 
   shellcheck:
-    name: Shell lint (run.sh)
+    name: Shell lint (run.sh + tests)
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -68,5 +68,69 @@ jobs:
           # bashio), shellcheck should treat it as bash.
           SHELLCHECK_OPTS: "-s bash -e SC1008"
         with:
-          scandir: "./ha-libre-glucose-mqtt"
-          ignore_paths: "translations"
+          scandir: "."
+          ignore_paths: "translations .github"
+
+  apparmor-syntax:
+    name: AppArmor profile syntax
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
+      - name: Install apparmor-parser
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends apparmor apparmor-utils
+      - name: Validate apparmor.txt (skip kernel load)
+        run: |
+          sudo apparmor_parser -Q -K \
+            ha-libre-glucose-mqtt/apparmor.txt
+          echo "apparmor.txt parses cleanly."
+
+  docker-build:
+    name: Docker build smoke (amd64)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+      - name: Build addon image (amd64)
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        with:
+          context: ./ha-libre-glucose-mqtt
+          platforms: linux/amd64
+          push: false
+          load: true
+          tags: ha-libre-glucose-mqtt:ci
+          build-args: |
+            BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian:bookworm
+            GLUCO_HUB_TAG=2026.514.0
+            BUILD_ARCH=amd64
+            BUILD_DATE=ci
+            BUILD_DESCRIPTION=ci-smoke
+            BUILD_NAME=ha-libre-glucose-mqtt
+            BUILD_REF=${{ github.sha }}
+            BUILD_REPOSITORY=${{ github.repository }}
+            BUILD_VERSION=ci
+      - name: Inspect built image
+        run: |
+          docker image inspect ha-libre-glucose-mqtt:ci \
+            --format 'OK: {{.RepoTags}} size={{.Size}}'
+
+  env-mapping-smoke:
+    name: run.sh ENV mapping + check-config
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
+      - name: Unit-test run.sh ENV mapping (mocked bashio)
+        run: bash tests/test-run-sh.sh
+      - name: Smoke-test gluco-hub check-config with the mocked env
+        env:
+          GLUCO_HUB_TAG: "2026.514.0"
+        run: bash tests/test-check-config.sh
