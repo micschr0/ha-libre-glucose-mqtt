@@ -47,7 +47,7 @@ medical devices**. They are not for medical decisions, therapy,
 dosing, or diagnosis. They poll Abbott's LibreLink Up API without any
 partnership; **use may violate Abbott's LibreLink Up Terms of
 Service**, and the maintainers accept no liability for account
-suspension or any other consequence.
+suspension or any other consequence. Use at your own risk.
 
 Issues that report "the glucose number is wrong" without a separate
 security implication should be filed as bugs (issue tracker), not as
