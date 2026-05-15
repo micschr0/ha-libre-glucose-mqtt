@@ -9,7 +9,7 @@
 
 name: Libre Glucose MQTT Bridge
 slug: libre-glucose
-version: "2026.515.1"
+version: "2026.515.2"
 
 # Pre-built multi-arch image — release.yml publishes this on every tag
 # push, signed with cosign + SLSA build-provenance. HA Supervisor pulls
