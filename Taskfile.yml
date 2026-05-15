@@ -1,0 +1,61 @@
+# Taskfile for ha-libre-glucose-mqtt — mirrors the gluco-hub-rs
+# release cadence (CalVer-on-SemVer, YYYY.MMDD.PATCH).
+#
+# Usage: install go-task (`brew install go-task` / `apt install
+# go-task`) then `task <name>`. See `task --list` for all targets.
+#
+# Versions are managed exclusively through these tasks. Manual edits
+# to config.yaml's `version:` risk drift between source, tag, and
+# published image.
+
+version: '3'
+
+vars:
+  ADDON_DIR: libre-glucose
+
+tasks:
+  default:
+    desc: List available tasks
+    cmds:
+      - task --list-all
+
+  test:
+    desc: Run the ENV-mapping smoke test locally
+    cmds:
+      - bash tests/test-run-sh.sh
+
+  drift-check:
+    desc: Assert Dockerfile / build.yaml / config.yaml carry the same upstream tag
+    cmds:
+      - |
+        set -euo pipefail
+        DOCKERFILE_TAG=$(grep -oP 'ARG GLUCO_HUB_TAG=\K\S+' {{.ADDON_DIR}}/Dockerfile)
+        BUILD_TAG=$(grep -oP 'GLUCO_HUB_TAG:\s*"?\K[^"\s]+' {{.ADDON_DIR}}/build.yaml)
+        CONFIG_VERSION=$(grep -oP '^version:\s*"?\K[^"\s]+' {{.ADDON_DIR}}/config.yaml)
+        printf "Dockerfile  : %s\nbuild.yaml  : %s\nconfig.yaml : %s\n" \
+          "$DOCKERFILE_TAG" "$BUILD_TAG" "$CONFIG_VERSION"
+        if [ "$DOCKERFILE_TAG" != "$BUILD_TAG" ]; then
+          echo "DRIFT: Dockerfile != build.yaml" >&2
+          exit 1
+        fi
+        echo "OK: upstream-tag refs agree on $DOCKERFILE_TAG"
+
+  release:dry:
+    desc: Preview what `task release` would do (no commit, no tag, no push)
+    cmds:
+      - bash scripts/release.sh --dry-run
+
+  release:
+    desc: Cut today's CalVer release — tag the current `version:` in config.yaml and push
+    cmds:
+      - bash scripts/release.sh
+
+  release:patch:
+    desc: Same-day patch — bump PATCH, tag, push (use when a release for today already exists)
+    cmds:
+      - bash scripts/release.sh --patch
+
+  release:rc:
+    desc: Pre-release — appends `-rc.N` to today's CalVer and pushes to the :testing channel
+    cmds:
+      - bash scripts/release.sh --rc

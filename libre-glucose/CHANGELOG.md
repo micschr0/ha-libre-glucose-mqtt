@@ -7,6 +7,25 @@ gluco-hub release it bundles.
 
 ## [Unreleased]
 
+### Added
+
+- **Pre-built multi-arch GHCR image** — `.github/workflows/release.yml`
+  now builds the addon for `linux/amd64` + `linux/arm64` natively
+  (no QEMU), signs the manifest list with cosign (keyless OIDC),
+  attaches a SLSA build-provenance attestation, and publishes to
+  `ghcr.io/micschr0/libre-glucose`. Tag channels mirror upstream
+  gluco-hub-rs: `:main`, `:develop`, `:testing` (pre-release), and on
+  final tags `:X.Y.Z`, `:X.Y`, `:X`, `:latest`, `:stable`,
+  `:sha-<short>`. HA Supervisor now pulls the pre-built image at
+  install time instead of building locally — ~30 s vs ~60 s
+  first-install, deterministic across users, verifiable provenance.
+- **`config.yaml` `image:` field** points HA Supervisor at the new
+  GHCR-published manifest. The local `Dockerfile` + `build.yaml` stay
+  as a build-from-source fallback.
+- **`Taskfile.yml` + `scripts/release.sh`** — same CalVer cadence as
+  upstream gluco-hub-rs (`YYYY.MMDD.PATCH`, MMDD = month*100 + day).
+  Tasks: `release`, `release:patch`, `release:rc`, `release:dry`.
+
 ### Changed
 
 - **Upstream pin**: `gluco-hub` image tag bumped from rolling `:develop`
