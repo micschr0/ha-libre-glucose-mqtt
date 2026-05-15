@@ -7,6 +7,18 @@ gluco-hub release it bundles.
 
 ## [Unreleased]
 
+### Changed
+
+- **Disclaimer wording** across `README.md`, `libre-glucose/README.md`,
+  `libre-glucose/DOCS.md`, and `SECURITY.md` now spells out three
+  previously-implicit risks: (a) this app is unofficial and not
+  affiliated with Abbott, (b) use may violate Abbott's LibreLink Up
+  Terms of Service and the maintainers accept no liability for
+  account suspension, (c) the software is provided "as is" — use at
+  your own risk. The medical-device wording is retained and slightly
+  broadened ("medical decisions" alongside "therapy, dosing,
+  diagnosis").
+
 ### Added
 
 - **Pre-built multi-arch GHCR image** — `.github/workflows/release.yml`

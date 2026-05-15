@@ -1,8 +1,9 @@
 # ha-libre-glucose-mqtt — Home Assistant app repository
 
-> ⚠️ **Not for medical use.** Research and self-hosting tool. No warranty.
-> Not for therapy, dosing, or diagnosis. See the app `DOCS.md` for the
-> full disclaimer.
+> ⚠️ **Disclaimer:** Unofficial, not affiliated with Abbott. Use may
+> violate Abbott's LibreLink Up Terms of Service. No warranty. Not for
+> medical decisions, therapy, dosing, or diagnosis. Use at your own
+> risk. See the app `DOCS.md` → *Disclaimer* for full details.
 
 This repository ships a single Home Assistant Supervisor **app** (formerly
 known as an *add-on* — HA's developer docs renamed the concept in 2025):
