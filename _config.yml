@@ -1,0 +1,30 @@
+# GitHub Pages — minimal Jekyll config.
+#
+# Renders the repo's existing Markdown files as a static site under
+# https://micschr0.github.io/ha-libre-glucose-mqtt/ with the built-in
+# Cayman theme (header band + code highlighting, no extra build step).
+# README.md becomes the landing page; everything else is reachable via
+# normal relative links (DOCS.md, CHANGELOG.md, SECURITY.md).
+
+theme: jekyll-theme-cayman
+title: Libre Glucose MQTT Bridge
+description: >-
+  Home Assistant app bridging LibreLink Up glucose readings to MQTT
+  with auto-discovery. Powered by gluco-hub-rs.
+
+# Don't try to render anything that isn't user-visible documentation.
+exclude:
+  - .github/
+  - .yamllint
+  - LICENSE
+  - Taskfile.yml
+  - renovate.json
+  - scripts/
+  - tests/
+  - vendor/
+  - Gemfile
+  - Gemfile.lock
+
+# Permalinks: keep them short and tied to filenames so existing
+# README links keep working (Markdown → HTML with same path).
+permalink: pretty
