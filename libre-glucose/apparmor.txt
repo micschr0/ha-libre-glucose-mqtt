@@ -41,6 +41,12 @@ profile libre-glucose flags=(attach_disconnected,mediate_deleted) {
   # /init above.
   /usr/lib/bashio/** rix,
 
+  # Our entrypoint script. s6-overlay's legacy-services step exec's it
+  # from /run/s6/basedir/scripts/rc.init; the shebang is
+  # `#!/usr/bin/with-contenv bashio` so the kernel needs `r` to parse
+  # the interpreter line and `x` to launch it.
+  /run.sh rix,
+
   # /data is the add-on's only writable persistent location (mapped by
   # `map: [data:rw]` in config.yaml). The DLQ JSONL files live here.
   /data/** rw,
