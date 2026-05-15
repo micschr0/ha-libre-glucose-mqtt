@@ -123,7 +123,14 @@ if ! grep -q "^version: \"${version}\"" "$addon_config"; then
 fi
 
 git add "$addon_config"
-git commit -m "chore: release ${tag}"
+# Skip the bump commit if config.yaml was already at the target
+# version (typical when the user just bumped manually before running
+# the script, or when version-in-file == version-from-CalVer-rule).
+if git diff --cached --quiet; then
+  echo "config.yaml already at ${version} — tagging current HEAD without a bump commit."
+else
+  git commit -m "chore: release ${tag}"
+fi
 git tag -a "$tag" -m "Release ${version}"
 
 echo
