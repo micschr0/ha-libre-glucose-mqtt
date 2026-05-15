@@ -10,6 +10,12 @@
 name: Libre Glucose MQTT Bridge
 slug: libre-glucose
 version: "2026.515.0"
+
+# Pre-built multi-arch image — release.yml publishes this on every tag
+# push, signed with cosign + SLSA build-provenance. HA Supervisor pulls
+# from here at install time; `build.yaml` and the local Dockerfile stay
+# as fallback for users who want to rebuild from source.
+image: ghcr.io/micschr0/libre-glucose
 description: >-
   Polls LibreLink Up glucose readings and publishes them to MQTT with
   Home Assistant auto-discovery. Powered by gluco-hub-rs.

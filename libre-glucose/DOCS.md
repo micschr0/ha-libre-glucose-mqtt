@@ -163,6 +163,46 @@ exposing them through this add-on's UI is a deliberate human decision
 touch `config.yaml` (option + schema), `run.sh` (export), both
 `translations/*.yaml`, and the `tests/` env-mapping assertions.
 
+## Releasing — CalVer scheme + image channels
+
+The app uses the same CalVer-on-SemVer scheme as upstream gluco-hub-rs:
+`YYYY.MMDD.PATCH` where `MMDD = month*100 + day`. So a release cut on
+2026-05-15 is `2026.515.0`; a same-day re-cut is `2026.515.1`. Tags
+are prefixed `v` (e.g. `v2026.515.0`).
+
+Releases are managed via the local `Taskfile.yml` — install
+`go-task` once, then:
+
+```bash
+task release           # cut today's CalVer (commit + tag + push)
+task release:patch     # same-day hotfix (PATCH bump)
+task release:rc        # pre-release (-rc.N suffix)
+task release:dry       # preview without changing anything
+```
+
+Pushing a `v*` tag triggers `.github/workflows/release.yml`, which
+builds the addon image for `linux/amd64` + `linux/arm64`, signs it
+with cosign (keyless), attaches a SLSA build-provenance attestation,
+and publishes to `ghcr.io/micschr0/libre-glucose` under the right
+channel tags:
+
+| Trigger | Tags published |
+|---|---|
+| `push: main` | `:main`, `:sha-<short>` |
+| `push: develop` *(when the branch exists)* | `:develop`, `:sha-<short>` |
+| pre-release tag `vX.Y.Z-rc.N` | `:X.Y.Z-rc.N`, `:testing`, `:sha-<short>` |
+| final tag `vX.Y.Z` | `:X.Y.Z`, `:X.Y`, `:X`, `:latest`, `:stable`, `:sha-<short>` |
+| pull_request | build-only verification, no push |
+
+HA Supervisor pulls the image whose tag matches `config.yaml`'s
+`version:` field, so the canonical release flow is: `task release` →
+release.yml builds & pushes `:2026.515.0` → HA users install or update
+to that tag automatically.
+
+The local `Dockerfile` + `build.yaml` stay as a fallback for users
+who want to build from source (or for emergency installs before a tag
+is published).
+
 ## Reporting issues
 
 For app-specific problems (manifest, install, run.sh): file an issue
