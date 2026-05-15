@@ -7,7 +7,31 @@ gluco-hub release it bundles.
 
 ## [Unreleased]
 
+### Fixed
+
+- **AppArmor profile: container failed to boot with `/bin/sh: 0: cannot
+  open /init: Permission denied`.** The HA `*-base-debian:bookworm`
+  images ship s6-overlay v3, whose `/init`, `/package/**`, `/command/**`
+  and `/run/{s6,s6-rc*,service}/**` entries are `#!/bin/sh` *shebang
+  scripts* rather than ELF binaries (as they were under s6-overlay v2).
+  The Linux kernel must `open(O_RDONLY)` a script during `execve()` to
+  read its shebang line, so AppArmor `ix` (execute + inherit, no read)
+  produces `EACCES` and the boot failure above. Granted `r` on those
+  paths (now `rix`) plus `/usr/lib/bashio/**` (sourced by `run.sh`,
+  also a read). ELF paths under `/bin`, `/usr/bin`, `/usr/sbin`, and
+  `/usr/local/bin` deliberately stay `ix` — ELF exec does not require
+  a userspace `read()`, and granting `r` there would only widen the
+  attack surface for no functional gain. Refs: AppArmor docs ("Read
+  access is required for shell scripts and other interpreted content"),
+  HA Supervisor #1748, s6-overlay v2→v3 base-image migration (HA dev
+  blog, May 2022).
+
 ### Changed
+
+- **`init: false` comment in `config.yaml`** corrected: it is a
+  Supervisor flag (disables the default `tini` wrapper), not an
+  s6-overlay flag. The s6 `/init` from the base image still runs as
+  the container ENTRYPOINT.
 
 - **Disclaimer phrasing tightened**: shortened
   `"not affiliated with, endorsed by, or sponsored by Abbott Laboratories"`
