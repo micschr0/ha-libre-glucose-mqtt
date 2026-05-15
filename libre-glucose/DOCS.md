@@ -99,13 +99,11 @@ status.
 
 ## Disclaimer
 
-**Unofficial. Not affiliated with, endorsed by, or sponsored by Abbott
-Laboratories.** This app polls the LibreLink Up cloud API without any
-partnership with Abbott. **Use may violate Abbott's LibreLink Up
-Terms of Service.** You are responsible for ensuring your use
-complies with the ToS in your jurisdiction; the maintainers cannot
-assess that for you and accept no liability if Abbott suspends or
-terminates your LibreView account.
+**Unofficial. Not affiliated with Abbott Laboratories.** This app polls
+the LibreLink Up cloud API without any partnership with Abbott. **Use
+may violate Abbott's LibreLink Up Terms of Service.** You are
+responsible for ensuring your use complies with the ToS in your
+jurisdiction.
 
 **Not a medical device.** This app is a research and self-hosting
 tool. Do not use the values it reports for medical decisions,
@@ -114,11 +112,10 @@ upstream `gluco-hub-rs` binary prints a `NOT FOR MEDICAL USE` banner
 on every start — see `SCOPE.md`, `DISCLAIMER.md`, and `LICENSE` in
 the upstream repository for the full upstream wording.
 
-**No warranty. Use at your own risk.** The software is provided
-"as is" without warranty of any kind. The maintainers accept no
-liability for missed readings, incorrect data, software defects,
-account terminations, or any other consequences arising from the
-use of this app.
+**No warranty.** The software is provided "as is" without warranty
+of any kind. The maintainers accept no liability for missed readings,
+incorrect data, software defects, account terminations, or any other
+consequences arising from the use of this app. Use at your own risk.
 
 ## Architecture notes
 

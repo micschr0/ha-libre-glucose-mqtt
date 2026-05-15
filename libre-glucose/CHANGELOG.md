@@ -9,6 +9,22 @@ gluco-hub release it bundles.
 
 ### Changed
 
+- **Disclaimer phrasing tightened**: shortened
+  `"not affiliated with, endorsed by, or sponsored by Abbott Laboratories"`
+  to `"not affiliated with Abbott Laboratories"` across all 5
+  occurrences (short callouts + Trademarks sections + long-form
+  Disclaimer paragraph in DOCS.md).
+- **Disclaimer consistency**: every disclaimer section now closes
+  with `Use at your own risk.` as its final sentence. Touched: the
+  3rd paragraph in `libre-glucose/DOCS.md` (reordered so the bold
+  `**No warranty.**` is the lead and `Use at your own risk.` is the
+  closer) and the disclaimer paragraph in `SECURITY.md` (appended
+  the closer). The two README short callouts already ended with the
+  phrase.
+- **DOCS.md disclaimer trimmed**: dropped the trailing
+  `; the maintainers cannot assess … LibreView account` clause from
+  the first long-form paragraph — the maintainer-liability point is
+  already covered (more broadly) by the third paragraph.
 - **Disclaimer wording (II)**: short callouts in both READMEs now
   open with the not-affiliated-with-Abbott clause as a bold first
   sentence, dropped the trailing `See DOCS.md → Disclaimer for full

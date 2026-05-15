@@ -9,11 +9,10 @@ Powered by [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs).
 This app is a thin Bash + Docker wrapper around the upstream Rust
 binary — no business logic lives here.
 
-> ⚠️ **Not affiliated with, endorsed by, or sponsored by Abbott
-> Laboratories.** Unofficial research and self-hosting tool. Use may
-> violate Abbott's LibreLink Up Terms of Service. No warranty. Not for
-> medical decisions, therapy, dosing, or diagnosis. Use at your own
-> risk.
+> ⚠️ **Not affiliated with Abbott Laboratories.** Unofficial research
+> and self-hosting tool. Use may violate Abbott's LibreLink Up Terms
+> of Service. No warranty. Not for medical decisions, therapy, dosing,
+> or diagnosis. Use at your own risk.
 
 ## Requirements
 
@@ -40,8 +39,8 @@ timestamp, patient id) is available as entity attributes.
 ## Trademarks
 
 LibreLink, LibreView, FreeStyle Libre, and Libre 2 / Libre 3 are
-trademarks of Abbott. This project is not affiliated with, endorsed
-by, or sponsored by Abbott Laboratories.
+trademarks of Abbott. This project is not affiliated with Abbott
+Laboratories.
 
 ## Licence
 
