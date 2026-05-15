@@ -40,13 +40,19 @@ or a documented mitigation within 30 days for confirmed issues.
 Coordinated disclosure with the upstream `gluco-hub-rs` maintainers is
 the default for any issue that touches polling or wire-format logic.
 
-## Not a medical device
+## Not a medical device, not affiliated with Abbott
 
-This app and its upstream are research / self-hosting tools, not
-medical devices. They are **not for therapy, dosing, or diagnosis**.
+This app and its upstream are research / self-hosting tools, **not
+medical devices**. They are not for medical decisions, therapy,
+dosing, or diagnosis. They poll Abbott's LibreLink Up API without any
+partnership; **use may violate Abbott's LibreLink Up Terms of
+Service**, and the maintainers accept no liability for account
+suspension or any other consequence.
+
 Issues that report "the glucose number is wrong" without a separate
 security implication should be filed as bugs (issue tracker), not as
-security advisories.
+security advisories. ToS or contractual concerns with Abbott are out
+of scope for this repository — those are between the user and Abbott.
 
 ## Supported versions
 

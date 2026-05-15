@@ -9,9 +9,10 @@ Powered by [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs).
 This app is a thin Bash + Docker wrapper around the upstream Rust
 binary — no business logic lives here.
 
-> ⚠️ **Not for medical use.** Research and self-hosting tool. No
-> warranty. Not for therapy, dosing, or diagnosis. See `DOCS.md` →
-> *Disclaimer*.
+> ⚠️ **Disclaimer:** Unofficial, not affiliated with Abbott. Use may
+> violate Abbott's LibreLink Up Terms of Service. No warranty. Not for
+> medical decisions, therapy, dosing, or diagnosis. Use at your own
+> risk. See `DOCS.md` → *Disclaimer* for full details.
 
 ## Requirements
 
