@@ -147,7 +147,7 @@ jobs:
           tags: libre-glucose:ci
           build-args: |
             BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian:bookworm
-            GLUCO_HUB_TAG=develop
+            GLUCO_HUB_TAG=2026.515.0
             BUILD_ARCH=amd64
             BUILD_DATE=ci
             BUILD_DESCRIPTION=ci-smoke
@@ -172,8 +172,5 @@ jobs:
         run: bash tests/test-run-sh.sh
       - name: Smoke-test gluco-hub check-config with the mocked env
         env:
-          # `develop` channel: upstream gluco-hub-rs has not cut a CalVer
-          # release yet, so :develop is the only published tag. Renovate
-          # will switch us to a stable tag once one exists.
-          GLUCO_HUB_TAG: "develop"
+          GLUCO_HUB_TAG: "2026.515.0"
         run: bash tests/test-check-config.sh
