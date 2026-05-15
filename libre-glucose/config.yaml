@@ -32,8 +32,12 @@ arch:
   - amd64
   - aarch64
 
-# `init: false` tells s6-overlay to exec our run.sh directly. gluco-hub
-# is a long-running, well-behaved process and handles SIGTERM itself.
+# `init: false` is a HA Supervisor flag (NOT an s6-overlay flag): it
+# tells Supervisor NOT to wrap the container with its default `tini`
+# init. The HA Debian base already ships s6-overlay's own `/init` as
+# the image ENTRYPOINT, so adding tini on top would be redundant and
+# break signal handling. gluco-hub itself is well-behaved and handles
+# SIGTERM directly.
 init: false
 
 # Start with Home Assistant's other long-running services, after USB
