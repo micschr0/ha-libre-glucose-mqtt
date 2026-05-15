@@ -9,6 +9,14 @@ gluco-hub release it bundles.
 
 ### Fixed
 
+- **AppArmor profile: container still failed after the previous fix at
+  `/run/s6/basedir/scripts/rc.init: 91: /run.sh: Permission denied`.**
+  Same root cause as the prior fix: `/run.sh` is a
+  `#!/usr/bin/with-contenv bashio` shebang script and lives at the
+  filesystem root, which wasn't matched by any rule in the profile.
+  Added `/run.sh rix,` so s6-overlay's `legacy-services` stage can read
+  and exec it.
+
 - **AppArmor profile: container failed to boot with `/bin/sh: 0: cannot
   open /init: Permission denied`.** The HA `*-base-debian:bookworm`
   images ship s6-overlay v3, whose `/init`, `/package/**`, `/command/**`
