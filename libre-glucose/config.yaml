@@ -9,7 +9,7 @@
 
 name: Libre Glucose MQTT Bridge
 slug: libre-glucose
-version: "0.2.0-dev"
+version: "2026.515.0"
 description: >-
   Polls LibreLink Up glucose readings and publishes them to MQTT with
   Home Assistant auto-discovery. Powered by gluco-hub-rs.

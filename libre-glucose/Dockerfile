@@ -8,12 +8,11 @@
 # bashio + s6-overlay). The base is glibc-based to match the binary,
 # which is built against glibc in micschr0/gluco-hub-rs/Dockerfile.
 
-# Tag the upstream gluco-hub release used by this app. Bump this when
-# bumping `version:` in config.yaml so the binary version actually
-# matches the manifest. Default `develop` because gluco-hub-rs has not
-# cut a CalVer release yet — Renovate will switch us to a stable tag
-# once one exists.
-ARG GLUCO_HUB_TAG=develop
+# Tag the upstream gluco-hub release used by this app. Bump this in
+# lockstep with `version:` in config.yaml so the binary version always
+# names the release it bundles. Renovate's customManagers keep this in
+# sync with build.yaml + config.yaml automatically.
+ARG GLUCO_HUB_TAG=2026.515.0
 
 # `BUILD_FROM` must be a GLOBAL ARG (declared before any FROM) so it
 # remains in scope at the final `FROM ${BUILD_FROM}` line. Declaring it

@@ -7,6 +7,13 @@ gluco-hub release it bundles.
 
 ## [Unreleased]
 
+### Changed
+
+- **Upstream pin**: `gluco-hub` image tag bumped from rolling `:develop`
+  to the first stable release `2026.515.0`. The app's own `version:`
+  now mirrors the upstream CalVer exactly (was `0.2.0-dev`), so a
+  running app version names the bundled binary release at a glance.
+
 ### Added
 
 - **`glucose_unit` option** (`mgdl` | `mmol`, default `mgdl`) — surfaces
