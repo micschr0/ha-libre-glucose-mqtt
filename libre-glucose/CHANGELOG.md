@@ -9,6 +9,15 @@ gluco-hub release it bundles.
 
 ### Changed
 
+- **Disclaimer wording (II)**: short callouts in both READMEs now
+  open with the not-affiliated-with-Abbott clause as a bold first
+  sentence, dropped the trailing `See DOCS.md → Disclaimer for full
+  details` pointer (the callout is already self-contained), and the
+  full long-form text in `DOCS.md` stays for readers who want it.
+- **GitHub Pages**: new `_config.yml` enables Jekyll with the Cayman
+  theme so the existing Markdown files render as a minimal static
+  site at <https://micschr0.github.io/ha-libre-glucose-mqtt/>.
+  Landing page is `README.md`; no separate build pipeline needed.
 - **Disclaimer wording** across `README.md`, `libre-glucose/README.md`,
   `libre-glucose/DOCS.md`, and `SECURITY.md` now spells out three
   previously-implicit risks: (a) this app is unofficial and not
