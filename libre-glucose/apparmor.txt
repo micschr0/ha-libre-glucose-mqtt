@@ -8,14 +8,27 @@ profile libre-glucose flags=(attach_disconnected,mediate_deleted) {
   # ---------------------------------------------------------------------
   # s6-overlay / bashio scaffolding (HA add-on base image)
   # ---------------------------------------------------------------------
-  /init ix,
+  # s6-overlay v3 (in the HA *-base-debian:bookworm images) ships /init
+  # and most of /package, /command as `#!/bin/sh` shebang scripts — not
+  # ELF binaries like s6-overlay v2 did. The Linux kernel must
+  # open(O_RDONLY) a shebang script to read its `#!`-line during
+  # execve(), so AppArmor `ix` (execute + inherit, no read) causes
+  # EACCES and the well-known boot failure:
+  #   /bin/sh: 0: cannot open /init: Permission denied
+  # See: AppArmor docs ("Read access is required for shell scripts and
+  # other interpreted content"), HA Supervisor #1748, s6-overlay v2→v3
+  # base-image migration (HA dev blog, May 2022).
+  # ELF paths (/bin, /usr/bin, /usr/sbin, /usr/local/bin) stay `ix` —
+  # ELF exec does not require a userspace read; granting `r` would only
+  # widen the read surface for no functional gain.
+  /init rix,
   /bin/** ix,
   /usr/bin/** ix,
   /usr/sbin/** ix,
   /usr/local/bin/** ix,
-  /run/{s6,s6-rc*,service}/** ix,
-  /package/** ix,
-  /command/** ix,
+  /run/{s6,s6-rc*,service}/** rix,
+  /package/** rix,
+  /command/** rix,
   /etc/services.d/** rwix,
   /etc/cont-init.d/** rwix,
   /etc/cont-finish.d/** rwix,
@@ -23,8 +36,10 @@ profile libre-glucose flags=(attach_disconnected,mediate_deleted) {
   /run/{,**} rwk,
   /dev/tty rw,
 
-  # Bashio helpers
-  /usr/lib/bashio/** ix,
+  # Bashio helpers — sourced (`. /usr/lib/bashio/bashio.sh`) by run.sh,
+  # which is a read, not an exec; needs `r` for the same reason as
+  # /init above.
+  /usr/lib/bashio/** rix,
 
   # /data is the add-on's only writable persistent location (mapped by
   # `map: [data:rw]` in config.yaml). The DLQ JSONL files live here.
