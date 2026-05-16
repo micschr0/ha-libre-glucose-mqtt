@@ -277,3 +277,73 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.manifest.outputs.digest }}
           push-to-registry: true
+
+  # Publish a GitHub Release for v* tags, with notes lifted from the
+  # matching ## [X.Y.Z] section in libre-glucose/CHANGELOG.md. Runs only
+  # after the manifest is signed & attested, so the Release page never
+  # points at an unverified image. Pre-release tags (v*-rc.N / -alpha /
+  # -beta) are flagged as pre-release and never move :latest.
+  gh-release:
+    name: publish GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: merge
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # create the Release object + upload notes
+    steps:
+      - uses: step-security/harden-runner@ab7a9404c0f3da075243ca237b5fac12c98deaa5 # v2.19.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Extract changelog section
+        id: notes
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          # Strip leading "v" → "2026.516.2", matches the CHANGELOG heading.
+          version="${TAG#v}"
+          # Pull lines between "## [<version>]" and the next "## [" heading.
+          # `awk` keeps the body but drops the heading itself, so the
+          # Release page shows the body only (the version is already the
+          # Release title).
+          awk -v v="$version" '
+            $0 ~ "^## \\[" v "\\]" { flag=1; next }
+            /^## \[/ && flag      { exit }
+            flag                   { print }
+          ' libre-glucose/CHANGELOG.md > /tmp/notes.md
+          if ! [ -s /tmp/notes.md ]; then
+            echo "::error::No CHANGELOG section found for $version" >&2
+            exit 1
+          fi
+          echo "path=/tmp/notes.md" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+          NOTES: ${{ steps.notes.outputs.path }}
+        run: |
+          set -euo pipefail
+          # Pre-release tags carry a hyphen (e.g. v2026.516.2-rc.1).
+          if [[ "$TAG" == *-* ]]; then
+            prerelease_flag=(--prerelease)
+          else
+            prerelease_flag=(--latest)
+          fi
+          # Idempotent: if a release already exists (manual backfill, or
+          # workflow re-run), update its notes instead of failing.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" \
+              --title "$TAG" \
+              --notes-file "$NOTES" \
+              "${prerelease_flag[@]}"
+          else
+            gh release create "$TAG" \
+              --title "$TAG" \
+              --notes-file "$NOTES" \
+              --verify-tag \
+              "${prerelease_flag[@]}"
+          fi
