@@ -7,6 +7,23 @@ gluco-hub release it bundles.
 
 ## [Unreleased]
 
+## [2026.516.1] - 2026-05-16
+
+### Changed
+
+- **Upstream pin bumped to `gluco-hub` `2026.516.1`** — picks up the
+  `http.enabled` toggle + liveness heartbeat file (gluco-hub-rs PR #20),
+  the disclaimer JSON-field removal + banner unification (PRs #18, #19),
+  and the upstream PVR security-reporting switch. The HA app does not
+  expose the HTTP API (MQTT-only deployment), so `http.enabled = false`
+  could be set at the app level in a future release to skip the unused
+  TCP listener entirely.
+- **Security reporting now goes through GitHub Private Vulnerability
+  Reporting** — `SECURITY.md` no longer offers an email fallback;
+  sensitive reports go through the in-platform [advisory form](https://github.com/micschr0/ha-libre-glucose-mqtt/security/advisories/new).
+  `repository.yaml`'s `maintainer:` field also aligns with the
+  privacy-friendly mailbox.org alias used in the upstream repo.
+
 ### Fixed
 
 - **AppArmor profile: container still failed after the previous fix at
