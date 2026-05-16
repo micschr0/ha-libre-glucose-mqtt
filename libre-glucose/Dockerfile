@@ -12,7 +12,7 @@
 # lockstep with `version:` in config.yaml so the binary version always
 # names the release it bundles. Renovate's customManagers keep this in
 # sync with build.yaml + config.yaml automatically.
-ARG GLUCO_HUB_TAG=2026.516.1
+ARG GLUCO_HUB_TAG=2026.516.2
 
 # `BUILD_FROM` must be a GLOBAL ARG (declared before any FROM) so it
 # remains in scope at the final `FROM ${BUILD_FROM}` line. Declaring it

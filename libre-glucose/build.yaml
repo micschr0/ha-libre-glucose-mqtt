@@ -10,4 +10,4 @@ args:
   # Tag the upstream gluco-hub release pulled in by the Dockerfile.
   # Renovate's customManagers (see renovate.json) keep this in lockstep
   # with the Dockerfile ARG and config.yaml `version:`.
-  GLUCO_HUB_TAG: "2026.516.1"
+  GLUCO_HUB_TAG: "2026.516.2"
