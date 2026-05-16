@@ -7,6 +7,24 @@ gluco-hub release it bundles.
 
 ## [Unreleased]
 
+### Changed
+
+- **Upstream pin bumped to `gluco-hub` `2026.516.2`** — picks up the
+  new dedicated HA-discovery trend sensor entity (gluco-hub-rs PR #22).
+  After this update, Home Assistant auto-creates a sibling
+  `sensor.<device>_trend` next to the existing glucose entity, with
+  `device_class: "enum"` and every `Trend` variant (`Flat`, `SingleUp`,
+  `FortyFiveUp`, …) in `options`. Both entities also gain
+  `has_entity_name: true` and an `origin:` block so HA renders them as
+  `<Device Name> Glucose` / `<Device Name> Trend` and surfaces the
+  upstream identity in the device picker. Backward-compatible: the
+  glucose entity still publishes the full JSON body as attributes, so
+  existing user templates reading `state_attr('sensor.<...>_glucose',
+  'trend')` keep working. Directional arrow icons remain a dashboard
+  concern (HA MQTT discovery does not support templated icons) — pair
+  the new trend entity with a `template`/`mushroom` card mapping the
+  state to an `mdi:arrow-*` icon.
+
 ## [2026.516.1] - 2026-05-16
 
 ### Changed
