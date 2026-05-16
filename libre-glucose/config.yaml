@@ -81,7 +81,7 @@ options:
   device_name: ""
   glucose_unit: "mgdl"
   topic_prefix: "gluco-hub/ha"
-  client_id: "gluco-hub-ha"
+  client_id: "ha"
   log_level: "info"
 
 schema:

@@ -53,6 +53,14 @@ gluco-hub release it bundles.
 
 ### Changed
 
+- **Default `client_id` shortened from `gluco-hub-ha` to `ha`.** Upstream
+  gluco-hub-rs builds the HA-discovery `object_id` as
+  `gluco_hub_<client_id>_glucose`, so the previous default produced the
+  doubled-up entity `sensor.gluco_hub_gluco_hub_ha_glucose`. Fresh
+  installs now get `sensor.gluco_hub_ha_glucose`. Existing installations
+  are unaffected — Supervisor persists the user's current `client_id` in
+  `/data/options.json`, so their entity ID does not change on upgrade.
+
 - **`init: false` comment in `config.yaml`** corrected: it is a
   Supervisor flag (disables the default `tini` wrapper), not an
   s6-overlay flag. The s6 `/init` from the base image still runs as
