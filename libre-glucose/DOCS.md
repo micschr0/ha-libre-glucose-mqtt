@@ -62,7 +62,7 @@ Attributes (on the sensor entity):
 | `<topic_prefix>/glucose` | publish | no | Latest reading (JSON). |
 | `<topic_prefix>/_health` | publish | yes | Liveness: `{"online": true/false}`. Used by HA's availability_topic to grey out the entity when the bridge is offline. |
 | `<topic_prefix>/_stats` | publish | yes | Per-minute summary of polls / sink success / DLQ depth. Useful for dashboards. |
-| `homeassistant/sensor/gluco_hub_<client_id>_glucose/config` | publish | yes | HA MQTT-discovery config message. Auto-published after every reconnect. |
+| `homeassistant/sensor/gluco_hub_<client_id>_glucose/config` | publish | yes | HA MQTT-discovery config message. Auto-published after every reconnect. With the default `client_id: ha` this becomes `homeassistant/sensor/gluco_hub_ha_glucose/config` and registers `sensor.gluco_hub_ha_glucose` in HA. |
 
 ## Troubleshooting
 
