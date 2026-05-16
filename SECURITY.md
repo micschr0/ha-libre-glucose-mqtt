@@ -18,12 +18,7 @@ If you are unsure, file here — we'll route upstream as needed.
 
 **Do not open a public GitHub issue for security-sensitive reports.**
 
-Use one of the following channels:
-
-- GitHub's [private vulnerability reporting](https://github.com/micschr0/ha-libre-glucose-mqtt/security/advisories/new)
-  (preferred — keeps the discussion auditable in-platform).
-- Email: see the `maintainer:` field in `repository.yaml` at the root
-  of this repo.
+Use GitHub's [private vulnerability reporting](https://github.com/micschr0/ha-libre-glucose-mqtt/security/advisories/new) — the discussion stays auditable in-platform and triggers a GitHub Security Advisory on confirmation.
 
 Please include:
 
