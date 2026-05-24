@@ -4,11 +4,26 @@
 # date (~90 days). Renovate bumps the cosign-verified Home Assistant
 # base image when upstream rebuilds; revisit then and prune.
 #
-# Last reviewed: 2026-05-23 — review by: 2026-08-21
+# Last reviewed: 2026-05-25 — review by: 2026-08-25
 
 fail-on-severity: critical
 
 ignore:
-  # No exceptions at this time. Add entries here only when a CVE is
-  # confirmed to not affect this add-on and include a justification
-  # and a review-by date.
+  - vulnerability: CVE-2026-5450
+    package:
+      name: libc6
+      type: deb
+    # Justification: scanf %mc heap-overflow in glibc 2.7–2.43. Debian 12
+    # (bookworm) ships 2.36-9+deb12u14; no patched package available yet.
+    # Fix requires HA upstream to rebuild the base-debian image once Debian
+    # backports the patch. The add-on runs a Rust binary that does not call
+    # C scanf with user input. — review by: 2026-08-25
+
+  - vulnerability: CVE-2019-1010022
+    package:
+      name: libc6
+      type: deb
+    # Justification: glibc stack-guard mitigation bypass, disputed upstream
+    # (glibc maintainers consider it working-as-designed, no fix planned).
+    # Not exploitable without a prior stack buffer overflow; not applicable
+    # to a Rust binary running in this add-on. — review by: 2026-08-25
