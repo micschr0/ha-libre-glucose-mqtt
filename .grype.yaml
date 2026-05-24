@@ -1,0 +1,14 @@
+# Ignore rules for the Grype container CVE scan.
+#
+# Every entry MUST justify why we accept the risk and carry a review
+# date (~90 days). Renovate bumps the cosign-verified Home Assistant
+# base image when upstream rebuilds; revisit then and prune.
+#
+# Last reviewed: 2026-05-23 — review by: 2026-08-21
+
+fail-on-severity: critical
+
+ignore:
+  # No exceptions at this time. Add entries here only when a CVE is
+  # confirmed to not affect this add-on and include a justification
+  # and a review-by date.
