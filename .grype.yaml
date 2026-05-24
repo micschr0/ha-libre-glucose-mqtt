@@ -9,21 +9,61 @@
 fail-on-severity: critical
 
 ignore:
+  # Go stdlib and stdlib-adjacent vulnerabilities baked into /usr/bin/tempio
+  # (HA's templating helper, statically linked against go1.23.3 with
+  # golang.org/x/crypto v0.26.0). Fixed only by an HA base image rebuild
+  # against a newer Go toolchain. Same exceptions as ha-reverse-autossh-tunnel.
+  - vulnerability: CVE-2025-22871
+    package:
+      name: stdlib
+      type: go-module
+  - vulnerability: CVE-2025-68121
+    package:
+      name: stdlib
+      type: go-module
+  - vulnerability: CVE-2026-27143
+    package:
+      name: stdlib
+      type: go-module
+  - vulnerability: GHSA-v778-237x-gjrc
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+
+  # libc6 + libc-bin: glibc vulnerabilities in HA Debian base (bookworm).
+  # Both packages ship the same glibc version (2.36-9+deb12u14); fix requires
+  # HA upstream to rebuild base-debian once Debian backports the patches.
   - vulnerability: CVE-2026-5450
     package:
       name: libc6
       type: deb
-    # Justification: scanf %mc heap-overflow in glibc 2.7–2.43. Debian 12
-    # (bookworm) ships 2.36-9+deb12u14; no patched package available yet.
-    # Fix requires HA upstream to rebuild the base-debian image once Debian
-    # backports the patch. The add-on runs a Rust binary that does not call
+    # scanf %mc heap-overflow in glibc 2.7–2.43. Rust binary never calls
     # C scanf with user input. — review by: 2026-08-25
-
+  - vulnerability: CVE-2026-5450
+    package:
+      name: libc-bin
+      type: deb
   - vulnerability: CVE-2019-1010022
     package:
       name: libc6
       type: deb
-    # Justification: glibc stack-guard mitigation bypass, disputed upstream
-    # (glibc maintainers consider it working-as-designed, no fix planned).
-    # Not exploitable without a prior stack buffer overflow; not applicable
-    # to a Rust binary running in this add-on. — review by: 2026-08-25
+    # Stack-guard bypass, disputed upstream (working-as-designed, no fix
+    # planned). Not exploitable without prior stack overflow. — review by: 2026-08-25
+  - vulnerability: CVE-2019-1010022
+    package:
+      name: libc-bin
+      type: deb
+
+  # libgnutls30 3.7.9-2+deb12u6 in HA Debian base (bookworm). Fix requires
+  # HA upstream to rebuild base-debian once Debian ships a patched package.
+  # The add-on's Rust binary uses rustls, not GnuTLS.
+  - vulnerability: CVE-2026-33845
+    package:
+      name: libgnutls30
+      type: deb
+    # — review by: 2026-08-25
+  - vulnerability: CVE-2026-42010
+    package:
+      name: libgnutls30
+      type: deb
+    # — review by: 2026-08-25
