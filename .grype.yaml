@@ -77,3 +77,16 @@ ignore:
     package:
       name: tar
       type: deb
+
+  # perl-base 5.36.0-7+deb12u3 in HA Debian base (bookworm). CVE-2026-8376
+  # is a heap overflow in Perl_study_chunk when compiling a regex with a
+  # repeated fixed string, but the SSize_t overflow only occurs on 32-bit
+  # builds; the add-on image is amd64/arm64 (64-bit). perl-base is an
+  # unused transitive base-image dependency — the Rust binary compiles no
+  # Perl regexes, let alone attacker-controlled ones. Grype rates the match
+  # low; only GitHub's mapping calls it critical. Fix requires an HA base
+  # image rebuild once Debian ships a patched perl. — review by: 2026-08-25
+  - vulnerability: CVE-2026-8376
+    package:
+      name: perl-base
+      type: deb
