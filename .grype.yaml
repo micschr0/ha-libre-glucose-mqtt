@@ -90,3 +90,14 @@ ignore:
     package:
       name: perl-base
       type: deb
+  # CVE-2026-42496: Archive::Tar < 3.08 (bundled in perl-base) extracts
+  # symlinks with attacker-controlled targets outside the extraction dir
+  # (path traversal). Reachable only by extracting an untrusted tar archive
+  # through Perl — the add-on's Rust binary runs no Perl and extracts no
+  # untrusted tarballs. perl-base is an unused transitive base-image dep.
+  # Not yet fixed in Debian bookworm; needs an HA base image rebuild once
+  # Archive::Tar 3.08 is backported. — review by: 2026-08-25
+  - vulnerability: CVE-2026-42496
+    package:
+      name: perl-base
+      type: deb
