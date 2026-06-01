@@ -260,11 +260,18 @@ jobs:
         env:
           IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           DIGEST: ${{ steps.manifest.outputs.digest }}
+          # Pass workflow context through env vars rather than expanding
+          # ${{ ... }} directly inside run: — avoids any template-injection
+          # surface (zizmor/template-injection) even though these GitHub
+          # context values are not attacker-controlled.
+          REPO: ${{ github.repository }}
+          WORKFLOW: ${{ github.workflow }}
+          REF: ${{ github.sha }}
         run: |
           cosign sign --yes \
-            -a "repo=${{ github.repository }}" \
-            -a "workflow=${{ github.workflow }}" \
-            -a "ref=${{ github.sha }}" \
+            -a "repo=${REPO}" \
+            -a "workflow=${WORKFLOW}" \
+            -a "ref=${REF}" \
             "${IMAGE}@${DIGEST}"
 
       # Pushes a Sigstore-signed SLSA provenance bundle to the registry,

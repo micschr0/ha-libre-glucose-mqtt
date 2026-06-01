@@ -67,3 +67,37 @@ ignore:
       name: libgnutls30
       type: deb
     # — review by: 2026-08-25
+
+  # tar in HA Debian base (bookworm). CVE-2005-2541 is a disputed 2005 CVE
+  # (tar extracting setuid/setgid files is documented, working-as-designed
+  # behaviour, no fix planned upstream); Grype's DB recently re-rated it to
+  # critical, which trips fail-on-severity. The add-on extracts no untrusted
+  # tarballs, so this is not reachable. — review by: 2026-08-25
+  - vulnerability: CVE-2005-2541
+    package:
+      name: tar
+      type: deb
+
+  # perl-base 5.36.0-7+deb12u3 in HA Debian base (bookworm). CVE-2026-8376
+  # is a heap overflow in Perl_study_chunk when compiling a regex with a
+  # repeated fixed string, but the SSize_t overflow only occurs on 32-bit
+  # builds; the add-on image is amd64/arm64 (64-bit). perl-base is an
+  # unused transitive base-image dependency — the Rust binary compiles no
+  # Perl regexes, let alone attacker-controlled ones. Grype rates the match
+  # low; only GitHub's mapping calls it critical. Fix requires an HA base
+  # image rebuild once Debian ships a patched perl. — review by: 2026-08-25
+  - vulnerability: CVE-2026-8376
+    package:
+      name: perl-base
+      type: deb
+  # CVE-2026-42496: Archive::Tar < 3.08 (bundled in perl-base) extracts
+  # symlinks with attacker-controlled targets outside the extraction dir
+  # (path traversal). Reachable only by extracting an untrusted tar archive
+  # through Perl — the add-on's Rust binary runs no Perl and extracts no
+  # untrusted tarballs. perl-base is an unused transitive base-image dep.
+  # Not yet fixed in Debian bookworm; needs an HA base image rebuild once
+  # Archive::Tar 3.08 is backported. — review by: 2026-08-25
+  - vulnerability: CVE-2026-42496
+    package:
+      name: perl-base
+      type: deb

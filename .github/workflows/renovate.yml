@@ -1,0 +1,69 @@
+---
+name: Renovate
+
+# Self-hosted Renovate. Runs the Renovate CLI from this repo via the
+# official action instead of relying on the hosted Mend Renovate App.
+#
+# Authentication uses a Personal Access Token stored as the
+# RENOVATE_TOKEN secret (repo Settings > Secrets and variables >
+# Actions). A PAT (not the built-in GITHUB_TOKEN) is required so that
+# pushes from Renovate's branches/PRs trigger the CI workflow.
+#   - Classic PAT: scope `repo` (+ `workflow` if Renovate should edit
+#     files under .github/workflows/, which it does here for the
+#     github-actions manager).
+#   - Fine-grained PAT (this repo only): Contents RW, Pull requests RW,
+#     Workflows RW, Issues RW (Dependency Dashboard), Metadata RO.
+#
+# What runs WHEN is split in two:
+#   - This cron decides how often Renovate *checks* the repo (daily).
+#   - renovate.json's `schedule` ("before 6am on monday") gates when PRs
+#     are actually opened. The daily run keeps the Dependency Dashboard
+#     fresh and lets manual/security updates flow without waiting a week.
+
+on:
+  schedule:
+    # Daily at 03:00 UTC. renovate.json's schedule still limits real PRs.
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: "Renovate log level"
+        required: false
+        default: "info"
+        type: choice
+        options:
+          - debug
+          - info
+          - warn
+
+# Deny-all by default; the PAT carries the write permissions Renovate
+# needs, so the job's own GITHUB_TOKEN only reads.
+permissions: {}
+
+concurrency:
+  group: renovate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  renovate:
+    name: Renovate self-hosted
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: step-security/harden-runner@ab7a9404c0f3da075243ca237b5fac12c98deaa5 # v2.19.3
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
+
+      - uses: renovatebot/github-action@693b9ef15eec82123529a37c782242f091365961 # v46.1.14
+        with:
+          token: ${{ secrets.RENOVATE_TOKEN }}
+        env:
+          # Operate only on this repository; no org-wide autodiscovery.
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
+          # renovate.json already exists in the repo, so no onboarding
+          # PR is needed — read the in-repo config directly.
+          RENOVATE_ONBOARDING: "false"
+          LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
