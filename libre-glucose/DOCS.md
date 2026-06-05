@@ -62,7 +62,34 @@ Attributes (on the sensor entity):
 | `<topic_prefix>/glucose` | publish | no | Latest reading (JSON). |
 | `<topic_prefix>/_health` | publish | yes | Liveness: `{"online": true/false}`. Used by HA's availability_topic to grey out the entity when the bridge is offline. |
 | `<topic_prefix>/_stats` | publish | yes | Per-minute summary of polls / sink success / DLQ depth. Useful for dashboards. |
+| `<topic_prefix>/_patients` | publish | yes | Patient list, published after each successful LibreLink Up login. JSON array of `{id, display_name, is_active}`. `display_name` is abbreviated (first name + last initial only, e.g. `Anna M.`) per the PHI constraint. Lets you discover patient UUIDs without a UI. |
 | `homeassistant/sensor/gluco_hub_<client_id>_glucose/config` | publish | yes | HA MQTT-discovery config message. Auto-published after every reconnect. With the default `client_id: ha` this becomes `homeassistant/sensor/gluco_hub_ha_glucose/config` and registers `sensor.gluco_hub_ha_glucose` in HA. |
+
+## Clock View
+
+The add-on serves a responsive glucose display at the Ingress path `/clock`,
+opened directly from the Home Assistant sidebar entry (visible to admin users
+only — see `panel_admin` in the add-on config).
+
+| Route | Description |
+|---|---|
+| `/clock` | HTML display. Query params: `?lo=70&hi=180`, `?eink=1`, `?unit=mgdl\|mmol`, `?dark=0\|1`. |
+| `/clock/state` | JSON snapshot of the current reading. |
+| `/clock/events` | Server-Sent Events stream of new readings. |
+
+**Display classes** — detected automatically from the viewport size, no URL
+parameter needed:
+
+- `wall`: longest screen edge > 900px (landscape) — value + name + trend + time
+- `phone`: default smartphone layout
+- `small`: < 400px (compact displays) — value + trend only
+- `watch`: < 200px — value + background color only
+
+**E-Ink mode** (`?eink=1`): the server throttles the SSE stream to changes
+> 1 mg/dL or gaps > 5 min, and the page drops the opacity decay / hypo pulse in
+favor of a `STALE Xm Ys` text label.
+
+All Clock View responses send `Cache-Control: no-store` (PHI).
 
 ## Troubleshooting
 
