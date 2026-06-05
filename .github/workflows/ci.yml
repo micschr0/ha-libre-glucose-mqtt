@@ -79,6 +79,22 @@ jobs:
             exit 1
           fi
           echo "OK: upstream-tag refs agree on $DOCKERFILE_TAG"
+          # Port-drift guard: ingress_port in config.yaml must match the
+          # bind port in run.sh (GLUCO_HUB__HTTP__BIND). Both hardcode 8080;
+          # this check catches silent drift from manual edits or future
+          # upstream port changes. Only enforced when ingress_port is set.
+          INGRESS_PORT=$(grep -oP 'ingress_port:\s*\K\d+' \
+            libre-glucose/config.yaml || echo "not-set")
+          BIND_PORT=$(grep -oP 'GLUCO_HUB__HTTP__BIND=.*?:\K\d+' \
+            libre-glucose/run.sh)
+          echo "config.yaml ingress_port         : $INGRESS_PORT"
+          echo "run.sh GLUCO_HUB__HTTP__BIND port: $BIND_PORT"
+          if [ "$INGRESS_PORT" != "not-set" ] && \
+             [ "$INGRESS_PORT" != "$BIND_PORT" ]; then
+            echo "::error::ingress_port ($INGRESS_PORT) != bind port ($BIND_PORT)"
+            exit 1
+          fi
+          echo "OK: ingress_port and bind port agree"
 
   yamllint:
     name: YAML lint
