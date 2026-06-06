@@ -23,10 +23,11 @@ url: https://github.com/micschr0/ha-libre-glucose-mqtt
 panel_icon: mdi:water-percent
 panel_title: Glucose Bridge
 # PHI hardening: the panel surfaces live glucose values and (abbreviated)
-# patient names, so restrict the sidebar entry to HA admin users rather
-# than exposing it to every household/guest account. Ingress itself still
-# requires an authenticated HA session; this narrows who discovers the UI.
-panel_admin: true
+# patient names. HA Supervisor restricts the Ingress sidebar entry to admin
+# users BY DEFAULT once ingress is enabled, so we rely on that default and do
+# NOT set panel_admin explicitly (the add-on linter flags an explicit `true`
+# as redundant). Do not expose this panel to non-admin household/guest
+# accounts. Ingress itself still requires an authenticated HA session.
 
 # Ingress: HA Supervisor proxied access authenticated via the HA session.
 # Port 8080 is internal — only reachable via the Supervisor proxy, not
