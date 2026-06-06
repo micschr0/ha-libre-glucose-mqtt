@@ -4,7 +4,7 @@
 # date (~90 days). Renovate bumps the cosign-verified Home Assistant
 # base image when upstream rebuilds; revisit then and prune.
 #
-# Last reviewed: 2026-05-25 — review by: 2026-08-25
+# Last reviewed: 2026-06-06 — review by: 2026-08-25
 
 fail-on-severity: critical
 
@@ -26,6 +26,55 @@ ignore:
       name: stdlib
       type: go-module
   - vulnerability: GHSA-v778-237x-gjrc
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  # 2026-06-06: Grype's DB now additionally flags these stdlib + x/crypto
+  # advisories in the SAME /usr/bin/tempio binary as critical (CVSS up to 10),
+  # which trips fail-on-severity. Same root cause and acceptance rationale as
+  # the entries above: tempio is the HA base image's config-template renderer
+  # (statically linked go1.23.3 + golang.org/x/crypto v0.26.0), is not built
+  # by this add-on, runs once at container start with no network service (so
+  # the TLS/SSH network-path CVEs are unreachable here), and is fixable only
+  # by an upstream HA base image rebuild on a newer Go toolchain. — review
+  # by: 2026-08-25
+  - vulnerability: GO-2025-3563
+    package:
+      name: stdlib
+      type: go-module
+  - vulnerability: GO-2026-4337
+    package:
+      name: stdlib
+      type: go-module
+  - vulnerability: GO-2024-3321
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  - vulnerability: GO-2026-5005
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  - vulnerability: GO-2026-5006
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  - vulnerability: GO-2026-5017
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  - vulnerability: GO-2026-5019
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  - vulnerability: GO-2026-5020
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  - vulnerability: GO-2026-5021
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  - vulnerability: GO-2026-5023
     package:
       name: golang.org/x/crypto
       type: go-module

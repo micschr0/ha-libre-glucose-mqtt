@@ -59,11 +59,11 @@ fi
 # Poller
 export GLUCO_HUB__POLLER__INTERVAL_SECS="${POLL_INTERVAL_SECS}"
 
-# HTTP API binds to 0.0.0.0:8080 inside the container so the HA
-# Supervisor watchdog (config.yaml: watchdog: tcp://[HOST]:[PORT:8080])
-# can probe it. The add-on does not declare `ports:`, so the listener
-# stays on the internal hassio bridge network — not reachable from the
-# host or external network.
+# HTTP API binds to 0.0.0.0:8080. The Supervisor Ingress proxy forwards
+# authenticated HA-session requests to this port (config.yaml: ingress_port: 8080).
+# The Docker HEALTHCHECK probes it directly. Port 8080 is not exposed to
+# the host — only reachable via the Supervisor proxy or within the hassio
+# bridge network.
 export GLUCO_HUB__HTTP__BIND="0.0.0.0:8080"
 
 # Sink — MQTT (Mosquitto add-on internal, plaintext, with HA discovery)

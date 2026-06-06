@@ -20,6 +20,21 @@ description: >-
   Polls LibreLink Up glucose readings and publishes them to MQTT with
   Home Assistant auto-discovery. Powered by gluco-hub-rs.
 url: https://github.com/micschr0/ha-libre-glucose-mqtt
+panel_icon: mdi:water-percent
+panel_title: Glucose Bridge
+# PHI hardening: the panel surfaces live glucose values and (abbreviated)
+# patient names. HA Supervisor restricts the Ingress sidebar entry to admin
+# users BY DEFAULT once ingress is enabled, so we rely on that default and do
+# NOT set panel_admin explicitly (the add-on linter flags an explicit `true`
+# as redundant). Do not expose this panel to non-admin household/guest
+# accounts. Ingress itself still requires an authenticated HA session.
+
+# Ingress: HA Supervisor proxied access authenticated via the HA session.
+# Port 8080 is internal — only reachable via the Supervisor proxy, not
+# directly from the host or external network.
+ingress: true
+ingress_port: 8080
+ingress_stream: true
 
 # Minimum Home Assistant Core version. 2024.1 ships the addon_config map
 # type and the modern bashio::services API used by run.sh.
@@ -65,9 +80,11 @@ services:
 # Dockerfile (the previous Supervisor `watchdog:` field is deprecated
 # in favour of native HEALTHCHECK).
 #
-# No ingress, no host network, no devices, no privileged caps — the
-# app talks outbound to LibreLink Up over HTTPS and to the in-cluster
-# MQTT broker only. No `image:` either: the local Dockerfile copies the
+# Ingress is enabled (see above) — the Supervisor proxy exposes the
+# gluco-hub HTTP API (port 8080) as an authenticated web UI in the HA
+# sidebar. No host network, no devices, no privileged caps — the app
+# talks outbound to LibreLink Up over HTTPS and to the in-cluster MQTT
+# broker only. No `image:` either: the local Dockerfile copies the
 # gluco-hub binary onto a HA Debian base (s6 + bashio), built on the
 # Supervisor at install time.
 
