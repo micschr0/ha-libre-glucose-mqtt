@@ -5,6 +5,28 @@ the upstream [gluco-hub-rs](https://github.com/micschr0/gluco-hub-rs)
 CalVer scheme (`YYYY.0M0D.PATCH`) so the app version always names the
 gluco-hub release it bundles.
 
+## [2026.607.0] - 2026-06-07
+
+### Fixed
+
+- **`run.sh`** — Multi-account TOML template used undefined `${MQTT_USER}` /
+  `${MQTT_PW}` instead of `${MQTT_USERNAME}` / `${MQTT_PASSWORD}`.
+  MQTT auth failed silently in multi-account mode. (#21)
+
+### Changed
+
+- **Upstream pin bumped to `gluco-hub` `v2026.606.0`** — picks up
+  multi-source support, HTTP 429 retry, Clock View, HTTP Status API,
+  Nightscout auth fix, schema fingerprint.
+
+### Added
+
+- Multi-account `llu_accounts` schema: named source blocks in config,
+  per-source MQTT topics (`per_source = true`), TOML config generation
+  for 2+ accounts. (#19)
+- `llu_version` config option to pin upstream API version. (#18)
+- Schema fingerprint logging on startup. (#18)
+
 ## [Unreleased]
 
 ## [2026.516.2] - 2026-05-16
