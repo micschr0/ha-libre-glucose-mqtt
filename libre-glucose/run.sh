@@ -117,8 +117,8 @@ dir = "/data/state"
 [sink.mqtt]
 host = "${MQTT_HOST}"
 port = ${MQTT_PORT}
-username = "${MQTT_USER}"
-password = "${MQTT_PW}"
+username = "${MQTT_USERNAME}"
+password = "${MQTT_PASSWORD}"
 topic_prefix = "${TOPIC_PREFIX}"
 client_id = "ha"
 discovery_enabled = true
