@@ -60,6 +60,7 @@ profile libre-glucose flags=(attach_disconnected,mediate_deleted) {
   /etc/ssl/certs/** r,
   /etc/ca-certificates/ r,
   /etc/ca-certificates/** r,
+  /usr/share/ca-certificates/** r,
   /etc/resolv.conf r,
   /etc/nsswitch.conf r,
   /etc/hosts r,
