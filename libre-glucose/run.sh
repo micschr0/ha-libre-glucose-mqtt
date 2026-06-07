@@ -144,6 +144,11 @@ TOML
         } >> /tmp/gluco-hub.toml
     done
 
+    # Pre-flight validation — catch TOML syntax errors before exec,
+    # avoiding a container restart loop.
+    /usr/local/bin/gluco-hub check-config --config /tmp/gluco-hub.toml \
+        || bashio::exit.nok "Invalid TOML config — check the generated /tmp/gluco-hub.toml"
+
     bashio::log.info "Starting gluco-hub (multi-account)..."
     exec /usr/local/bin/gluco-hub --config /tmp/gluco-hub.toml run
 fi

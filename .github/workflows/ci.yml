@@ -222,6 +222,8 @@ jobs:
         env:
           GLUCO_HUB_TAG: "2026.515.0"
         run: bash tests/test-check-config.sh
+      - name: Unit-test multi-account TOML generation
+        run: bash tests/test-run-sh-multi.sh
 
   zizmor:
     name: GitHub Actions security scan

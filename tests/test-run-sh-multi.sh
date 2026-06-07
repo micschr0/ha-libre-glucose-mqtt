@@ -21,6 +21,7 @@ trap 'rm -rf "${TEST_STATE_PARENT}"; rm -f "${TOML_CAPTURE}"' EXIT
 #  3. replaces the final `exec` with a stderr marker so the script returns
 sed -e '1d' \
     -e "s|/data/state|${TEST_STATE_PARENT}/state|g" \
+    -e '/gluco-hub check-config/,+1d' \
     -e 's|exec /usr/local/bin/gluco-hub.*|cp /tmp/gluco-hub.toml '"${TOML_CAPTURE}"'; echo "EXEC_CAPTURED" >\&2|' \
     libre-glucose/run.sh \
     > /tmp/run-multi.sh
