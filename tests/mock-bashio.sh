@@ -34,6 +34,8 @@ bashio::config() {
         llu_region) echo "EU" ;;
         llu_patient_id) echo "" ;;
         llu_timezone) echo "Europe/Berlin" ;;
+        llu_version) echo "" ;;
+
         poll_interval_secs) echo "60" ;;
         device_name) echo "" ;;
         glucose_unit) echo "mgdl" ;;

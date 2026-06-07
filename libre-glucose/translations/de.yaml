@@ -28,6 +28,13 @@ configuration:
       LibreLink Up liefert Zeitstempel als lokale Wand-Uhrzeit ohne
       Offset — ohne diesen Wert erscheinen Messwerte zeitlich
       verschoben.
+  llu_version:
+    name: LibreLink Up API-Version (optional)
+    description: >-
+      Überschreibt den LibreLink-Up-App-Versions-Header. LibreLink Up
+      kann veraltete Versions-Strings nach API-Änderungen ablehnen.
+      Leer lassen, um den Upstream-Standard zu verwenden. Als letzte
+      Option, wenn die Standardversion nicht mehr akzeptiert wird.
   poll_interval_secs:
     name: Poll-Intervall (Sekunden)
     description: >-

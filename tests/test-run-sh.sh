@@ -81,7 +81,7 @@ done
 
 # Options that are empty in the mock must NOT show up in the exported
 # env (run.sh guards them behind `bashio::var.is_empty` checks).
-for key in GLUCO_HUB__SOURCE__LLU__PATIENT_ID GLUCO_HUB__SINK__MQTT__DEVICE_NAME; do
+for key in GLUCO_HUB__SOURCE__LLU__PATIENT_ID GLUCO_HUB__SINK__MQTT__DEVICE_NAME GLUCO_HUB__SOURCE__LLU__VERSION; do
     if grep -q "^${key}=" /tmp/captured-env.txt; then
         echo "FAIL: ${key} was exported despite the option being empty" >&2
         fail=1

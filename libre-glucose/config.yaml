@@ -94,6 +94,8 @@ options:
   llu_region: "EU"
   llu_patient_id: ""
   llu_timezone: "UTC"
+  llu_version: ""
+
   poll_interval_secs: 60
   device_name: ""
   glucose_unit: "mgdl"
@@ -107,6 +109,8 @@ schema:
   llu_region: "list(AE|AP|AU|CA|DE|EU|EU2|FR|JP|US|LA|RU|CN)"
   llu_patient_id: "str?"
   llu_timezone: "str"
+  llu_version: "str?"
+
   poll_interval_secs: "int(30,600)"
   device_name: "str?"
   glucose_unit: "list(mgdl|mmol)"
