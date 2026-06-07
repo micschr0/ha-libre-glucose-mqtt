@@ -38,6 +38,10 @@ tasks:
           echo "DRIFT: Dockerfile != build.yaml" >&2
           exit 1
         fi
+        if [ "$DOCKERFILE_TAG" != "$CONFIG_VERSION" ]; then
+          echo "DRIFT: Dockerfile != config.yaml" >&2
+          exit 1
+        fi
         echo "OK: upstream-tag refs agree on $DOCKERFILE_TAG"
 
   release:dry:

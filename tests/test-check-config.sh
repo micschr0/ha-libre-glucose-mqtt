@@ -11,7 +11,7 @@
 
 set -euo pipefail
 
-GLUCO_HUB_TAG="${GLUCO_HUB_TAG:-2026.514.0}"
+GLUCO_HUB_TAG="${GLUCO_HUB_TAG:-$(grep -oP 'GLUCO_HUB_TAG:\s*"?\K[^"\s]+' libre-glucose/build.yaml)}"
 IMAGE="ghcr.io/micschr0/gluco-hub:${GLUCO_HUB_TAG}"
 
 echo ">> Pulling ${IMAGE}"

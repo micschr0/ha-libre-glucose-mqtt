@@ -36,14 +36,12 @@ default 5-minute LibreLink Up update raster — can be buffered.
 | `poll_interval_secs` | int (30–600) | `60` | How often to ask LibreLink Up for new readings. LibreLink Up itself only updates every ~60 seconds, so values below 30 waste API calls. |
 | `device_name` | string | *empty* | Friendly device name in HA. Empty falls back to `Gluco Hub (<client_id>)`. |
 | `topic_prefix` | string | `gluco-hub/ha` | MQTT topic prefix. Readings publish to `<prefix>/glucose`. |
-| `client_id` | string | `gluco-hub-ha` | MQTT client id (1–23 chars, alphanumeric / `-` / `_`). Also appears in the HA discovery unique-id. |
+| `client_id` | string | `ha` | MQTT client id (1–23 chars, alphanumeric / `-` / `_`). Also appears in the HA discovery unique-id. |
 | `log_level` | enum | `info` | Logging verbosity. `debug` is useful for troubleshooting LibreLink Up issues. |
 
 ## What the sensor exposes
 
-State: current glucose in **mg/dL** (this is hard-coded upstream for V1;
-a future upstream patch will make mmol/L selectable for European users —
-the JSON payload already carries both units).
+State: current glucose in the configured unit (**mg/dL** or **mmol/L**; default mg/dL).
 
 Attributes (on the sensor entity):
 
@@ -69,7 +67,7 @@ Attributes (on the sensor entity):
 
 The add-on serves a responsive glucose display at the Ingress path `/clock`,
 opened directly from the Home Assistant sidebar entry (visible to admin users
-only — see `panel_admin` in the add-on config).
+only by default when Ingress is enabled, per the Supervisor's default `panel_admin` behaviour).
 
 | Route | Description |
 |---|---|
