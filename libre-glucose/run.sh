@@ -33,6 +33,8 @@ LLU_PASSWORD="$(bashio::config 'llu_password')"
 LLU_REGION="$(bashio::config 'llu_region')"
 LLU_PATIENT_ID="$(bashio::config 'llu_patient_id')"
 LLU_TIMEZONE="$(bashio::config 'llu_timezone')"
+LLU_VERSION="$(bashio::config 'llu_version')"
+
 POLL_INTERVAL_SECS="$(bashio::config 'poll_interval_secs')"
 DEVICE_NAME="$(bashio::config 'device_name')"
 GLUCOSE_UNIT="$(bashio::config 'glucose_unit')"
@@ -52,6 +54,9 @@ export GLUCO_HUB__SOURCE__LLU__EMAIL="${LLU_EMAIL}"
 export GLUCO_HUB__SOURCE__LLU__PASSWORD="${LLU_PASSWORD}"
 export GLUCO_HUB__SOURCE__LLU__REGION="${LLU_REGION}"
 export GLUCO_HUB__SOURCE__LLU__TIMEZONE="${LLU_TIMEZONE}"
+if ! bashio::var.is_empty "${LLU_VERSION}"; then
+    export GLUCO_HUB__SOURCE__LLU__VERSION="${LLU_VERSION}"
+fi
 if ! bashio::var.is_empty "${LLU_PATIENT_ID}"; then
     export GLUCO_HUB__SOURCE__LLU__PATIENT_ID="${LLU_PATIENT_ID}"
 fi
@@ -90,6 +95,10 @@ mkdir -p /data/state
 export RUST_LOG="${LOG_LEVEL}"
 # Pretty logs in the HA add-on log viewer (it doesn't parse JSON).
 export GLUCO_HUB_LOG_PRETTY="1"
+
+# Schema fingerprint — log expected LLU JSON field names so operators can detect
+# API changes by comparing fingerprints across versions.
+bashio::log.info "LLU schema fingerprint: ValueInMgPerDl, ValueInMmolPerL, TrendArrow, Timestamp, PatientId"
 
 bashio::log.info "Starting gluco-hub..."
 exec /usr/local/bin/gluco-hub run

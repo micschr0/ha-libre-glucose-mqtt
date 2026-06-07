@@ -27,6 +27,13 @@ configuration:
       America/New_York). LibreLink Up returns timestamps as local
       wall-clock time without an offset — without this, readings
       appear shifted.
+  llu_version:
+    name: LibreLink Up API version (optional)
+    description: >-
+      Override the LibreLink Up app version header. LibreLink Up
+      may reject outdated version strings after API changes. Leave
+      empty to use the upstream default. Used as a last resort when
+      the upstream default version is no longer accepted.
   poll_interval_secs:
     name: Poll interval (seconds)
     description: >-
