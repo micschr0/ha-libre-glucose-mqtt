@@ -101,6 +101,10 @@ options:
   glucose_unit: "mgdl"
   topic_prefix: "gluco-hub/ha"
   client_id: "ha"
+  # Multi-account: list of named LibreLink Up accounts/patients.
+  # When non-empty, supersedes the single-account fields above.
+  llu_accounts: []
+
   log_level: "info"
 
 schema:
@@ -115,5 +119,15 @@ schema:
   device_name: "str?"
   glucose_unit: "list(mgdl|mmol)"
   topic_prefix: "str"
+
+  # Multi-account schema. Each entry is a named source.
+  llu_accounts:
+    - name: "str"
+      email: email
+      password: password
+      region: "list(AE|AP|AU|CA|DE|EU|EU2|FR|JP|US|LA|RU|CN)"
+      patient_id: "str?"
+      timezone: "str"
+      version: "str?"
   client_id: "match(^[A-Za-z0-9_-]{1,23}$)"
   log_level: "list(trace|debug|info|warn|error)"

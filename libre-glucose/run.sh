@@ -100,5 +100,51 @@ export GLUCO_HUB_LOG_PRETTY="1"
 # API changes by comparing fingerprints across versions.
 bashio::log.info "LLU schema fingerprint: ValueInMgPerDl, ValueInMmolPerL, TrendArrow, Timestamp, PatientId"
 
-bashio::log.info "Starting gluco-hub..."
+ACCOUNT_COUNT=$(bashio::config 'llu_accounts|length' 2>/dev/null || echo "0")
+if [ "${ACCOUNT_COUNT}" -gt 0 ]; then
+    bashio::log.info "Multi-account mode: ${ACCOUNT_COUNT} source(s) — generating TOML config"
+
+    cat > /tmp/gluco-hub.toml <<TOML
+[poller]
+interval_secs = ${POLL_INTERVAL_SECS}
+
+[http]
+bind = "0.0.0.0:8080"
+
+[state]
+dir = "/data/state"
+
+[sink.mqtt]
+host = "${MQTT_HOST}"
+port = ${MQTT_PORT}
+username = "${MQTT_USER}"
+password = "${MQTT_PW}"
+topic_prefix = "${TOPIC_PREFIX}"
+client_id = "ha"
+discovery_enabled = true
+per_source = true
+TOML
+
+    for i in $(seq 0 $((ACCOUNT_COUNT - 1))); do
+        ACCT_NAME=$(bashio::config "llu_accounts[${i}].name")
+        ACCT_EMAIL=$(bashio::config "llu_accounts[${i}].email")
+        ACCT_PASSWORD=$(bashio::config "llu_accounts[${i}].password")
+        ACCT_REGION=$(bashio::config "llu_accounts[${i}].region")
+        ACCT_PATIENT=$(bashio::config "llu_accounts[${i}].patient_id")
+        ACCT_TZ=$(bashio::config "llu_accounts[${i}].timezone")
+        printf '\n[source.sources.%s]\n' "${ACCT_NAME}" >> /tmp/gluco-hub.toml
+        printf 'email = "%s"\n' "${ACCT_EMAIL}" >> /tmp/gluco-hub.toml
+        printf 'password = "%s"\n' "${ACCT_PASSWORD}" >> /tmp/gluco-hub.toml
+        printf 'region = "%s"\n' "${ACCT_REGION}" >> /tmp/gluco-hub.toml
+        ACCT_VER=$(bashio::config "llu_accounts[${i}].version")
+        [ -n "${ACCT_PATIENT}" ] && printf 'patient_id = "%s"\n' "${ACCT_PATIENT}" >> /tmp/gluco-hub.toml
+        [ -n "${ACCT_TZ}" ] && printf 'timezone = "%s"\n' "${ACCT_TZ}" >> /tmp/gluco-hub.toml
+        [ -n "${ACCT_VER}" ] && printf 'version = "%s"\n' "${ACCT_VER}" >> /tmp/gluco-hub.toml
+    done
+
+    bashio::log.info "Starting gluco-hub (multi-account)..."
+    exec /usr/local/bin/gluco-hub --config /tmp/gluco-hub.toml run
+fi
+
+bashio::log.info "Starting gluco-hub (single-account)..."
 exec /usr/local/bin/gluco-hub run
