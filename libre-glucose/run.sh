@@ -132,14 +132,16 @@ TOML
         ACCT_REGION=$(bashio::config "llu_accounts[${i}].region")
         ACCT_PATIENT=$(bashio::config "llu_accounts[${i}].patient_id")
         ACCT_TZ=$(bashio::config "llu_accounts[${i}].timezone")
-        printf '\n[source.sources.%s]\n' "${ACCT_NAME}" >> /tmp/gluco-hub.toml
-        printf 'email = "%s"\n' "${ACCT_EMAIL}" >> /tmp/gluco-hub.toml
-        printf 'password = "%s"\n' "${ACCT_PASSWORD}" >> /tmp/gluco-hub.toml
-        printf 'region = "%s"\n' "${ACCT_REGION}" >> /tmp/gluco-hub.toml
         ACCT_VER=$(bashio::config "llu_accounts[${i}].version")
-        [ -n "${ACCT_PATIENT}" ] && printf 'patient_id = "%s"\n' "${ACCT_PATIENT}" >> /tmp/gluco-hub.toml
-        [ -n "${ACCT_TZ}" ] && printf 'timezone = "%s"\n' "${ACCT_TZ}" >> /tmp/gluco-hub.toml
-        [ -n "${ACCT_VER}" ] && printf 'version = "%s"\n' "${ACCT_VER}" >> /tmp/gluco-hub.toml
+        {
+            printf '\n[source.sources.%s]\n' "${ACCT_NAME}"
+            printf 'email = "%s"\n' "${ACCT_EMAIL}"
+            printf 'password = "%s"\n' "${ACCT_PASSWORD}"
+            printf 'region = "%s"\n' "${ACCT_REGION}"
+            [ -n "${ACCT_PATIENT}" ] && printf 'patient_id = "%s"\n' "${ACCT_PATIENT}"
+            [ -n "${ACCT_TZ}" ] && printf 'timezone = "%s"\n' "${ACCT_TZ}"
+            [ -n "${ACCT_VER}" ] && printf 'version = "%s"\n' "${ACCT_VER}"
+        } >> /tmp/gluco-hub.toml
     done
 
     bashio::log.info "Starting gluco-hub (multi-account)..."
