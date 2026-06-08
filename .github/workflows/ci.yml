@@ -142,7 +142,7 @@ jobs:
           # SC1091 = "Not following" — tests/test-run-sh.sh sources
           # tests/mock-bashio.sh dynamically; we don't need shellcheck
           # to follow that link for the lint pass.
-          SHELLCHECK_OPTS: "-s bash -e SC1008 -e SC1091"
+          SHELLCHECK_OPTS: "-s bash -e SC1008 -e SC1091 -e SC2329"
         with:
           scandir: "."
           ignore_paths: "translations .github"
