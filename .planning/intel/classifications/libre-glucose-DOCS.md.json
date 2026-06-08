@@ -1,0 +1,25 @@
+{
+  "source_path": "/home/claude/projects/ha-libre-glucose-mqtt/libre-glucose/DOCS.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": false,
+  "title": "Libre Glucose MQTT Bridge — Documentation",
+  "summary": "End-user documentation for the HA app — connection diagram, configuration options, troubleshooting, architecture notes, and legal disclaimers.",
+  "scope": [
+    "app configuration options",
+    "MQTT discovery topics",
+    "state persistence",
+    "logging and troubleshooting",
+    "AppArmor profile",
+    "Ingress panel"
+  ],
+  "cross_refs": [
+    "libre-glucose/README.md",
+    "libre-glucose/config.yaml",
+    "libre-glucose/apparmor.txt",
+    "libre-glucose/run.sh"
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": "Pure documentation. No decision records, requirements, or specifications."
+}

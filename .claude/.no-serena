@@ -1,0 +1,3 @@
+Serena hier deaktiviert: reines Bash/YAML-Add-on (~1500 LOC), keine LSP-Symbole, passt komplett in den Kontext.
+Guard in ~/.claude/settings.json (SessionStart activate + PreToolUse remind) ueberspringt Serena, wenn diese Datei existiert.
+Reaktivieren: diese Datei loeschen.

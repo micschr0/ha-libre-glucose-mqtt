@@ -1,0 +1,20 @@
+{
+  "source_path": "/home/claude/projects/ha-libre-glucose-mqtt/libre-glucose/README.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": false,
+  "title": "Libre Glucose MQTT Bridge",
+  "summary": "README for the Libre Glucose MQTT Bridge — polls LibreLink Up and publishes to HA via MQTT",
+  "scope": [
+    "Libre Glucose MQTT Bridge",
+    "gluco-hub-rs upstream binary",
+    "Home Assistant MQTT broker",
+    "LibreLink Up account"
+  ],
+  "cross_refs": [
+    "DOCS.md"
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": ""
+}

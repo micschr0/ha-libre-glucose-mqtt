@@ -27,7 +27,27 @@ gluco-hub release it bundles.
 - `llu_version` config option to pin upstream API version. (#18)
 - Schema fingerprint logging on startup. (#18)
 
+## [2026.607.2] - 2026-06-08
+
+### Fixed
+
+- **Upstream image tag** — `GLUCO_HUB_TAG` in `Dockerfile` und `build.yaml`
+  hatte fälschlich ein `v`-Präfix (`v2026.607.1`). Das upstream-Repo publiziert
+  seine Images ohne `v` (`2026.607.1`). Der Build scheiterte mit `not found`.
+
+### Changed
+
+- **Upstream pin bleibt auf `gluco-hub` `v2026.607.1`** — unverändert zum
+  vorherigen Release; nur der Docker-Tag-Referenz-Fehler behoben.
+
 ## [2026.607.1] - 2026-06-07
+
+### Fixed
+
+- **AppArmor-Profil** — `/usr/share/ca-certificates/** r,` hinzugefügt, damit
+  `rustls_platform_verifier` die CA-Zertifikate lesen kann (Symlinks in
+  `/etc/ssl/certs/` zeigen auf `/usr/share/ca-certificates/`, AppArmor folgt
+  ihnen). Behebt die "Permission denied"-Warnungen im Log bei jedem Start.
 
 ### Changed
 
@@ -36,12 +56,6 @@ gluco-hub release it bundles.
   (which proxies to `/` on the add-on) shows the Clock View instead
   of a blank screen.
 
-### Fixed
-
-- **AppArmor-Profil** — `/usr/share/ca-certificates/** r,` hinzugefügt, damit
-  `rustls_platform_verifier` die CA-Zertifikate lesen kann (Symlinks in
-  `/etc/ssl/certs/` zeigen auf `/usr/share/ca-certificates/`, AppArmor folgt
-  ihnen). Behebt die "Permission denied"-Warnungen im Log bei jedem Start.
 ## [2026.516.2] - 2026-05-16
 
 ### Changed
