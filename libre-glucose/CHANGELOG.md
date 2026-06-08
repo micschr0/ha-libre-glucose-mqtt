@@ -27,6 +27,22 @@ gluco-hub release it bundles.
 - `llu_version` config option to pin upstream API version. (#18)
 - Schema fingerprint logging on startup. (#18)
 
+## [2026.607.3] - 2026-06-08
+
+### Fixed
+
+- **HA Ingress blank screen (take 2)** — Der 308 Redirect von `/` → `/clock`
+  funktioniert nicht durch den HA Ingress-Proxy: der Browser folgt
+  `Location: /clock` außerhalb des Ingress-Kontexts (`/api/hassio_ingress/`),
+  was zu einem 404 auf dem HA-Server führt. Stattdessen wird `clock.html`
+  jetzt direkt unter `/` ausgeliefert, sodass die Antwort im Ingress-Proxy
+  bleibt.
+
+### Changed
+
+- **Upstream pin bumped to `gluco-hub` `v2026.607.2`** — picks up
+  direct serving of `clock.html` at `/` instead of the broken 308 redirect.
+
 ## [2026.607.2] - 2026-06-08
 
 ### Fixed
