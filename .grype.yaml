@@ -150,3 +150,19 @@ ignore:
     package:
       name: perl-base
       type: deb
+  # CVE-2026-12087: out-of-bounds heap read (max 3 bytes) in the Perl Socket
+  # module's pack_ip_mreq_source() (Socket.xs), reachable only when Perl code
+  # packs a multicast source-group address with a too-short source argument.
+  # perl-base bundles the vulnerable Socket.so, but the add-on runs no Perl —
+  # only the Rust binary gluco-hub — so the code path is never invoked.
+  # No patched perl-base exists in ANY Debian suite: bookworm, trixie and sid
+  # all ship a vulnerable bundled Socket (perl source is "(unfixed)", bug
+  # #1140152); only the standalone libsocket-perl 2.041 is fixed, which
+  # perl-base does not use. NVD/OSV publish no CVSS and there is no GitHub
+  # advisory — only Grype's DB rates this critical. Switching base is no fix
+  # (trixie also vulnerable; HA ships no trixie base anyway). Needs an HA base
+  # image rebuild once Debian backports the perl core fix. — review by: 2026-08-25
+  - vulnerability: CVE-2026-12087
+    package:
+      name: perl-base
+      type: deb

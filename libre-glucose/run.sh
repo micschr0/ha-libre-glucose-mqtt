@@ -87,7 +87,7 @@ if ! bashio::var.is_empty "${DEVICE_NAME}"; then
 fi
 
 # Persistent state (DLQ) — survives add-on updates because /data is
-# mapped via `map: data:rw` in config.yaml.
+# auto-mounted RW by the Supervisor (no explicit `map:` needed in config.yaml).
 export GLUCO_HUB__STATE__DIR="/data/state"
 mkdir -p /data/state
 

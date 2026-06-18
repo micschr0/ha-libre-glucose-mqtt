@@ -10,7 +10,8 @@ Home Assistant add-on bridge wrapping gluco-hub-rs. Shell scripts + Docker, no R
 
 ## Testing
 
-- `tests/test-run-sh.sh` — single-account env assertions (19 vars). No multi-account TOML test yet.
+- `tests/test-run-sh.sh` — single-account env assertions (19 vars).
+- `tests/test-run-sh-multi.sh` — multi-account TOML generation assertions (per-source sections, MQTT creds, `per_source=true`).
 - `tests/test-check-config.sh` — feeds env into `gluco-hub check-config` via Docker.
 - `tests/mock-bashio.sh` — mocks all `bashio::config` keys and `bashio::services` calls.
 

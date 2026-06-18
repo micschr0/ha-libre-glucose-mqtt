@@ -61,6 +61,16 @@
       ],
       "datasourceTemplate": "docker",
       "depNameTemplate": "ghcr.io/micschr0/gluco-hub"
+    },
+    {
+      "description": "Keep the GLUCO_HUB_TAG build-args/env in the CI workflow in lockstep with the Dockerfile ARG. ci.yml was previously unmanaged, which let it silently drift to a stale upstream tag while the shipped image moved on. Same depName so Renovate bundles it with the other gluco-hub bumps.",
+      "customType": "regex",
+      "managerFilePatterns": ["/\\.github/workflows/ci\\.yml$/"],
+      "matchStrings": [
+        "GLUCO_HUB_TAG[=:]\\s*[\"']?(?<currentValue>\\d[\\w.-]+)[\"']?"
+      ],
+      "datasourceTemplate": "docker",
+      "depNameTemplate": "ghcr.io/micschr0/gluco-hub"
     }
   ]
 }
