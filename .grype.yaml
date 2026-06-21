@@ -103,6 +103,19 @@ ignore:
       name: libc-bin
       type: deb
 
+  # libssh2-1 1.10.0-3+b1 in HA Debian base (bookworm). CVE-2026-55200 is an
+  # out-of-bounds write in ssh2_transport_read() when packet_length exceeds
+  # buffer bounds — RCE via crafted SSH packets. The upstream fix exists
+  # (libssh2 commit 97acf3df) but is not yet backported to any Debian suite
+  # (bookworm, trixie, sid all show "unfixed"; Debian bug #1140401). The
+  # add-on's Rust binary uses rustls for all TLS/SSH; libssh2 is an unused
+  # transitive base-image dependency, never invoked. Fix requires an HA base
+  # image rebuild once Debian ships the backport. — review by: 2026-09-21
+  - vulnerability: CVE-2026-55200
+    package:
+      name: libssh2-1
+      type: deb
+
   # libgnutls30 3.7.9-2+deb12u6 in HA Debian base (bookworm). Fix requires
   # HA upstream to rebuild base-debian once Debian ships a patched package.
   # The add-on's Rust binary uses rustls, not GnuTLS.

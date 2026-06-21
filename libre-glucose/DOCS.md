@@ -1,148 +1,111 @@
 # Libre Glucose MQTT Bridge — Documentation
 
-> This is a Home Assistant **app** (formerly *add-on*; HA's developer
-> documentation renamed the concept in 2025). HA-Supervisor schema
-> fields, the official `home-assistant/addons` repository, and the
-> `frenck/action-addon-linter` CI helper still carry the old
-> "addon"/"add-on" name; that's intentional and not a typo.
-
 ## What it does
 
-This app runs [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs)
-in a container alongside Home Assistant. Every `poll_interval_secs`
-(default 60 s) it:
+Every `poll_interval_secs` seconds (default: 60), the app:
 
-1. Logs in to LibreLink Up using the configured credentials.
+1. Logs in to LibreLink Up with the configured credentials.
 2. Fetches the latest glucose reading for the selected patient.
-3. Publishes the reading to the HA MQTT broker (Mosquitto) on
-   `<topic_prefix>/glucose` (default `gluco-hub/ha/glucose`).
-4. Publishes an MQTT-discovery config message so Home Assistant
-   auto-creates a sensor entity called **Glucose**.
+3. Publishes the reading to Mosquitto on `<topic_prefix>/glucose`.
+4. Publishes an MQTT discovery message so Home Assistant creates a **Glucose** sensor automatically.
 
-If the MQTT broker is unreachable, readings are queued in
-`/data/state` (persistent across app restarts and updates) and
-flushed on reconnect. Up to 10 000 readings — about 35 days at the
-default 5-minute LibreLink Up update raster — can be buffered.
+Readings that fail to publish queue in `/data/state` (persistent across restarts) and flush on reconnect. The queue holds up to 10,000 readings — about 35 days at LibreLink Up's default 5-minute update interval.
 
-## Configuration reference
+## Configuration
 
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `llu_email` | string | *required* | LibreLink Up account email. |
-| `llu_password` | string | *required* | LibreLink Up account password. Stored only in the app options DB; never written to MQTT or logs. |
-| `llu_region` | enum | `EU` | LibreLink Up regional API endpoint. Match your account — wrong region returns auth errors. Supported: `AE`, `AP`, `AU`, `CA`, `DE`, `EU`, `EU2`, `FR`, `JP`, `US`, `LA`, `RU`, `CN`. |
-| `llu_patient_id` | string | *empty* | If your account has multiple connections (e.g. multiple kids), set this to the specific patient's id. Empty = first connection. |
-| `llu_timezone` | IANA TZ | `UTC` | The patient's local timezone. LibreLink Up returns timestamps in local wall-clock time; without this hint they appear shifted by your offset. Examples: `Europe/Berlin`, `America/New_York`. |
-| `poll_interval_secs` | int (30–600) | `60` | How often to ask LibreLink Up for new readings. LibreLink Up itself only updates every ~60 seconds, so values below 30 waste API calls. |
-| `device_name` | string | *empty* | Friendly device name in HA. Empty falls back to `Gluco Hub (<client_id>)`. |
+| `llu_password` | string | *required* | LibreLink Up account password. Never written to MQTT or logs. |
+| `llu_region` | enum | `EU` | Regional API endpoint. Must match your LibreView account region, not your physical location. Options: `AE`, `AP`, `AU`, `CA`, `DE`, `EU`, `EU2`, `FR`, `JP`, `LA`, `RU`, `US`, `CN`. |
+| `llu_patient_id` | string | — | Patient UUID. Required only if your account has multiple connections. Leave empty to use the first connection. |
+| `llu_timezone` | IANA TZ | `UTC` | The patient's local timezone. LibreLink Up timestamps are in local wall-clock time with no UTC offset; without this, times appear shifted. Example: `Europe/Berlin`. |
+| `poll_interval_secs` | int (30–600) | `60` | Poll interval in seconds. Values below 30 waste API calls; LibreLink Up updates every ~60 s. |
+| `device_name` | string | — | Friendly device name in HA. Defaults to `Gluco Hub (<client_id>)`. |
 | `topic_prefix` | string | `gluco-hub/ha` | MQTT topic prefix. Readings publish to `<prefix>/glucose`. |
-| `client_id` | string | `ha` | MQTT client id (1–23 chars, alphanumeric / `-` / `_`). Also appears in the HA discovery unique-id. |
-| `log_level` | enum | `info` | Logging verbosity. `debug` is useful for troubleshooting LibreLink Up issues. |
+| `client_id` | string | `ha` | MQTT client ID (1–23 chars, alphanumeric / `-` / `_`). Appears in the HA discovery unique ID. |
+| `log_level` | enum | `info` | Log verbosity. Use `debug` to troubleshoot LibreLink Up issues. |
 
-## What the sensor exposes
+## Sensor
 
-State: current glucose in the configured unit (**mg/dL** or **mmol/L**; default mg/dL).
+The **Glucose** sensor appears under the **Gluco Hub** device in Home Assistant (Settings → Devices & Services → MQTT).
 
-Attributes (on the sensor entity):
+State: current reading in mg/dL (or mmol/L if configured).
+
+Attributes:
 
 | Attribute | Description |
 |---|---|
 | `mgdl` | Reading in mg/dL. |
 | `mmol` | Reading in mmol/L. |
 | `trend` | Trend arrow: `DoubleDown`, `SingleDown`, `FortyFiveDown`, `Flat`, `FortyFiveUp`, `SingleUp`, `DoubleUp`, `NotComputable`, or `OutOfRange`. |
-| `timestamp` | ISO-8601 timestamp of the reading (UTC). |
-| `patient_id` | The LibreLink Up patient identifier this reading is for. |
+| `timestamp` | ISO-8601 timestamp (UTC). |
+| `patient_id` | LibreLink Up patient identifier. |
 
 ## MQTT topics
 
-| Topic | Direction | Retained | Purpose |
-|---|---|---|---|
-| `<topic_prefix>/glucose` | publish | no | Latest reading (JSON). |
-| `<topic_prefix>/_health` | publish | yes | Liveness: `{"online": true/false}`. Used by HA's availability_topic to grey out the entity when the bridge is offline. |
-| `<topic_prefix>/_stats` | publish | yes | Per-minute summary of polls / sink success / DLQ depth. Useful for dashboards. |
-| `<topic_prefix>/_patients` | publish | yes | Patient list, published after each successful LibreLink Up login. JSON array of `{id, display_name, is_active}`. `display_name` is abbreviated (first name + last initial only, e.g. `Anna M.`) per the PHI constraint. Lets you discover patient UUIDs without a UI. |
-| `homeassistant/sensor/gluco_hub_<client_id>_glucose/config` | publish | yes | HA MQTT-discovery config message. Auto-published after every reconnect. With the default `client_id: ha` this becomes `homeassistant/sensor/gluco_hub_ha_glucose/config` and registers `sensor.gluco_hub_ha_glucose` in HA. |
+| Topic | Retained | Purpose |
+|---|---|---|
+| `<prefix>/glucose` | no | Latest reading (JSON). |
+| `<prefix>/_health` | yes | Liveness: `{"online": true/false}`. Used as `availability_topic`. |
+| `<prefix>/_stats` | yes | Per-minute poll/sink summary. Useful for dashboards. |
+| `<prefix>/_patients` | yes | Patient list. JSON array of `{id, display_name, is_active}`. `display_name` is abbreviated (e.g. `Anna M.`). Published after each successful login. |
+| `homeassistant/sensor/gluco_hub_<client_id>_glucose/config` | yes | HA MQTT discovery config. Published after every reconnect. |
 
 ## Clock View
 
-The add-on serves a responsive glucose display at the Ingress path `/clock`,
-opened directly from the Home Assistant sidebar entry (visible to admin users
-only by default when Ingress is enabled, per the Supervisor's default `panel_admin` behaviour).
+The app serves a glucose display at the Ingress path `/clock`, accessible from the HA sidebar.
 
 | Route | Description |
 |---|---|
 | `/clock` | HTML display. Query params: `?lo=70&hi=180`, `?eink=1`, `?unit=mgdl\|mmol`, `?dark=0\|1`. |
 | `/clock/state` | JSON snapshot of the current reading. |
-| `/clock/events` | Server-Sent Events stream of new readings. |
+| `/clock/events` | Server-Sent Events stream. |
 
-**Display classes** — detected automatically from the viewport size, no URL
-parameter needed:
+Display layout is detected from the viewport — no URL parameter needed:
 
-- `wall`: longest screen edge > 900px (landscape) — value + name + trend + time
-- `phone`: default smartphone layout
-- `small`: < 400px (compact displays) — value + trend only
-- `watch`: < 200px — value + background color only
+| Class | Condition | Shows |
+|---|---|---|
+| `wall` | longest edge > 900 px | value + name + trend + time |
+| `phone` | default | standard layout |
+| `small` | < 400 px | value + trend |
+| `watch` | < 200 px | value + background color |
 
-**E-Ink mode** (`?eink=1`): the server throttles the SSE stream to changes
-> 1 mg/dL or gaps > 5 min, and the page drops the opacity decay / hypo pulse in
-favor of a `STALE Xm Ys` text label.
+**E-ink mode** (`?eink=1`): the SSE stream throttles to changes > 1 mg/dL or gaps > 5 min; the page replaces the opacity decay and hypo pulse with a `STALE Xm Ys` label.
 
-All Clock View responses send `Cache-Control: no-store` (PHI).
+All Clock View responses send `Cache-Control: no-store`.
 
 ## Troubleshooting
 
-**App refuses to start with `No MQTT service available`.**
-Install the official **Mosquitto broker** app and configure the MQTT
-HA-integration (Settings → Devices & Services → Add Integration →
-MQTT). Then restart this app.
+**App refuses to start — `No MQTT service available`.**
+Install the **Mosquitto broker** app and configure the MQTT integration (Settings → Devices & Services → Add Integration → MQTT). Then restart this app.
 
-**Sensor entity never appears in HA.**
-- Confirm Mosquitto is running and reachable.
-- Set `log_level` to `debug` and check the app log for an
-  `mqtt sink configured` entry and `discovery_enabled = true`.
-- Check the discovery topic with the **MQTT** app's *Listen to topic*
-  feature: `homeassistant/sensor/+/config`. The bridge's discovery
-  message should appear within ~10 seconds of starting the app.
+**Sensor never appears.**
+1. Confirm Mosquitto is running.
+2. Set `log_level: debug` and look for `mqtt sink configured` and `discovery_enabled = true` in the log.
+3. Use MQTT's *Listen to topic* feature: subscribe to `homeassistant/sensor/+/config`. The discovery message should arrive within ~10 seconds of starting.
 
 **LibreLink Up login fails with `[LLU003]`.**
-Wrong credentials, wrong region, or your password contains characters
-the app UI escaped incorrectly. Double-check region (it's the one
-on your *LibreView* account, which may not match your physical
-location).
+Wrong credentials, wrong region, or the password was escaped incorrectly by the HA UI. The region must match your LibreView account, not your physical location.
 
-**Sensor values look wrong / time-shifted.**
-Set `llu_timezone` to the patient's IANA timezone (e.g.
-`Europe/Berlin`). LibreLink Up returns timestamps in local wall-clock
-time without an offset — `UTC` is only correct if the patient lives in
-UTC.
+**Sensor values are time-shifted.**
+Set `llu_timezone` to the patient's IANA timezone (e.g. `Europe/Berlin`). LibreLink Up timestamps are in local wall-clock time with no UTC offset.
 
 **My platform is not in the install dropdown.**
-V1 supports `amd64` and `aarch64` only. 32-bit ARM (`armv7`, `armhf`)
-and `i386` are blocked by the upstream gluco-hub build configuration —
-follow [gluco-hub-rs](https://github.com/micschr0/gluco-hub-rs) for
-status.
+V1 supports `amd64` and `aarch64`. 32-bit ARM (`armv7`, `armhf`) and `i386` are not supported — follow [gluco-hub-rs](https://github.com/micschr0/gluco-hub-rs) for status.
 
 ## Disclaimer
 
-**Unofficial. Not affiliated with Abbott Laboratories.** This app polls
-the LibreLink Up cloud API without any partnership with Abbott. **Use
-may violate Abbott's LibreLink Up Terms of Service.** You are
-responsible for ensuring your use complies with the ToS in your
-jurisdiction.
+**Not affiliated with Abbott Laboratories.** This app polls LibreLink Up without any partnership with Abbott. Use may violate Abbott's Terms of Service.
 
-**Not a medical device.** This app is a research and self-hosting
-tool. Do not use the values it reports for medical decisions,
-therapy, insulin dosing, diagnosis, or any clinical purpose. The
-upstream `gluco-hub-rs` binary prints a `NOT FOR MEDICAL USE` banner
-on every start — see `SCOPE.md`, `DISCLAIMER.md`, and `LICENSE` in
-the upstream repository for the full upstream wording.
+**Not a medical device.** Do not use readings for medical decisions, insulin dosing, diagnosis, or any clinical purpose.
 
-**No warranty.** The software is provided "as is" without warranty
-of any kind. The maintainers accept no liability for missed readings,
-incorrect data, software defects, account terminations, or any other
-consequences arising from the use of this app. Use at your own risk.
+**No warranty.** The software is provided as-is. The maintainers accept no liability for missed readings, incorrect data, or any other consequences.
 
-## Architecture notes
+LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.
+
+<details>
+<summary>Architecture</summary>
 
 ```text
 LibreLink Up API
@@ -169,81 +132,6 @@ LibreLink Up API
    Home Assistant entities
 ```
 
-## Maintenance — upgrading to a new gluco-hub release
+This app is a thin Bash wrapper around [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs). No polling or MQTT logic lives here — only the HA manifest, `run.sh`, and this documentation.
 
-The add-on's `version:` (in `config.yaml`) intentionally mirrors the
-bundled upstream gluco-hub release tag exactly (in steady state, post
-upstream-release), so HA users can map a running app back to its
-upstream binary at a glance. Three files carry the tag:
-
-- `libre-glucose/Dockerfile` — `ARG GLUCO_HUB_TAG=...`
-- `libre-glucose/build.yaml` — `args.GLUCO_HUB_TAG: "..."`
-- `libre-glucose/config.yaml` — `version: "..."` (informational; may
-  carry a SemVer pre-release like `0.1.0-dev` while the upstream image
-  tag points at `:develop`)
-
-**Automated** — Renovate watches `ghcr.io/micschr0/gluco-hub`. When the
-upstream CI publishes a new CalVer tag, Renovate opens one PR (group
-`gluco-hub-upstream`) bumping all three values atomically. The CI's
-`version-consistency` job is the fail-safe — it rejects any commit
-where the three diverge.
-
-**Manual** — the maintainer reviews Renovate's PR, adds an `Added` or
-`Changed` entry under `## [Unreleased]` in `CHANGELOG.md` describing
-what users actually see (a new option, a behaviour change, …), and
-merges to `main`. The narrative is the only part Renovate cannot
-generate.
-
-**New upstream config fields** (e.g. a future `MqttSinkConfig` field):
-exposing them through this add-on's UI is a deliberate human decision
-— not every field belongs in the HA options panel. When wiring one up,
-touch `config.yaml` (option + schema), `run.sh` (export), both
-`translations/*.yaml`, and the `tests/` env-mapping assertions.
-
-## Releasing — CalVer scheme + image channels
-
-The app uses the same CalVer-on-SemVer scheme as upstream gluco-hub-rs:
-`YYYY.MMDD.PATCH` where `MMDD = month*100 + day`. So a release cut on
-2026-05-15 is `2026.515.0`; a same-day re-cut is `2026.515.1`. Tags
-are prefixed `v` (e.g. `v2026.515.0`).
-
-Releases are managed via the local `Taskfile.yml` — install
-`go-task` once, then:
-
-```bash
-task release           # cut today's CalVer (commit + tag + push)
-task release:patch     # same-day hotfix (PATCH bump)
-task release:rc        # pre-release (-rc.N suffix)
-task release:dry       # preview without changing anything
-```
-
-Pushing a `v*` tag triggers `.github/workflows/release.yml`, which
-builds the addon image for `linux/amd64` + `linux/arm64`, signs it
-with cosign (keyless), attaches a SLSA build-provenance attestation,
-and publishes to `ghcr.io/micschr0/libre-glucose` under the right
-channel tags:
-
-| Trigger | Tags published |
-|---|---|
-| `push: main` | `:main`, `:sha-<short>` |
-| `push: develop` *(when the branch exists)* | `:develop`, `:sha-<short>` |
-| pre-release tag `vX.Y.Z-rc.N` | `:X.Y.Z-rc.N`, `:testing`, `:sha-<short>` |
-| final tag `vX.Y.Z` | `:X.Y.Z`, `:X.Y`, `:X`, `:latest`, `:stable`, `:sha-<short>` |
-| pull_request | build-only verification, no push |
-
-HA Supervisor pulls the image whose tag matches `config.yaml`'s
-`version:` field, so the canonical release flow is: `task release` →
-release.yml builds & pushes `:2026.515.0` → HA users install or update
-to that tag automatically.
-
-The local `Dockerfile` + `build.yaml` stay as a fallback for users
-who want to build from source (or for emergency installs before a tag
-is published).
-
-## Reporting issues
-
-For app-specific problems (manifest, install, run.sh): file an issue
-at [ha-libre-glucose-mqtt](https://github.com/micschr0/ha-libre-glucose-mqtt/issues).
-
-For polling / MQTT / LibreLink Up logic: file upstream at
-[gluco-hub-rs](https://github.com/micschr0/gluco-hub-rs/issues).
+</details>
