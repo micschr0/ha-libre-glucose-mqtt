@@ -7,6 +7,8 @@ gluco-hub release it bundles.
 
 ## [Unreleased]
 
+## [2026.622.0] - 2026-06-22
+
 ### Changed
 
 - **Upstream pin bumped to `gluco-hub` `v2026.621.0`** (from `v2026.607.2`) —
