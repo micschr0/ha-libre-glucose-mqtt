@@ -32,3 +32,6 @@ venv/
 
 # GSD planning workspace — kept local, not published
 .planning/
+
+# Claude Code per-user local settings
+.claude/settings.local.json
