@@ -191,7 +191,7 @@ jobs:
           tags: libre-glucose:ci
           build-args: |
             BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian:bookworm
-            GLUCO_HUB_TAG=2026.607.2
+            GLUCO_HUB_TAG=2026.621.0
             BUILD_ARCH=amd64
             BUILD_DATE=ci
             BUILD_DESCRIPTION=ci-smoke
@@ -220,7 +220,7 @@ jobs:
         run: bash tests/test-run-sh.sh
       - name: Smoke-test gluco-hub check-config with the mocked env
         env:
-          GLUCO_HUB_TAG: "2026.607.2"
+          GLUCO_HUB_TAG: "2026.621.0"
         run: bash tests/test-check-config.sh
       - name: Unit-test multi-account TOML generation
         run: bash tests/test-run-sh-multi.sh
@@ -239,7 +239,7 @@ jobs:
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
-      - uses: zizmorcore/zizmor-action@5f14fd08f7cf1cb1609c1e344975f152c7ee938d # v0.5.6
+      - uses: zizmorcore/zizmor-action@192e21d79ab29983730a13d1382995c2307fbcaa # v0.5.7
         with:
           min-severity: medium
           min-confidence: medium
@@ -270,7 +270,7 @@ jobs:
           tags: libre-glucose:ci
           build-args: |
             BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian:bookworm
-            GLUCO_HUB_TAG=2026.607.2
+            GLUCO_HUB_TAG=2026.621.0
             BUILD_ARCH=amd64
             BUILD_DATE=ci
             BUILD_DESCRIPTION=ci-smoke

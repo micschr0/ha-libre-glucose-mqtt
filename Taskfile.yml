@@ -24,6 +24,11 @@ tasks:
     cmds:
       - bash tests/test-run-sh.sh
 
+  docs:
+    desc: Serve the Docsify site locally at http://127.0.0.1:3000 (no build step)
+    cmds:
+      - python3 -m http.server 3000
+
   drift-check:
     desc: Assert Dockerfile / build.yaml / config.yaml carry the same upstream tag
     cmds:
