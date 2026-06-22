@@ -5,6 +5,14 @@ the upstream [gluco-hub-rs](https://github.com/micschr0/gluco-hub-rs)
 CalVer scheme (`YYYY.0M0D.PATCH`) so the app version always names the
 gluco-hub release it bundles.
 
+## [Unreleased]
+
+### Changed
+
+- **Upstream pin bumped to `gluco-hub` `v2026.621.0`** (from `v2026.607.2`) —
+  security and maintenance refresh from upstream, including the `libssh2`
+  update addressing CVE-2026-55200. (#26)
+
 ## [2026.607.0] - 2026-06-07
 
 ### Fixed

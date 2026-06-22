@@ -29,3 +29,6 @@ venv/
 *.log
 *.tmp
 *.bak
+
+# GSD planning workspace — kept local, not published
+.planning/
