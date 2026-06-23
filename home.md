@@ -40,7 +40,7 @@ The app is a thin, auditable wrapper around the open-source [`gluco-hub-rs`](htt
 
 Once running, the app creates a **Glucose** sensor under the **Gluco Hub** device (Settings → Devices & Services → MQTT). The state holds the current reading in mg/dL by default (mmol/L if you configure it); entity attributes carry the full payload — mg/dL, mmol/L, trend arrow, and timestamp.
 
-For every option, the sensor attributes, MQTT topics, and troubleshooting, see [Configuration & usage](libre-glucose/DOCS.md).
+For every option, the sensor attributes, and MQTT topics, see [Configuration](libre-glucose/configuration.md). For troubleshooting and architecture detail, see [Troubleshooting](libre-glucose/troubleshooting.md).
 
 ## Getting help
 

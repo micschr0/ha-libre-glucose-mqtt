@@ -56,3 +56,7 @@ Attributes:
 | `<prefix>/_stats` | yes | Per-minute poll/sink summary. Useful for dashboards. |
 | `<prefix>/_patients` | yes | Patient list. JSON array of `{id, display_name, is_active}`. `display_name` is abbreviated (e.g. `Anna M.`). Published after each successful login. |
 | `homeassistant/sensor/gluco_hub_<client_id>_glucose/config` | yes | HA MQTT discovery config. Published after every reconnect. |
+
+---
+
+> ⚠️ **Not affiliated with Abbott Laboratories.** Unofficial research and self-hosting tool. Use may violate Abbott's LibreLink Up Terms of Service. No warranty. Not for medical decisions, therapy, dosing, or diagnosis.
