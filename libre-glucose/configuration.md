@@ -19,7 +19,7 @@ Readings that fail to publish queue in `/data/state` (persistent across restarts
 |---|---|---|---|
 | `llu_email` | string | *required* | LibreLink Up account email. |
 | `llu_password` | string | *required* | LibreLink Up account password. Never written to MQTT or logs. |
-| `llu_region` | enum | `EU` | Regional API endpoint. Must match your LibreView account region, not your physical location. Options: `AE`, `AP`, `AU`, `CA`, `DE`, `EU`, `EU2`, `FR`, `JP`, `LA`, `RU`, `US`, `CN`. |
+| `llu_region` | enum | `EU` | Regional API endpoint. Must match your LibreView account region, not your physical location. Options: `AE`, `AP`, `AU`, `CA`, `DE`, `EU`, `EU2`, `FR`, `JP`, `US`, `LA`, `RU`, `CN`. |
 | `llu_patient_id` | string | — | Patient UUID. Required only if your account has multiple connections. Leave empty to use the first connection. |
 | `llu_timezone` | IANA TZ | `UTC` | The patient's local timezone. LibreLink Up timestamps are in local wall-clock time with no UTC offset; without this, times appear shifted. Example: `Europe/Berlin`. |
 | `llu_version` | string | — | LibreLink Up app-version header sent to the API. Leave empty to use the upstream default. |
@@ -28,7 +28,7 @@ Readings that fail to publish queue in `/data/state` (persistent across restarts
 | `glucose_unit` | enum | `mgdl` | Sensor state unit: `mgdl` for mg/dL, `mmol` for mmol/L. |
 | `topic_prefix` | string | `gluco-hub/ha` | MQTT topic prefix. Readings publish to `<prefix>/glucose`. |
 | `client_id` | string | `ha` | MQTT client ID (1–23 chars, alphanumeric / `-` / `_`). Appears in the HA discovery unique ID. |
-| `llu_accounts` | list | `[]` | Named multi-account/multi-patient sources. When non-empty, supersedes the single-account `llu_*` fields above. Full schema and a worked example are covered on the multi-account page (Phase 8). |
+| `llu_accounts` | list | `[]` | Named multi-account/multi-patient sources. When non-empty, supersedes the single-account `llu_*` fields above. Full schema and a worked example are covered on the multi-account setup page. |
 | `log_level` | enum | `info` | Log verbosity. Use `debug` to troubleshoot LibreLink Up issues. Options: `trace`, `debug`, `info`, `warn`, `error`. |
 
 ## Sensor
