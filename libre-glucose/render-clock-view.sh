@@ -3,8 +3,8 @@
 # Render a mock-data Clock View screenshot from clock.html using headless Chromium.
 # Output: libre-glucose/_media/clock-view.png
 #
-# Usage: bash render-clock-view.sh [path/to/clock.html]
-#   Default clock.html path: <script-dir>/../../libre-glucose/clock.html
+# Usage: bash render-clock-view.sh
+#   Reads clock.html from the same directory as this script (libre-glucose/).
 #
 # Requirements: /usr/local/bin/chromium (Chrome for Testing)
 # No package installs performed; compression skipped if no compressor on PATH.
@@ -12,9 +12,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../../../" && pwd)"
-CLOCK_HTML="$REPO_ROOT/libre-glucose/clock.html"
-MEDIA_DIR="$REPO_ROOT/libre-glucose/_media"
+# Script lives in libre-glucose/ — REPO_ROOT is one level up
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# clock.html is in the same directory as this script
+CLOCK_HTML="$SCRIPT_DIR/clock.html"
+MEDIA_DIR="$SCRIPT_DIR/_media"
 OUTPUT_PNG="$MEDIA_DIR/clock-view.png"
 CHROMIUM="${CHROMIUM:-/usr/local/bin/chromium}"
 
