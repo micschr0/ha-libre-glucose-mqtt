@@ -7,6 +7,17 @@ gluco-hub release it bundles.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`run.sh`** — Multi-account TOML used `[sink.mqtt]` keys `host` / `port`,
+  but `gluco-hub` requires `broker_host` / `broker_port`. `check-config`
+  rejected the generated config with `[CFG001] missing field
+  "sink.mqtt.broker_host"`, so the run.sh pre-flight aborted and
+  **multi-account mode never started**. Corrected to `broker_host` /
+  `broker_port`, matching the single-account env mapping
+  (`GLUCO_HUB__SINK__MQTT__BROKER_HOST`). Added a regression guard to
+  `tests/test-run-sh-multi.sh` asserting the broker keys.
+
 ## [2026.622.0] - 2026-06-22
 
 ### Changed

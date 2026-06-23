@@ -117,6 +117,24 @@ if ! grep -q 'password = "mqttpw"' "${TOML_CAPTURE}"; then
     fail=1
 fi
 
+# --- Assert MQTT sink uses the broker_host/broker_port keys gluco-hub expects ---
+# Regression guard: gluco-hub check-config rejects bare host/port with
+# [CFG001] missing field "sink.mqtt.broker_host", which aborts the run.sh
+# pre-flight and prevents multi-account mode from starting at all.
+if ! grep -q '^broker_host = ' "${TOML_CAPTURE}"; then
+    echo "FAIL: TOML [sink.mqtt] missing broker_host (gluco-hub requires broker_host, not host)" >&2
+    grep -E '^(broker_)?host' "${TOML_CAPTURE}" >&2
+    fail=1
+fi
+if ! grep -q '^broker_port = ' "${TOML_CAPTURE}"; then
+    echo "FAIL: TOML [sink.mqtt] missing broker_port (gluco-hub requires broker_port, not port)" >&2
+    fail=1
+fi
+if grep -qE '^(host|port) = ' "${TOML_CAPTURE}"; then
+    echo "FAIL: TOML uses legacy bare host/port keys — gluco-hub needs broker_host/broker_port" >&2
+    fail=1
+fi
+
 # --- Assert per_source flag ---
 if ! grep -q 'per_source = true' "${TOML_CAPTURE}"; then
     echo "FAIL: TOML missing per_source = true" >&2

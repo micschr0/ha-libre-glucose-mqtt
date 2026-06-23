@@ -115,8 +115,8 @@ bind = "0.0.0.0:8080"
 dir = "/data/state"
 
 [sink.mqtt]
-host = "${MQTT_HOST}"
-port = ${MQTT_PORT}
+broker_host = "${MQTT_HOST}"
+broker_port = ${MQTT_PORT}
 username = "${MQTT_USERNAME}"
 password = "${MQTT_PASSWORD}"
 topic_prefix = "${TOPIC_PREFIX}"
