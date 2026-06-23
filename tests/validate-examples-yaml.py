@@ -12,9 +12,13 @@ Asserts:
 """
 import re
 import sys
+from pathlib import Path
+
 import yaml
 
-EXAMPLES_MD = "libre-glucose/examples.md"
+# Resolve relative to the repo root (this file lives in tests/), so the
+# validator works regardless of the caller's working directory.
+EXAMPLES_MD = Path(__file__).resolve().parent.parent / "libre-glucose" / "examples.md"
 
 with open(EXAMPLES_MD, encoding="utf-8") as f:
     raw = f.read()

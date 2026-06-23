@@ -31,7 +31,6 @@ action:
               title: "Glucose low"
               message: >
                 Glucose is {{ states('sensor.gluco_hub_ha_glucose') }}
-                {{ state_attr('sensor.gluco_hub_ha_glucose', 'mgdl') | round(0) }} mg/dL
                 — below 70.
           - action: notify.mobile_app_your_phone
             data:

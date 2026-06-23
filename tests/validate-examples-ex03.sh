@@ -44,7 +44,7 @@ for required in "per_source = true" "[source.sources.alex]" "[source.sources.sam
     fi
 done
 
-if grep -qE '^\s*(^host|^port) = ' "${TMP_TOML}"; then
+if grep -qE '^(host|port) = ' "${TMP_TOML}"; then
     echo "FAIL: TOML uses bare host/port keys — must use broker_host/broker_port"
     exit 1
 fi
