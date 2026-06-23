@@ -4,6 +4,8 @@ A Home Assistant app that polls your **LibreLink Up** glucose readings and publi
 
 > ⚠️ **Not affiliated with Abbott Laboratories.** Unofficial research and self-hosting tool. Use may violate Abbott's LibreLink Up Terms of Service. No warranty. Not for medical decisions, therapy, dosing, or diagnosis.
 
+LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.
+
 ## Why use it?
 
 Abbott's apps lock your glucose data inside LibreLink Up. This bridge turns that reading into **a normal Home Assistant sensor** — an entity you fully control:
