@@ -4,7 +4,7 @@
 
 ## What it does
 
-Every `poll_interval_secs` seconds (default: 60), the app:
+Every `poll_interval_secs` seconds (default: 60), the add-on:
 
 1. Logs in to LibreLink Up with the configured credentials.
 2. Fetches the latest glucose reading for the selected patient.
@@ -12,6 +12,9 @@ Every `poll_interval_secs` seconds (default: 60), the app:
 4. Publishes an MQTT discovery message so Home Assistant creates a **Glucose** sensor automatically.
 
 Readings that fail to publish queue in `/data/state` (persistent across restarts) and flush on reconnect. The queue holds up to 10,000 readings — about 35 days at LibreLink Up's default 5-minute update interval.
+
+> [!NOTE]
+> The polling, MQTT publishing, discovery, and retry queue are implemented by the upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) binary. This add-on wraps it for Home Assistant — it provides the config, the `run.sh` entrypoint, and HA Ingress wiring.
 
 ## Configuration
 
@@ -25,10 +28,10 @@ Readings that fail to publish queue in `/data/state` (persistent across restarts
 | `llu_version` | string | — | LibreLink Up app-version header sent to the API. Leave empty to use the upstream default. |
 | `poll_interval_secs` | int (30–600) | `60` | Poll interval in seconds. Values below 30 waste API calls; LibreLink Up updates every ~60 s. |
 | `device_name` | string | — | Friendly device name in HA. Defaults to `Gluco Hub (<client_id>)`. |
-| `glucose_unit` | enum | `mgdl` | Sensor state unit: `mgdl` for mg/dL, `mmol` for mmol/L. |
+| `glucose_unit` | enum | `mgdl` | Sensor state unit: `mgdl` for mg/dL, `mmol` for mmol/L. In multi-account mode (`llu_accounts`) this option does not affect MQTT discovery; discovery always uses mg/dL in that mode. |
 | `topic_prefix` | string | `gluco-hub/ha` | MQTT topic prefix. Readings publish to `<prefix>/glucose`. |
-| `client_id` | string | `ha` | MQTT client ID (1–23 chars, alphanumeric / `-` / `_`). Appears in the HA discovery unique ID. |
-| `llu_accounts` | list | `[]` | Named multi-account/multi-patient sources. When non-empty, supersedes the single-account `llu_*` fields above. Full schema and a worked example are covered on the multi-account setup page. |
+| `client_id` | string | `ha` | MQTT client ID (1–23 chars, alphanumeric / `-` / `_`). Appears in the HA discovery unique ID. In multi-account mode (`llu_accounts`) the TOML hard-codes `client_id = "ha"`; this option applies to single-account mode only. |
+| `llu_accounts` | list | `[]` | Named multi-account/multi-patient sources. When non-empty, supersedes the single-account `llu_*` fields above. Full schema and a worked example are covered on the [multi-account setup](multi-account.md) page. |
 | `log_level` | enum | `info` | Log verbosity. Use `debug` to troubleshoot LibreLink Up issues. Options: `trace`, `debug`, `info`, `warn`, `error`. |
 
 ## Sensor

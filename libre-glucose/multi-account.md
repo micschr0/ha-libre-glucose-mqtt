@@ -1,6 +1,6 @@
 # Multi-account setup
 
-The `llu_accounts` option lets you poll **multiple LibreLink Up accounts or patients** from a single add-on instance. Each entry in the list is a named source. When `llu_accounts` is non-empty it **supersedes** the single-account `llu_email`, `llu_password`, `llu_region`, `llu_patient_id`, `llu_timezone`, and `llu_version` fields — those fields are ignored.
+The `llu_accounts` option lets you poll **multiple LibreLink Up accounts or patients** from a single add-on instance. Each entry in the list is a named source. When `llu_accounts` is non-empty it **supersedes** the single-account `llu_email`, `llu_password`, `llu_region`, `llu_patient_id`, `llu_timezone`, and `llu_version` fields.
 
 See [Configuration](configuration.md) for the full single-account option reference.
 
@@ -37,11 +37,12 @@ llu_accounts:
     patient_id: "00000000-0000-0000-0000-000000000001"
 ```
 
-This is an **illustrative** example — credentials and UUIDs are placeholders. A `gluco-hub check-config`-validated multi-account example with copy-paste automation YAML will live on the Examples page.
+This is an **illustrative** example — credentials and UUIDs are placeholders. For a `gluco-hub check-config`-validated example with copy-paste automation YAML, see the [Examples](examples.md) page.
 
 ## MQTT topics (per-source)
 
-> **Note:** This is the most common multi-account support issue. With `llu_accounts`, the add-on sets `per_source = true` in the upstream config. Each source publishes to its **own topic path** — `<prefix>/<name>/glucose` — **not** to `<prefix>/glucose`.
+> [!WARNING]
+> This is the most common multi-account support issue. With `llu_accounts`, the add-on sets `per_source = true` in the upstream config. Each source publishes to its **own topic path** — `<prefix>/<name>/glucose`. The shared `<prefix>/glucose` topic is **not published** in multi-account mode — existing automations targeting that topic will receive no data.
 
 For the example above, assuming the default `topic_prefix: gluco-hub/ha`, the two reading topics are:
 
@@ -53,6 +54,8 @@ For the example above, assuming the default `topic_prefix: gluco-hub/ha`, the tw
 Your Home Assistant automations and dashboard cards must target the per-source topic for the patient you want. The shared `<prefix>/glucose` topic is not published in multi-account mode.
 
 The health, stats, and discovery topics remain at the prefix level (`<prefix>/_health`, `<prefix>/_stats`).
+
+> **Note:** Two single-account options do not carry over to multi-account mode. The generated TOML hard-codes `client_id = "ha"` and does not pass `glucose_unit` to discovery — readings are always published in mg/dL regardless of the `glucose_unit` add-on option.
 
 ## Status API
 

@@ -1,9 +1,7 @@
 # Troubleshooting
 
-## Troubleshooting
-
-**App refuses to start — `No MQTT service available`.**
-Install the **Mosquitto broker** app and configure the MQTT integration (Settings → Devices & Services → Add Integration → MQTT). Then restart this app.
+**Add-on refuses to start — `No MQTT service available`.**
+Install the **Mosquitto broker** add-on and configure the MQTT integration (Settings → Devices & Services → Add Integration → MQTT). Then restart this add-on.
 
 **Sensor never appears.**
 1. Confirm Mosquitto is running.
@@ -47,7 +45,7 @@ LibreLink Up API
    Home Assistant entities
 ```
 
-This app is a thin Bash wrapper around [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs). No polling or MQTT logic lives here — only the HA manifest, `run.sh`, and this documentation. This add-on only wires HA Ingress to it.
+This add-on is a thin Bash wrapper around [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs). No polling or MQTT logic lives here — only the HA manifest, `run.sh`, and this documentation. This add-on only wires HA Ingress to it.
 
 </details>
 

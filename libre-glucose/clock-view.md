@@ -8,7 +8,7 @@ Home Assistant sidebar. The `clock.html` file in this repository is a source-of-
 
 ## Access
 
-The Clock View is reached through the add-on's Ingress panel in the Home Assistant sidebar.
+Open the Clock View from the Home Assistant sidebar — the add-on's Ingress panel serves it directly.
 Access is admin-only by default (as configured in `config.yaml`).
 
 Direct URL (via Ingress proxy): the sidebar panel opens `clock.html` relative to the Ingress root.
@@ -64,7 +64,7 @@ Behaviour:
 - The e-ink preset is applied **before first paint** to prevent a theme flash.
 - SSE updates are debounced (500 ms) to avoid rapid screen refreshes on slow e-ink panels.
 - A visible border is drawn around the display when the reading is in the LOW or HYPO zone, providing a high-contrast
-  at-a-glance alarm that works on monochrome screens.
+  at-a-glance visual indicator that works on monochrome screens.
 
 ## Kiosk mode
 
@@ -76,8 +76,10 @@ Activated by `?kiosk` (presence flag). Optionally combined with `?pin=<digits>`.
 - With `?pin=<digits>` set, the 3-second long-press shows a **PIN prompt** instead of settings; settings open only
   after the correct PIN is entered (e.g. `?kiosk&pin=4321`).
 - Without a `pin`, the 3-second long-press opens settings directly — no PIN prompt is shown.
-- This gates only the on-screen settings panel; it is **not** an authentication layer — Home Assistant Ingress
-  already authenticates the session before the page is served.
+- Tapping the display in kiosk mode does not open the detail/sparkline overlay — that tap gesture is disabled in kiosk mode.
+
+> [!NOTE]
+> Kiosk mode is a display lock only, not an authentication layer — Home Assistant Ingress already authenticates the session before the page is served.
 
 ## Data
 

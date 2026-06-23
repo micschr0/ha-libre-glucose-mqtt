@@ -1,8 +1,8 @@
 # HTTP Status API
 
-The HTTP Status API is served by the upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) binary, which binds to `0.0.0.0:8080` (set via `GLUCO_HUB__HTTP__BIND` in `run.sh`). This add-on only wires HA Ingress (`ingress: true`, `ingress_port: 8080` in `config.yaml`) to that listener.
+The upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) binary serves the HTTP Status API, binding to `0.0.0.0:8080` (set via `GLUCO_HUB__HTTP__BIND` in `run.sh`). This add-on only wires HA Ingress (`ingress: true`, `ingress_port: 8080` in `config.yaml`) to that listener.
 
-Routes are **not** directly reachable from the host — all requests go through the authenticated HA Supervisor Ingress proxy. You access them via the add-on's panel in the HA UI, or through the Supervisor-issued Ingress URL.
+The HA Supervisor Ingress proxy intercepts all requests — routes are not directly reachable from the host. You access them via the add-on's panel in the HA UI, or through the Supervisor-issued Ingress URL.
 
 ## Data endpoints
 

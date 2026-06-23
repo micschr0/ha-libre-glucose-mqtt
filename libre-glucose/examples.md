@@ -57,9 +57,12 @@ mode: single
 
 `sensor.gluco_hub_ha_glucose` uses the default `client_id: ha`. Replace `ha` with your configured `client_id` value — the entity name follows the pattern `sensor.gluco_hub_<client_id>_glucose`. Replace `notify.mobile_app_your_phone` with your device's notify service (Settings → Devices & Services → Mobile App).
 
-> **Unit note.** The sensor state is in your configured unit (`mgdl` by default; `mmol` if `glucose_unit: mmol`). If you use mmol/L, adjust the thresholds: `below: 3.9` (low) and `above: 10.0` (high) are the mmol/L equivalents.
+> [!NOTE]
+> The sensor state is in your configured unit (`mgdl` by default; `mmol` if `glucose_unit: mmol`). If you use mmol/L, adjust the thresholds: `below: 3.9` (low) and `above: 10.0` (high) are the mmol/L equivalents.
 
 The triggers fire on the sensor **state** — the current glucose reading. Do not use `attribute: mgdl` in the trigger; the state already holds the value in your configured unit.
+
+> **Attribution.** The `sensor.gluco_hub_*_glucose` entity is published by the upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) bridge via MQTT discovery. This add-on wires HA Ingress and translates add-on options into the upstream config.
 
 ## EX-02 — Dashboard gauge card
 
@@ -80,9 +83,7 @@ severity:
 
 The `severity` map sets the **lower bound** of each colored band. With the values above the gauge shows: red from 40 → 70, green from 70 → 180, yellow from 180 → 300. Replace `sensor.gluco_hub_ha_glucose` using the same `<client_id>` convention as in EX-01.
 
-This is the standard `gauge` card built into Home Assistant — no plugin or custom component is needed.
-
-> **Attribution.** The Glucose sensor is published by upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) via MQTT discovery. This add-on only wires HA Ingress and translates add-on options into the upstream config.
+> **Attribution.** The Glucose sensor is published by the upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) bridge via MQTT discovery. This add-on wires HA Ingress and translates add-on options into the upstream config.
 
 ## EX-03 — Multi-account configuration
 
@@ -150,7 +151,10 @@ timezone = "America/New_York"
 patient_id = "00000000-0000-0000-0000-000000000001"
 ```
 
-> **Note.** The MQTT sink section uses `broker_host` / `broker_port` — these are the field names required by the `gluco-hub` config loader. Bare `host` / `port` keys are rejected by `check-config` with `[CFG001] missing configuration field "sink.mqtt.broker_host"`.
+> [!WARNING]
+> The MQTT sink section uses `broker_host` / `broker_port` — these are the field names required by the `gluco-hub` config loader. Bare `host` / `port` keys are rejected by `check-config` with `[CFG001] missing configuration field "sink.mqtt.broker_host"`.
+
+**Multi-account limitations.** The generated TOML hard-codes `client_id = "ha"` and does not include `discovery_unit` — so MQTT discovery always advertises mg/dL regardless of your `glucose_unit` setting. The `client_id` and `discovery_unit` single-account options are not carried into multi-account mode.
 
 **Validation.** The TOML above was validated with `gluco-hub check-config` against the pinned upstream image `ghcr.io/micschr0/gluco-hub:2026.621.0` and returned **configuration ok**.
 
