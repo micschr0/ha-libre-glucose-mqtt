@@ -31,8 +31,8 @@ server-embedded config (`window.CLOCK_CONFIG`) and `localStorage` values.
 | `hi` | Number (mg/dL) | High threshold. Values above this are shown in the high zone (default 180). |
 | `eink` | Presence flag | Enables e-ink mode (same as `preset=eink`). Applied before first paint to avoid flash. |
 | `preset` | `eink` \| `wall` \| `phone` \| `small` \| `watch` | Forces a specific layout, overriding auto-detection. `preset=eink` also activates e-ink mode. |
-| `kiosk` | Presence flag | Enables kiosk mode: the display shows a PIN overlay on load. |
-| `pin` | Digits string | The PIN code used to unlock kiosk mode (e.g. `?kiosk&pin=1234`). |
+| `kiosk` | Presence flag | Enables kiosk mode: lengthens the long-press needed to open settings to 3 s and, when `pin` is set, gates settings behind a PIN prompt. The reading is shown immediately on load. |
+| `pin` | Digits string | The PIN required to open settings via long-press in kiosk mode (e.g. `?kiosk&pin=1234`). |
 | `dark` | `0` \| `1` | Force light (`0`) or dark (`1`) theme. Absence defers to `prefers-color-scheme`. |
 
 Parameter priority (highest to lowest): URL param → `localStorage` → server-embedded config → built-in default.
@@ -42,12 +42,14 @@ Parameter priority (highest to lowest): URL param → `localStorage` → server-
 The Clock View automatically selects a layout class based on the viewport dimensions. The `preset` parameter
 overrides auto-detection.
 
+Conditions are evaluated in this order; the first match wins, and `phone` is the fallback when none match:
+
 | Layout class | Auto-detection condition | Typical device |
 |---|---|---|
 | `watch` | Short side < 200 px | Smartwatch / tiny display |
 | `small` | Short side < 400 px | Small phone or compact widget |
-| `phone` | Default (all other sizes) | Phone, tablet, browser window |
 | `wall` | Long side > 900 px | Landscape monitor / wall display / TV |
+| `phone` | Fallback (no other condition matched) | Phone, tablet, browser window |
 
 `?preset=eink` activates e-ink mode (see below) instead of a viewport-based layout.
 
@@ -68,11 +70,14 @@ Behaviour:
 
 Activated by `?kiosk` (presence flag). Optionally combined with `?pin=<digits>`.
 
-- On load, a PIN overlay covers the display. The user must enter the configured PIN to reveal the reading.
-- `?pin=<digits>` sets the expected PIN (e.g. `?kiosk&pin=4321`).
-- If no `pin` is specified, the overlay can be dismissed without a code.
-- This is a **display lock only**, not an authentication layer — Home Assistant Ingress already authenticates
-  the session before the page is served.
+- The reading is shown immediately on load — kiosk mode does **not** hide it behind an overlay.
+- Kiosk mode lengthens the long-press that opens the settings panel from 600 ms to **3 seconds**, so a casual
+  touch on a wall display does not open settings.
+- With `?pin=<digits>` set, the 3-second long-press shows a **PIN prompt** instead of settings; settings open only
+  after the correct PIN is entered (e.g. `?kiosk&pin=4321`).
+- Without a `pin`, the 3-second long-press opens settings directly — no PIN prompt is shown.
+- This gates only the on-screen settings panel; it is **not** an authentication layer — Home Assistant Ingress
+  already authenticates the session before the page is served.
 
 ## Data
 

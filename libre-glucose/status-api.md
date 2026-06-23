@@ -85,7 +85,7 @@ The following endpoints are confirmed from the upstream [`gluco-hub-rs`](https:/
 | Path | Auth | Response |
 |------|------|----------|
 | `GET /healthz` | public | `{"status":"ok","version":"…"}` |
-| `GET /metrics` | public | Prometheus text exposition (v0.0.4) |
+| `GET /metrics` | public | Prometheus text exposition format |
 | `GET /glucose/latest` | optional Bearer | Latest cached reading, or `503` + `API001` if no reading is available |
 
 **Bearer auth:** set `GLUCO_HUB__HTTP__BEARER_TOKEN` in the add-on configuration to require a token for `/glucose/*` routes. The `/healthz` and `/metrics` endpoints remain public regardless.

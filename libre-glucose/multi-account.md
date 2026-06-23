@@ -37,7 +37,7 @@ llu_accounts:
     patient_id: "00000000-0000-0000-0000-000000000001"
 ```
 
-This is an **illustrative** example — credentials and UUIDs are placeholders. A `gluco-hub check-config`-validated multi-account example with copy-paste automation YAML lives on the [Examples](examples.md) page (Phase 9, EX-03).
+This is an **illustrative** example — credentials and UUIDs are placeholders. A `gluco-hub check-config`-validated multi-account example with copy-paste automation YAML will live on the Examples page.
 
 ## MQTT topics (per-source)
 

@@ -6,7 +6,7 @@
 # Usage: bash render-clock-view.sh
 #   Reads clock.html from the same directory as this script (libre-glucose/).
 #
-# Requirements: /usr/local/bin/chromium (Chrome for Testing)
+# Requirements: /usr/local/bin/chromium (Chrome for Testing), python3 (timestamp + harness generation)
 # No package installs performed; compression skipped if no compressor on PATH.
 
 set -euo pipefail
