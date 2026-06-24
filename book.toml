@@ -8,7 +8,7 @@ src = "src"
 [output.html]
 default-theme = "light"
 preferred-dark-theme = "navy"
-additional-css = ["theme/fonts/fonts.css", "custom.css", "mdbook-admonish.css"]
+additional-css = ["theme/fonts/fonts.css", "custom.css", "./mdbook-admonish.css"]
 additional-js = []
 git-repository-url = "https://github.com/micschr0/ha-libre-glucose-mqtt"
 git-repository-icon = "fa-github"
