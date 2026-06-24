@@ -1,0 +1,11 @@
+/* custom.css — HA-blue accent overrides. Accent-only: NEVER body text. */
+/* WCAG note: #03A9F4 on white = 2.79:1 (fails AA for body text); OK for decorative accent only. */
+:root {
+  --links: #0a66c2;           /* body links — AA-compliant, NOT HA blue */
+  --sidebar-active: #03A9F4;  /* active TOC item — accent use only */
+  --icons-hover: #03A9F4;
+}
+.navy, .coal, .ayu {
+  --sidebar-active: #29B6F6;  /* lighter HA blue on dark themes */
+  --icons-hover: #29B6F6;
+}

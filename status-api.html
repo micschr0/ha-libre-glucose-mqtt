@@ -1,0 +1,328 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>HTTP Status API - Libre Glucose MQTT Bridge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Home Assistant add-on bridging LibreLink Up glucose readings to MQTT with auto-discovery.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="theme/fonts/fonts.css">
+        <link rel="stylesheet" href="custom.css">
+        <link rel="stylesheet" href="./mdbook-admonish.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Home</a></li><li class="chapter-item expanded affix "><li class="part-title">Setup</li><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="multi-account.html"><strong aria-hidden="true">2.</strong> Multi-account setup</a></li><li class="chapter-item expanded affix "><li class="part-title">Features</li><li class="chapter-item expanded "><a href="clock-view.html"><strong aria-hidden="true">3.</strong> Clock View</a></li><li class="chapter-item expanded "><a href="status-api.html" class="active"><strong aria-hidden="true">4.</strong> HTTP Status API</a></li><li class="chapter-item expanded "><a href="examples.html"><strong aria-hidden="true">5.</strong> Examples</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="troubleshooting.html"><strong aria-hidden="true">6.</strong> Troubleshooting</a></li><li class="chapter-item expanded "><a href="CHANGELOG.html"><strong aria-hidden="true">7.</strong> Changelog</a></li><li class="chapter-item expanded "><a href="SECURITY.html"><strong aria-hidden="true">8.</strong> Security</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Libre Glucose MQTT Bridge</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/micschr0/ha-libre-glucose-mqtt" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="http-status-api"><a class="header" href="#http-status-api">HTTP Status API</a></h1>
+<p>The upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> binary serves the HTTP Status API, binding to <code>0.0.0.0:8080</code> (set via <code>GLUCO_HUB__HTTP__BIND</code> in <code>run.sh</code>). This add-on only wires HA Ingress (<code>ingress: true</code>, <code>ingress_port: 8080</code> in <code>config.yaml</code>) to that listener.</p>
+<p>The HA Supervisor Ingress proxy intercepts all requests — routes are not directly reachable from the host. You access them via the add-on's panel in the HA UI, or through the Supervisor-issued Ingress URL.</p>
+<h2 id="data-endpoints"><a class="header" href="#data-endpoints">Data endpoints</a></h2>
+<p>These three routes power the <a href="clock-view.html">Clock View</a>. They are not protected by Bearer auth.</p>
+<h3 id="get-clockstate"><a class="header" href="#get-clockstate"><code>GET /clock/state</code></a></h3>
+<p>Returns a JSON snapshot of the latest glucose reading. The Clock View fetches this once at startup to populate the display before the SSE stream delivers its first event.</p>
+<pre><code class="language-json">{
+  "mgdl": 112,
+  "trend": "Flat",
+  "ts": 1750000000000,
+  "delta": 2,
+  "patient": "Alex"
+}
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>mgdl</code></td><td>integer</td><td>Glucose value in mg/dL</td></tr>
+<tr><td><code>trend</code></td><td>string</td><td>One of: <code>DoubleDown</code>, <code>SingleDown</code>, <code>FortyFiveDown</code>, <code>Flat</code>, <code>FortyFiveUp</code>, <code>SingleUp</code>, <code>DoubleUp</code>, <code>NotComputable</code>, <code>OutOfRange</code></td></tr>
+<tr><td><code>ts</code></td><td>integer</td><td>Unix timestamp in milliseconds</td></tr>
+<tr><td><code>delta</code></td><td>integer</td><td>Change since previous reading (mg/dL), may be <code>null</code></td></tr>
+<tr><td><code>patient</code></td><td>string</td><td>Display name, may be absent</td></tr>
+</tbody></table>
+</div>
+<h3 id="get-clockevents"><a class="header" href="#get-clockevents"><code>GET /clock/events</code></a></h3>
+<p>Server-Sent Events stream. The Clock View opens an <code>EventSource</code> connection to this endpoint for live updates.</p>
+<p><strong>Named events:</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Event</th><th>Payload</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>reading</code></td><td>JSON (same shape as <code>/clock/state</code>)</td><td>New glucose reading arrived</td></tr>
+<tr><td><code>keepalive</code></td><td><em>(empty)</em></td><td>Periodic heartbeat to keep the connection alive</td></tr>
+</tbody></table>
+</div>
+<p><strong>Query parameters:</strong></p>
+<div class="table-wrapper"><table><thead><tr><th>Parameter</th><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>eink</code></td><td><code>1</code></td><td>Hint to the server that the client is an e-ink display. Set automatically by the Clock View when it detects e-ink mode (<code>?eink</code> or <code>?preset=eink</code>).</td></tr>
+</tbody></table>
+</div>
+<p>Example connection:</p>
+<pre><code>GET /clock/events?eink=1
+Accept: text/event-stream
+</code></pre>
+<p>The Clock View reconnects automatically with exponential back-off (2 s → 30 s cap) on any connection error.</p>
+<h3 id="get-clockhistory"><a class="header" href="#get-clockhistory"><code>GET /clock/history</code></a></h3>
+<p>Returns a JSON array of recent readings used to seed the Clock View's sparkline on first load. This call is best-effort — the Clock View swallows any error silently and draws the sparkline from SSE events only if history is unavailable.</p>
+<pre><code class="language-json">[
+  { "ts": 1749999940000, "mgdl": 108 },
+  { "ts": 1750000000000, "mgdl": 112 }
+]
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>ts</code></td><td>integer</td><td>Unix timestamp in milliseconds</td></tr>
+<tr><td><code>mgdl</code></td><td>integer</td><td>Glucose value in mg/dL</td></tr>
+</tbody></table>
+</div>
+<p>The array covers approximately the last 3 hours (up to 180 points at 1-minute intervals).</p>
+<h2 id="caching"><a class="header" href="#caching">Caching</a></h2>
+<p>All data endpoint responses carry <code>Cache-Control: no-store</code>. This prevents browsers and intermediate proxies from ever serving a stale glucose value — every request goes to the live server.</p>
+<h2 id="other-endpoints"><a class="header" href="#other-endpoints">Other endpoints</a></h2>
+<p>The following endpoints are confirmed from the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> README:</p>
+<div class="table-wrapper"><table><thead><tr><th>Path</th><th>Auth</th><th>Response</th></tr></thead><tbody>
+<tr><td><code>GET /healthz</code></td><td>public</td><td><code>{"status":"ok","version":"…"}</code></td></tr>
+<tr><td><code>GET /metrics</code></td><td>public</td><td>Prometheus text exposition format</td></tr>
+<tr><td><code>GET /glucose/latest</code></td><td>optional Bearer</td><td>Latest cached reading, or <code>503</code> + <code>API001</code> if no reading is available</td></tr>
+</tbody></table>
+</div>
+<p><strong>Bearer auth:</strong> set <code>GLUCO_HUB__HTTP__BEARER_TOKEN</code> in the add-on configuration to require a token for <code>/glucose/*</code> routes. The <code>/healthz</code> and <code>/metrics</code> endpoints remain public regardless.</p>
+<p><strong><code>X-Disclaimer</code> header:</strong> every response from gluco-hub-rs carries <code>X-Disclaimer: not-for-medical-use</code> — the canonical machine-readable disclaimer signal.</p>
+<p><strong><code>GET /glucose/latest</code> response shape (upstream-confirmed):</strong></p>
+<pre><code class="language-json">{
+  "patient_id": "00000000-0000-0000-0000-000000000000",
+  "source_id": "llu",
+  "timestamp": "2025-01-01T12:00:00Z",
+  "glucose_mgdl": 112,
+  "trend": "Flat"
+}
+</code></pre>
+<p>Note: the <code>/clock/*</code> routes use an internal shape (<code>mgdl</code>, <code>ts</code> as Unix-ms, <code>delta</code>, <code>patient</code>) optimised for the Clock View, while <code>/glucose/latest</code> uses the public API shape (<code>glucose_mgdl</code>, ISO 8601 <code>timestamp</code>, <code>patient_id</code>).</p>
+<p>For the full and authoritative endpoint list, see the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> documentation.</p>
+<h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
+<ul>
+<li><a href="clock-view.html">Clock View</a> — the visual display that consumes the data endpoints documented here</li>
+<li><a href="configuration.html">Configuration</a> — add-on options including <code>poll_interval_secs</code>, <code>glucose_unit</code>, and <code>topic_prefix</code></li>
+</ul>
+<hr />
+<div id="admonition-danger" class="admonition admonish-danger" role="note" aria-labelledby="admonition-danger-title">
+<div class="admonition-title">
+<div id="admonition-danger-title">
+<p>Danger</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-danger"></a>
+</div>
+<div>
+<p><strong>Not affiliated with Abbott Laboratories.</strong> Unofficial research and self-hosting tool. Use may violate Abbott's LibreLink Up Terms of Service. No warranty. Not for medical decisions, therapy, dosing, or diagnosis.</p>
+<p>LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.</p>
+</div>
+</div>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="clock-view.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="examples.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="clock-view.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="examples.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

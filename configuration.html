@@ -1,0 +1,306 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Configuration - Libre Glucose MQTT Bridge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Home Assistant add-on bridging LibreLink Up glucose readings to MQTT with auto-discovery.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="theme/fonts/fonts.css">
+        <link rel="stylesheet" href="custom.css">
+        <link rel="stylesheet" href="./mdbook-admonish.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Home</a></li><li class="chapter-item expanded affix "><li class="part-title">Setup</li><li class="chapter-item expanded "><a href="configuration.html" class="active"><strong aria-hidden="true">1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="multi-account.html"><strong aria-hidden="true">2.</strong> Multi-account setup</a></li><li class="chapter-item expanded affix "><li class="part-title">Features</li><li class="chapter-item expanded "><a href="clock-view.html"><strong aria-hidden="true">3.</strong> Clock View</a></li><li class="chapter-item expanded "><a href="status-api.html"><strong aria-hidden="true">4.</strong> HTTP Status API</a></li><li class="chapter-item expanded "><a href="examples.html"><strong aria-hidden="true">5.</strong> Examples</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="troubleshooting.html"><strong aria-hidden="true">6.</strong> Troubleshooting</a></li><li class="chapter-item expanded "><a href="CHANGELOG.html"><strong aria-hidden="true">7.</strong> Changelog</a></li><li class="chapter-item expanded "><a href="SECURITY.html"><strong aria-hidden="true">8.</strong> Security</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Libre Glucose MQTT Bridge</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/micschr0/ha-libre-glucose-mqtt" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- ACC-01 audit 2026-06-23: 13/13 config.yaml options covered; closed gaps: llu_version, glucose_unit, llu_accounts -->
+<h1 id="configuration"><a class="header" href="#configuration">Configuration</a></h1>
+<h2 id="what-it-does"><a class="header" href="#what-it-does">What it does</a></h2>
+<p>Every <code>poll_interval_secs</code> seconds (default: 60), the add-on:</p>
+<ol>
+<li>Logs in to LibreLink Up with the configured credentials.</li>
+<li>Fetches the latest glucose reading for the selected patient.</li>
+<li>Publishes the reading to Mosquitto on <code>&lt;topic_prefix&gt;/glucose</code>.</li>
+<li>Publishes an MQTT discovery message so Home Assistant creates a <strong>Glucose</strong> sensor automatically.</li>
+</ol>
+<p>Readings that fail to publish queue in <code>/data/state</code> (persistent across restarts) and flush on reconnect. The queue holds up to 10,000 readings — about 35 days at LibreLink Up's default 5-minute update interval.</p>
+<div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
+<div class="admonition-title">
+<div id="admonition-note-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-note"></a>
+</div>
+<div>
+<p>The polling, MQTT publishing, discovery, and retry queue are implemented by the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> binary. This add-on wraps it for Home Assistant — it provides the config, the <code>run.sh</code> entrypoint, and HA Ingress wiring.</p>
+</div>
+</div>
+<h2 id="configuration-1"><a class="header" href="#configuration-1">Configuration</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>llu_email</code></td><td>string</td><td><em>required</em></td><td>LibreLink Up account email.</td></tr>
+<tr><td><code>llu_password</code></td><td>string</td><td><em>required</em></td><td>LibreLink Up account password. Never written to MQTT or logs.</td></tr>
+<tr><td><code>llu_region</code></td><td>enum</td><td><code>EU</code></td><td>Regional API endpoint. Must match your LibreView account region, not your physical location. Options: <code>AE</code>, <code>AP</code>, <code>AU</code>, <code>CA</code>, <code>DE</code>, <code>EU</code>, <code>EU2</code>, <code>FR</code>, <code>JP</code>, <code>US</code>, <code>LA</code>, <code>RU</code>, <code>CN</code>.</td></tr>
+<tr><td><code>llu_patient_id</code></td><td>string</td><td>—</td><td>Patient UUID. Required only if your account has multiple connections. Leave empty to use the first connection.</td></tr>
+<tr><td><code>llu_timezone</code></td><td>IANA TZ</td><td><code>UTC</code></td><td>The patient's local timezone. LibreLink Up timestamps are in local wall-clock time with no UTC offset; without this, times appear shifted. Example: <code>Europe/Berlin</code>.</td></tr>
+<tr><td><code>llu_version</code></td><td>string</td><td>—</td><td>LibreLink Up app-version header sent to the API. Leave empty to use the upstream default.</td></tr>
+<tr><td><code>poll_interval_secs</code></td><td>int (30–600)</td><td><code>60</code></td><td>Poll interval in seconds. Values below 30 waste API calls; LibreLink Up updates every ~60 s.</td></tr>
+<tr><td><code>device_name</code></td><td>string</td><td>—</td><td>Friendly device name in HA. Defaults to <code>Gluco Hub (&lt;client_id&gt;)</code>.</td></tr>
+<tr><td><code>glucose_unit</code></td><td>enum</td><td><code>mgdl</code></td><td>Sensor state unit: <code>mgdl</code> for mg/dL, <code>mmol</code> for mmol/L. In multi-account mode (<code>llu_accounts</code>) this option does not affect MQTT discovery; discovery always uses mg/dL in that mode.</td></tr>
+<tr><td><code>topic_prefix</code></td><td>string</td><td><code>gluco-hub/ha</code></td><td>MQTT topic prefix. Readings publish to <code>&lt;prefix&gt;/glucose</code>.</td></tr>
+<tr><td><code>client_id</code></td><td>string</td><td><code>ha</code></td><td>MQTT client ID (1–23 chars, alphanumeric / <code>-</code> / <code>_</code>). Appears in the HA discovery unique ID. In multi-account mode (<code>llu_accounts</code>) the TOML hard-codes <code>client_id = "ha"</code>; this option applies to single-account mode only.</td></tr>
+<tr><td><code>llu_accounts</code></td><td>list</td><td><code>[]</code></td><td>Named multi-account/multi-patient sources. When non-empty, supersedes the single-account <code>llu_*</code> fields above. Full schema and a worked example are covered on the <a href="multi-account.html">multi-account setup</a> page.</td></tr>
+<tr><td><code>log_level</code></td><td>enum</td><td><code>info</code></td><td>Log verbosity. Use <code>debug</code> to troubleshoot LibreLink Up issues. Options: <code>trace</code>, <code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code>.</td></tr>
+</tbody></table>
+</div>
+<h2 id="sensor"><a class="header" href="#sensor">Sensor</a></h2>
+<p>The <strong>Glucose</strong> sensor appears under the <strong>Gluco Hub</strong> device in Home Assistant (Settings → Devices &amp; Services → MQTT).</p>
+<p>State: current reading in mg/dL (or mmol/L if configured).</p>
+<p>Attributes:</p>
+<div class="table-wrapper"><table><thead><tr><th>Attribute</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>mgdl</code></td><td>Reading in mg/dL.</td></tr>
+<tr><td><code>mmol</code></td><td>Reading in mmol/L.</td></tr>
+<tr><td><code>trend</code></td><td>Trend arrow: <code>DoubleDown</code>, <code>SingleDown</code>, <code>FortyFiveDown</code>, <code>Flat</code>, <code>FortyFiveUp</code>, <code>SingleUp</code>, <code>DoubleUp</code>, <code>NotComputable</code>, or <code>OutOfRange</code>.</td></tr>
+<tr><td><code>timestamp</code></td><td>ISO-8601 timestamp (UTC).</td></tr>
+<tr><td><code>patient_id</code></td><td>LibreLink Up patient identifier.</td></tr>
+</tbody></table>
+</div>
+<h2 id="mqtt-topics"><a class="header" href="#mqtt-topics">MQTT topics</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Topic</th><th>Retained</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>&lt;prefix&gt;/glucose</code></td><td>no</td><td>Latest reading (JSON).</td></tr>
+<tr><td><code>&lt;prefix&gt;/_health</code></td><td>yes</td><td>Liveness: <code>{"online": true/false}</code>. Used as <code>availability_topic</code>.</td></tr>
+<tr><td><code>&lt;prefix&gt;/_stats</code></td><td>yes</td><td>Per-minute poll/sink summary. Useful for dashboards.</td></tr>
+<tr><td><code>&lt;prefix&gt;/_patients</code></td><td>yes</td><td>Patient list. JSON array of <code>{id, display_name, is_active}</code>. <code>display_name</code> is abbreviated (e.g. <code>Anna M.</code>). Published after each successful login.</td></tr>
+<tr><td><code>homeassistant/sensor/gluco_hub_&lt;client_id&gt;_glucose/config</code></td><td>yes</td><td>HA MQTT discovery config. Published after every reconnect.</td></tr>
+</tbody></table>
+</div>
+<hr />
+<div id="admonition-danger" class="admonition admonish-danger" role="note" aria-labelledby="admonition-danger-title">
+<div class="admonition-title">
+<div id="admonition-danger-title">
+<p>Danger</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-danger"></a>
+</div>
+<div>
+<p><strong>Not affiliated with Abbott Laboratories.</strong> Unofficial research and self-hosting tool. Use may violate Abbott's LibreLink Up Terms of Service. No warranty. Not for medical decisions, therapy, dosing, or diagnosis.</p>
+<p>LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.</p>
+</div>
+</div>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="multi-account.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="multi-account.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

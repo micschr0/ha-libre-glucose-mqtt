@@ -1,0 +1,334 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Clock View - Libre Glucose MQTT Bridge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Home Assistant add-on bridging LibreLink Up glucose readings to MQTT with auto-discovery.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="theme/fonts/fonts.css">
+        <link rel="stylesheet" href="custom.css">
+        <link rel="stylesheet" href="./mdbook-admonish.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Home</a></li><li class="chapter-item expanded affix "><li class="part-title">Setup</li><li class="chapter-item expanded "><a href="configuration.html"><strong aria-hidden="true">1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="multi-account.html"><strong aria-hidden="true">2.</strong> Multi-account setup</a></li><li class="chapter-item expanded affix "><li class="part-title">Features</li><li class="chapter-item expanded "><a href="clock-view.html" class="active"><strong aria-hidden="true">3.</strong> Clock View</a></li><li class="chapter-item expanded "><a href="status-api.html"><strong aria-hidden="true">4.</strong> HTTP Status API</a></li><li class="chapter-item expanded "><a href="examples.html"><strong aria-hidden="true">5.</strong> Examples</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="troubleshooting.html"><strong aria-hidden="true">6.</strong> Troubleshooting</a></li><li class="chapter-item expanded "><a href="CHANGELOG.html"><strong aria-hidden="true">7.</strong> Changelog</a></li><li class="chapter-item expanded "><a href="SECURITY.html"><strong aria-hidden="true">8.</strong> Security</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Libre Glucose MQTT Bridge</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/micschr0/ha-libre-glucose-mqtt" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="clock-view"><a class="header" href="#clock-view">Clock View</a></h1>
+<p>The Clock View is a full-screen, real-time glucose display served by upstream
+<a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> (<code>clock.html</code>, baked into the upstream binary).
+This add-on only wires HA Ingress (<code>ingress: true</code>, <code>ingress_port: 8080</code>) so the Clock View appears in the
+Home Assistant sidebar. The <code>clock.html</code> file in this repository is a source-of-record reference copy and is
+<strong>not</strong> copied into the Docker image — the upstream binary serves its own bundled version.</p>
+<h2 id="access"><a class="header" href="#access">Access</a></h2>
+<p>Open the Clock View from the Home Assistant sidebar — the add-on's Ingress panel serves it directly.
+Access is admin-only by default (as configured in <code>config.yaml</code>).</p>
+<p>Direct URL (via Ingress proxy): the sidebar panel opens <code>clock.html</code> relative to the Ingress root.
+Query parameters can be appended to tailor the display — see <a href="#query-parameters">Query parameters</a> below.</p>
+<p>Example URL with common parameters:</p>
+<pre><code>?preset=phone&amp;unit=mmol&amp;lo=70&amp;hi=180
+</code></pre>
+<h2 id="query-parameters"><a class="header" href="#query-parameters">Query parameters</a></h2>
+<p>All parameters are optional. They are read from the URL query string on page load and merged with any
+server-embedded config (<code>window.CLOCK_CONFIG</code>) and <code>localStorage</code> values.</p>
+<div class="table-wrapper"><table><thead><tr><th>Parameter</th><th>Accepted values</th><th>Effect</th></tr></thead><tbody>
+<tr><td><code>unit</code></td><td><code>mgdl</code> (default) | <code>mmol</code></td><td>Display unit for glucose readings.</td></tr>
+<tr><td><code>lo</code></td><td>Number (mg/dL)</td><td>Low threshold. Values below this are shown in the low zone (default 70).</td></tr>
+<tr><td><code>hi</code></td><td>Number (mg/dL)</td><td>High threshold. Values above this are shown in the high zone (default 180).</td></tr>
+<tr><td><code>eink</code></td><td>Presence flag</td><td>Enables e-ink mode (same as <code>preset=eink</code>). Applied before first paint to avoid flash.</td></tr>
+<tr><td><code>preset</code></td><td><code>eink</code> | <code>wall</code> | <code>phone</code> | <code>small</code> | <code>watch</code></td><td>Forces a specific layout, overriding auto-detection. <code>preset=eink</code> also activates e-ink mode.</td></tr>
+<tr><td><code>kiosk</code></td><td>Presence flag</td><td>Enables kiosk mode: lengthens the long-press needed to open settings to 3 s and, when <code>pin</code> is set, gates settings behind a PIN prompt. The reading is shown immediately on load.</td></tr>
+<tr><td><code>pin</code></td><td>Digits string</td><td>The PIN required to open settings via long-press in kiosk mode (e.g. <code>?kiosk&amp;pin=1234</code>).</td></tr>
+<tr><td><code>dark</code></td><td><code>0</code> | <code>1</code></td><td>Force light (<code>0</code>) or dark (<code>1</code>) theme. Absence defers to <code>prefers-color-scheme</code>.</td></tr>
+</tbody></table>
+</div>
+<p>Parameter priority (highest to lowest): URL param → <code>localStorage</code> → server-embedded config → built-in default.</p>
+<h2 id="layouts"><a class="header" href="#layouts">Layouts</a></h2>
+<p>The Clock View automatically selects a layout class based on the viewport dimensions. The <code>preset</code> parameter
+overrides auto-detection.</p>
+<p>Conditions are evaluated in this order; the first match wins, and <code>phone</code> is the fallback when none match:</p>
+<div class="table-wrapper"><table><thead><tr><th>Layout class</th><th>Auto-detection condition</th><th>Typical device</th></tr></thead><tbody>
+<tr><td><code>watch</code></td><td>Short side &lt; 200 px</td><td>Smartwatch / tiny display</td></tr>
+<tr><td><code>small</code></td><td>Short side &lt; 400 px</td><td>Small phone or compact widget</td></tr>
+<tr><td><code>wall</code></td><td>Long side &gt; 900 px</td><td>Landscape monitor / wall display / TV</td></tr>
+<tr><td><code>phone</code></td><td>Fallback (no other condition matched)</td><td>Phone, tablet, browser window</td></tr>
+</tbody></table>
+</div>
+<p><code>?preset=eink</code> activates e-ink mode (see below) instead of a viewport-based layout.</p>
+<p>When <code>?preset=</code> is set to <code>wall</code>, <code>phone</code>, <code>small</code>, or <code>watch</code>, it forces that layout regardless of the actual
+viewport — useful for embedding in iframes or dashboard cards of a fixed size.</p>
+<h2 id="e-ink-mode"><a class="header" href="#e-ink-mode">E-ink mode</a></h2>
+<p>Activated by <code>?eink</code> (presence flag) or <code>?preset=eink</code>. Both are equivalent.</p>
+<p>Behaviour:</p>
+<ul>
+<li>The e-ink preset is applied <strong>before first paint</strong> to prevent a theme flash.</li>
+<li>SSE updates are debounced (500 ms) to avoid rapid screen refreshes on slow e-ink panels.</li>
+<li>A visible border is drawn around the display when the reading is in the LOW or HYPO zone, providing a high-contrast
+at-a-glance visual indicator that works on monochrome screens.</li>
+</ul>
+<h2 id="kiosk-mode"><a class="header" href="#kiosk-mode">Kiosk mode</a></h2>
+<p>Activated by <code>?kiosk</code> (presence flag). Optionally combined with <code>?pin=&lt;digits&gt;</code>.</p>
+<ul>
+<li>The reading is shown immediately on load — kiosk mode does <strong>not</strong> hide it behind an overlay.</li>
+<li>Kiosk mode lengthens the long-press that opens the settings panel from 600 ms to <strong>3 seconds</strong>, so a casual
+touch on a wall display does not open settings.</li>
+<li>With <code>?pin=&lt;digits&gt;</code> set, the 3-second long-press shows a <strong>PIN prompt</strong> instead of settings; settings open only
+after the correct PIN is entered (e.g. <code>?kiosk&amp;pin=4321</code>).</li>
+<li>Without a <code>pin</code>, the 3-second long-press opens settings directly — no PIN prompt is shown.</li>
+<li>Tapping the display in kiosk mode does not open the detail/sparkline overlay — that tap gesture is disabled in kiosk mode.</li>
+</ul>
+<div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
+<div class="admonition-title">
+<div id="admonition-note-title">
+<p>Note</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-note"></a>
+</div>
+<div>
+<p>Kiosk mode is a display lock only, not an authentication layer — Home Assistant Ingress already authenticates the session before the page is served.</p>
+</div>
+</div>
+<h2 id="data"><a class="header" href="#data">Data</a></h2>
+<p>The Clock View pulls live glucose data from three endpoints served by <code>gluco-hub-rs</code>:</p>
+<div class="table-wrapper"><table><thead><tr><th>Endpoint</th><th>Protocol</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>/clock/state</code></td><td>HTTP GET (JSON)</td><td>Initial snapshot — polled once on page load to populate the display immediately</td></tr>
+<tr><td><code>/clock/events</code></td><td>SSE (<code>EventSource</code>)</td><td>Live push stream — delivers <code>reading</code> and <code>keepalive</code> events as they arrive</td></tr>
+<tr><td><code>/clock/history</code></td><td>HTTP GET (JSON array)</td><td>Seed data — up to 3 h of <code>{ ts, mgdl }</code> history for the trend graph</td></tr>
+</tbody></table>
+</div>
+<p>See <a href="status-api.html">HTTP Status API</a> for the route signatures and response shapes.</p>
+<h2 id="screenshot"><a class="header" href="#screenshot">Screenshot</a></h2>
+<p>The screenshot below was captured headless from <code>clock.html</code> with mock data (phone layout, mgdl, in-range,
+patient "Alex").</p>
+<p><img src="assets/clock-view.png" alt="Clock View (mock data)" /></p>
+<p><em>Clock View — rendered with mock data (not a live reading)</em></p>
+<hr />
+<div id="admonition-danger" class="admonition admonish-danger" role="note" aria-labelledby="admonition-danger-title">
+<div class="admonition-title">
+<div id="admonition-danger-title">
+<p>Danger</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-danger"></a>
+</div>
+<div>
+<p><strong>Not affiliated with Abbott Laboratories.</strong> Unofficial research and self-hosting tool. Use may violate Abbott's LibreLink Up Terms of Service. No warranty. Not for medical decisions, therapy, dosing, or diagnosis.</p>
+<p>LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.</p>
+</div>
+</div>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="multi-account.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="status-api.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="multi-account.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="status-api.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
