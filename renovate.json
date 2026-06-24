@@ -71,6 +71,26 @@
       ],
       "datasourceTemplate": "docker",
       "depNameTemplate": "ghcr.io/micschr0/gluco-hub"
+    },
+    {
+      "description": "Track mdbook crate version in docs.yml CI workflow. The (?!-) negative lookahead prevents this manager from also matching mdbook-admonish.",
+      "customType": "regex",
+      "managerFilePatterns": ["/.github/workflows/docs\\.yml$/"],
+      "matchStrings": [
+        "cargo install --version (?<currentValue>[^\\s]+) --locked mdbook(?!-)"
+      ],
+      "datasourceTemplate": "crate",
+      "depNameTemplate": "mdbook"
+    },
+    {
+      "description": "Track mdbook-admonish crate version in docs.yml CI workflow.",
+      "customType": "regex",
+      "managerFilePatterns": ["/.github/workflows/docs\\.yml$/"],
+      "matchStrings": [
+        "cargo install --version (?<currentValue>[^\\s]+) --locked mdbook-admonish"
+      ],
+      "datasourceTemplate": "crate",
+      "depNameTemplate": "mdbook-admonish"
     }
   ]
 }
