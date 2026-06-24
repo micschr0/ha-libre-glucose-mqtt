@@ -40,7 +40,8 @@ done
 
 # --- Assert: no raw Docsify callout syntax in built HTML (MIG-03) ---
 # Will be RED until plan 12-02 converts all [!NOTE]/[!WARNING]/[!TIP] callouts.
-raw_callouts=$(grep -r '\[!NOTE\]\|\[!WARNING\]\|\[!TIP\]' book/ 2>/dev/null | wc -l)
+raw_callouts=0
+while IFS= read -r _line; do raw_callouts=$((raw_callouts + 1)); done < <(grep -r '\[!NOTE\]\|\[!WARNING\]\|\[!TIP\]' book/ 2>/dev/null || true)
 if [ "${raw_callouts}" -gt 0 ]; then
     echo "FAIL: ${raw_callouts} raw Docsify callout(s) found in built HTML" >&2
     fail=1
