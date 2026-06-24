@@ -1,0 +1,25 @@
+[book]
+title = "Libre Glucose MQTT Bridge"
+description = "Home Assistant add-on bridging LibreLink Up glucose readings to MQTT with auto-discovery."
+authors = ["micschr0"]
+language = "en"
+src = "src"
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"
+additional-css = ["theme/fonts/fonts.css", "custom.css", "mdbook-admonish.css"]
+additional-js = []
+git-repository-url = "https://github.com/micschr0/ha-libre-glucose-mqtt"
+git-repository-icon = "fa-github"
+site-url = "/ha-libre-glucose-mqtt/"
+input-404 = "404.md"
+
+[output.html.search]
+enable = true
+limit-results = 30
+boost-title = 2
+
+[preprocessor.admonish]
+command = "mdbook-admonish"
+assets_version = "3.0.0"
