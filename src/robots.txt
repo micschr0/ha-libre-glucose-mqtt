@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://micschr0.github.io/ha-libre-glucose-mqtt/sitemap.xml
