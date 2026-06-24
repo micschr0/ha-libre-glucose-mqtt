@@ -4,7 +4,7 @@
 
 A Home Assistant add-on that polls your **LibreLink Up** glucose readings and publishes them to MQTT with automatic sensor discovery — your **Glucose** sensor appears in Home Assistant within minutes of starting the add-on. Powered by [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs).
 
-```admonish danger
+```admonish important title="Disclaimer"
 **Not affiliated with Abbott Laboratories.** Unofficial research and self-hosting tool. Use may violate Abbott's LibreLink Up Terms of Service. No warranty. Not for medical decisions, therapy, dosing, or diagnosis.
 
 LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.
