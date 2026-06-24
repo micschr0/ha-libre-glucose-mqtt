@@ -35,3 +35,9 @@ venv/
 
 # Claude Code per-user local settings
 .claude/settings.local.json
+
+# mdBook built output — never committed to main (RESEARCH.md anti-pattern)
+book/
+
+# mdBook-admonish CSS — regenerated in CI by `mdbook-admonish install .` (RESEARCH.md Open Question 2)
+mdbook-admonish.css
