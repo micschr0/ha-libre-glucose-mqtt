@@ -12,9 +12,6 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Script lives in libre-glucose/ — REPO_ROOT is one level up
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-# clock.html is in the same directory as this script
 CLOCK_HTML="$SCRIPT_DIR/clock.html"
 MEDIA_DIR="$SCRIPT_DIR/_media"
 OUTPUT_PNG="$MEDIA_DIR/clock-view.png"
