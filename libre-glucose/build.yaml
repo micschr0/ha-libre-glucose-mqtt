@@ -2,6 +2,7 @@
 # gluco-hub binary is built against glibc (see micschr0/gluco-hub-rs
 # Dockerfile, distroless/cc-debian12 runtime). An Alpine base would
 # require a musl rebuild of gluco-hub.
+---
 build_from:
   amd64: ghcr.io/home-assistant/amd64-base-debian:bookworm
   aarch64: ghcr.io/home-assistant/aarch64-base-debian:bookworm

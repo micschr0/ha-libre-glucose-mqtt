@@ -7,6 +7,7 @@
 # options + the Mosquitto service hand-off into GLUCO_HUB__* env vars that
 # the Rust binary already understands.
 
+---
 name: Libre Glucose MQTT Bridge
 slug: libre-glucose
 version: "2026.622.0"

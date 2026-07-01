@@ -3,6 +3,7 @@
 # Ignores are kept here (not as inline `# zizmor: ignore[...]` comments)
 # so the `uses:` lines stay clean for Renovate's version-comment parser
 # (helpers:pinGitHubActionDigestsToSemver in renovate.json).
+---
 rules:
   impostor-commit:
     ignore:
