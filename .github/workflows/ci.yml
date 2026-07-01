@@ -96,6 +96,22 @@ jobs:
           fi
           echo "OK: ingress_port and bind port agree"
 
+  json-lint:
+    name: JSON lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Validate all JSON files are parseable
+        run: |
+          shopt -s globstar
+          cat **/*.json | jq '.'
+
   yamllint:
     name: YAML lint
     runs-on: ubuntu-latest
