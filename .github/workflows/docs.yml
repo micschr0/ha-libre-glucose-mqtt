@@ -1,6 +1,7 @@
+---
 name: docs
 
-on:
+"on":
   push:
     branches: [main]
 
@@ -14,11 +15,11 @@ jobs:
     permissions:
       contents: write   # narrowest scope for gh-pages push
     steps:
-      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411  # v2.19.4
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
       - name: Install mdbook
         run: |
@@ -28,7 +29,7 @@ jobs:
 
       - run: mdbook build
 
-      - uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
+      - uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f  # v4.8.0
         with:
           branch: gh-pages
           folder: book

@@ -8,6 +8,7 @@
 # to config.yaml's `version:` risk drift between source, tag, and
 # published image.
 
+---
 version: '3'
 
 vars:

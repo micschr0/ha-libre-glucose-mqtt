@@ -20,7 +20,7 @@ name: Renovate
 #     are actually opened. The daily run keeps the Dependency Dashboard
 #     fresh and lets manual/security updates flow without waiting a week.
 
-on:
+"on":
   schedule:
     # Daily at 03:00 UTC. renovate.json's schedule still limits real PRs.
     - cron: "0 3 * * *"
@@ -51,13 +51,13 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+      - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411  # v2.19.4
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
 
-      - uses: renovatebot/github-action@6d859fc95779be83a0335ca704879b47e5d79641 # v46.1.16
+      - uses: renovatebot/github-action@6d859fc95779be83a0335ca704879b47e5d79641  # v46.1.16
         with:
           token: ${{ secrets.RENOVATE_TOKEN }}
         env:
