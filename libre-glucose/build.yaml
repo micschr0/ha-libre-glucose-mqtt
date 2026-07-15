@@ -2,9 +2,12 @@
 # gluco-hub binary is built against glibc (see micschr0/gluco-hub-rs
 # Dockerfile, distroless/cc-debian12 runtime). An Alpine base would
 # require a musl rebuild of gluco-hub.
+# Debian 13 (trixie) replaces the EOL bookworm base; glibc is forward-
+# compatible so the upstream binary continues to run without rebuild.
+# Pinned to the latest HA patch-tag; Renovate tracks new patch releases.
 build_from:
-  amd64: ghcr.io/home-assistant/amd64-base-debian:bookworm
-  aarch64: ghcr.io/home-assistant/aarch64-base-debian:bookworm
+  amd64: ghcr.io/home-assistant/amd64-base-debian:trixie-2026.06.1
+  aarch64: ghcr.io/home-assistant/aarch64-base-debian:trixie-2026.06.1
 
 args:
   # Tag the upstream gluco-hub release pulled in by the Dockerfile.
