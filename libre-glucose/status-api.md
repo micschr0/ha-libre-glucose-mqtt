@@ -1,3 +1,5 @@
+<!-- authoring-audit: 2026-07-16 BLUF,ModePurity,ConceptBudget,Examples,Terminology -->
+
 # HTTP Status API
 
 The upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) binary serves the HTTP Status API, binding to `0.0.0.0:8080` (set via `GLUCO_HUB__HTTP__BIND` in `run.sh`). This add-on only wires HA Ingress (`ingress: true`, `ingress_port: 8080` in `config.yaml`) to that listener.

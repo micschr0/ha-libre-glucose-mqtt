@@ -41,3 +41,5 @@ book/
 
 # mdBook-admonish CSS — regenerated in CI by `mdbook-admonish install .` (RESEARCH.md Open Question 2)
 mdbook-admonish.css
+# Local AI runtime state
+.atl/

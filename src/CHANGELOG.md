@@ -1,3 +1,5 @@
+<!-- authoring-audit: 2026-07-16 BLUF,ModePurity,ConceptBudget,Examples,Terminology -->
+
 # Changelog
 
 The full changelog is maintained alongside the add-on source at

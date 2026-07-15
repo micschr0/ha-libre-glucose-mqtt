@@ -1,3 +1,5 @@
+<!-- authoring-audit: 2026-07-16 BLUF,ModePurity,ConceptBudget,Examples,Terminology -->
+
 # Libre Glucose MQTT Bridge
 
 Polls LibreLink Up glucose readings every 60 seconds (configurable) and publishes them to Home Assistant via MQTT with auto-discovery — your sensor entity appears under **Settings → Devices & Services → MQTT** within minutes of starting the app.

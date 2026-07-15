@@ -1,3 +1,5 @@
+<!-- authoring-audit: 2026-07-16 BLUF,ModePurity,ConceptBudget,Examples,Terminology -->
+
 # Clock View
 
 The Clock View is a full-screen, real-time glucose display served by upstream

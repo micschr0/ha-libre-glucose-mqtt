@@ -1,3 +1,5 @@
+<!-- authoring-audit: 2026-07-16 BLUF,ModePurity,ConceptBudget,Examples,Terminology -->
+
 # Troubleshooting
 
 **Add-on refuses to start — `No MQTT service available`.**
