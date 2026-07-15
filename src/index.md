@@ -1,4 +1,4 @@
-<!-- authoring-audit: 2026-07-16 BLUF,ModePurity,ConceptBudget,Examples,Terminology -->
+<!-- doc-review: 2026-07-16 -->
 
 ![Libre Glucose MQTT Bridge](assets/logo.png)
 

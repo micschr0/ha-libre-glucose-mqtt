@@ -1,4 +1,4 @@
-<!-- authoring-audit: 2026-07-16 BLUF,ModePurity,ConceptBudget,Examples,Terminology -->
+<!-- doc-review: 2026-07-16 -->
 
 <!-- ACC-01 audit 2026-06-23: 13/13 config.yaml options covered; closed gaps: llu_version, glucose_unit, llu_accounts -->
 
