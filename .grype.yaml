@@ -4,7 +4,7 @@
 # date (~90 days). Renovate bumps the cosign-verified Home Assistant
 # base image when upstream rebuilds; revisit then and prune.
 #
-# Last reviewed: 2026-06-06 — review by: 2026-08-25
+# Last reviewed: 2026-07-15 — review by: 2026-10-15
 
 fail-on-severity: critical
 
@@ -75,6 +75,45 @@ ignore:
       name: golang.org/x/crypto
       type: go-module
   - vulnerability: GO-2026-5023
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+
+  # 2026-07-15: Triaging the switch from HA base-debian bookworm (EOL) to
+  # trixie-2026.06.1, Grype's DB now flags these 7 golang.org/x/crypto CVEs as
+  # critical. Same root cause and acceptance rationale as the GO-* entries
+  # above: /usr/bin/tempio is the HA base image's config-template renderer,
+  # statically linked against go1.23.3 + golang.org/x/crypto v0.26.0, runs
+  # once at container start with no network service (so TLS/SSH code paths
+  # are unreachable here), and is fixable only by an upstream HA base image
+  # rebuild on a newer Go toolchain. libcurl4 CVE-2026-8927 also surfaced
+  # critical on trixie — left UN-IGNORED (reachable via bashio HTTP calls),
+  # tracking until the next trixie patch-tag fixes it. — review by: 2026-10-15
+  - vulnerability: GHSA-jppx-rxg9-jmrx
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  - vulnerability: GHSA-89gr-r52h-f8rx
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  - vulnerability: GHSA-f5wc-c3c7-36mc
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  - vulnerability: GHSA-x527-x647-q7gg
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  - vulnerability: GHSA-rm3j-f69w-wqmq
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  - vulnerability: GHSA-5cgq-3rg8-m6cv
+    package:
+      name: golang.org/x/crypto
+      type: go-module
+  - vulnerability: GHSA-vgwf-h737-ff37
     package:
       name: golang.org/x/crypto
       type: go-module
