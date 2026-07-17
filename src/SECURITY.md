@@ -1,3 +1,5 @@
+<!-- doc-review: 2026-07-16 -->
+
 # Security Policy
 
 ## Scope

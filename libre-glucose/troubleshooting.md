@@ -1,3 +1,5 @@
+<!-- doc-review: 2026-07-16 -->
+
 # Troubleshooting
 
 **Add-on refuses to start — `No MQTT service available`.**

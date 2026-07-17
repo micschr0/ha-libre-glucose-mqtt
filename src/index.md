@@ -1,3 +1,5 @@
+<!-- doc-review: 2026-07-16 -->
+
 ![Libre Glucose MQTT Bridge](assets/logo.png)
 
 # Libre Glucose MQTT Bridge

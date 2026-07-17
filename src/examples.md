@@ -1,3 +1,5 @@
+<!-- doc-review: 2026-07-16 -->
+
 # Examples
 
 Copy-paste examples for the MQTT-discovered Glucose sensor. See [Configuration](configuration.md) for the full sensor and attribute reference.

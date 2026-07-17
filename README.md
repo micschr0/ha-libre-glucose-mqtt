@@ -1,3 +1,5 @@
+<!-- doc-review: 2026-07-16 -->
+
 # ha-libre-glucose-mqtt — Home Assistant app repository
 
 > ⚠️ **Not affiliated with Abbott Laboratories.** Unofficial research and self-hosting tool. Use may violate Abbott's LibreLink Up Terms of Service. No warranty. Not for medical decisions, therapy, dosing, or diagnosis.

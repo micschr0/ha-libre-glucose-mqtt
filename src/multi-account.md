@@ -1,3 +1,5 @@
+<!-- doc-review: 2026-07-16 -->
+
 # Multi-account setup
 
 The `llu_accounts` option lets you poll **multiple LibreLink Up accounts or patients** from a single add-on instance. Each entry in the list is a named source. When `llu_accounts` is non-empty it **supersedes** the single-account `llu_email`, `llu_password`, `llu_region`, `llu_patient_id`, `llu_timezone`, and `llu_version` fields.

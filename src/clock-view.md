@@ -1,3 +1,5 @@
+<!-- doc-review: 2026-07-16 -->
+
 # Clock View
 
 The Clock View is a full-screen, real-time glucose display served by upstream

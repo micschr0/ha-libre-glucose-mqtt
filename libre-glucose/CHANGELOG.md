@@ -1,3 +1,5 @@
+<!-- doc-review: 2026-07-16 -->
+
 # Changelog
 
 All notable changes to this app are documented here. Versioning follows
