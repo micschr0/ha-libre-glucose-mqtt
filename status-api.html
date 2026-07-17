@@ -179,7 +179,8 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="http-status-api"><a class="header" href="#http-status-api">HTTP Status API</a></h1>
+                        <!-- doc-review: 2026-07-16 -->
+<h1 id="http-status-api"><a class="header" href="#http-status-api">HTTP Status API</a></h1>
 <p>The upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> binary serves the HTTP Status API, binding to <code>0.0.0.0:8080</code> (set via <code>GLUCO_HUB__HTTP__BIND</code> in <code>run.sh</code>). This add-on only wires HA Ingress (<code>ingress: true</code>, <code>ingress_port: 8080</code> in <code>config.yaml</code>) to that listener.</p>
 <p>The HA Supervisor Ingress proxy intercepts all requests — routes are not directly reachable from the host. You access them via the add-on's panel in the HA UI, or through the Supervisor-issued Ingress URL.</p>
 <h2 id="data-endpoints"><a class="header" href="#data-endpoints">Data endpoints</a></h2>
