@@ -1,18 +1,6 @@
+<!-- doc-review: 2026-07-21 -->
+
 # Security Policy
-
-## Scope
-
-This repository ships the Home Assistant **app** wrapper (formerly
-known as an add-on) around the upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs)
-Rust binary. Two repositories are relevant when reporting security
-issues, and you should pick the right one:
-
-| Symptom | Report here |
-|---|---|
-| Glucose-data parsing / LibreLink-Up authentication / MQTT publish logic / Nightscout / DLQ / HTTP API | [`gluco-hub-rs` SECURITY.md](https://github.com/micschr0/gluco-hub-rs/blob/main/SECURITY.md) — these are upstream concerns |
-| HA Supervisor wrapper: app manifest (`config.yaml`), AppArmor profile (`apparmor.txt`), `run.sh` entrypoint, Dockerfile, CI workflows | This repo (see below) |
-
-If you are unsure, file here — we'll route upstream as needed.
 
 ## Reporting a vulnerability
 
@@ -27,6 +15,20 @@ Please include:
   Supervisor versions involved.
 - Whether the issue is exploitable from outside the Mosquitto add-on's
   internal network (`hassio` bridge) or only from co-located add-ons.
+
+## Scope
+
+This repository ships the Home Assistant **app** wrapper (formerly
+known as an add-on) around the upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs)
+Rust binary. Two repositories are relevant when reporting security
+issues, and you should pick the right one:
+
+| Symptom | Report here |
+|---|---|
+| Glucose-data parsing / LibreLink-Up authentication / MQTT publish logic / Nightscout / DLQ / HTTP API | [`gluco-hub-rs` SECURITY.md](https://github.com/micschr0/gluco-hub-rs/blob/main/SECURITY.md) — these are upstream concerns |
+| HA Supervisor wrapper: app manifest (`config.yaml`), AppArmor profile (`apparmor.txt`), `run.sh` entrypoint, Dockerfile, CI workflows | This repo (see below) |
+
+If you are unsure, file here — we'll route upstream as needed.
 
 ## Disclosure
 

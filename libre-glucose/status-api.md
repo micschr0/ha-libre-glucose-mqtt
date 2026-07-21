@@ -1,4 +1,4 @@
-<!-- doc-review: 2026-07-16 -->
+<!-- doc-review: 2026-07-21 -->
 
 # HTTP Status API
 
@@ -6,9 +6,20 @@ The upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) binary s
 
 The HA Supervisor Ingress proxy intercepts all requests — routes are not directly reachable from the host. You access them via the add-on's panel in the HA UI, or through the Supervisor-issued Ingress URL.
 
-## Data endpoints
+## Endpoint reference
 
-These three routes power the [Clock View](clock-view.md). They are not protected by Bearer auth.
+| Method | Path | Auth | Response |
+|--------|------|------|----------|
+| `GET` | `/healthz` | public | `{"status":"ok","version":"…"}` |
+| `GET` | `/metrics` | public | Prometheus text exposition format |
+| `GET` | `/glucose/latest` | optional Bearer | Latest cached reading, or `503` + `API001` if no reading is available |
+| `GET` | `/clock/state` | public | JSON snapshot of latest reading |
+| `GET` | `/clock/events` | public | Server-Sent Events stream |
+| `GET` | `/clock/history` | public | JSON array of recent readings |
+
+## Clock endpoints
+
+These three routes power the [Clock View](https://micschr0.github.io/ha-libre-glucose-mqtt/clock-view.html). They are not protected by Bearer auth.
 
 ### `GET /clock/state`
 
@@ -76,25 +87,17 @@ Returns a JSON array of recent readings used to seed the Clock View's sparkline 
 
 The array covers approximately the last 3 hours (up to 180 points at 1-minute intervals).
 
-## Caching
+## Utility endpoints
 
-All data endpoint responses carry `Cache-Control: no-store`. This prevents browsers and intermediate proxies from ever serving a stale glucose value — every request goes to the live server.
+### `GET /healthz` and `GET /metrics`
 
-## Other endpoints
+Always public. No auth required.
 
-The following endpoints are confirmed from the upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) README:
+### `GET /glucose/latest`
 
-| Path | Auth | Response |
-|------|------|----------|
-| `GET /healthz` | public | `{"status":"ok","version":"…"}` |
-| `GET /metrics` | public | Prometheus text exposition format |
-| `GET /glucose/latest` | optional Bearer | Latest cached reading, or `503` + `API001` if no reading is available |
+Bearer auth is optional — set `GLUCO_HUB__HTTP__BEARER_TOKEN` in the add-on configuration to require a token for `/glucose/*` routes. The `/healthz` and `/metrics` endpoints remain public regardless.
 
-**Bearer auth:** set `GLUCO_HUB__HTTP__BEARER_TOKEN` in the add-on configuration to require a token for `/glucose/*` routes. The `/healthz` and `/metrics` endpoints remain public regardless.
-
-**`X-Disclaimer` header:** every response from gluco-hub-rs carries `X-Disclaimer: not-for-medical-use` — the canonical machine-readable disclaimer signal.
-
-**`GET /glucose/latest` response shape (upstream-confirmed):**
+Returns latest cached reading, or `503` + error code `API001` if no reading is available.
 
 ```json
 {
@@ -106,13 +109,18 @@ The following endpoints are confirmed from the upstream [`gluco-hub-rs`](https:/
 }
 ```
 
-Note: the `/clock/*` routes use an internal shape (`mgdl`, `ts` as Unix-ms, `delta`, `patient`) optimised for the Clock View, while `/glucose/latest` uses the public API shape (`glucose_mgdl`, ISO 8601 `timestamp`, `patient_id`).
+> **Note:** The `/clock/*` routes use an internal shape (`mgdl`, `ts` as Unix-ms, `delta`, `patient`) optimised for the Clock View, while `/glucose/latest` uses the public API shape (`glucose_mgdl`, ISO 8601 `timestamp`, `patient_id`).
 
 For the full and authoritative endpoint list, see the upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) documentation.
 
+## Response headers
+
+- **`Cache-Control: no-store`** — all data endpoint responses carry this header. Prevents browsers and intermediate proxies from serving a stale glucose value; every request goes to the live server.
+- **`X-Disclaimer: not-for-medical-use`** — every response from gluco-hub-rs carries this header as the canonical machine-readable disclaimer signal.
+
 ## See also
 
-- [Clock View](clock-view.md) — the visual display that consumes the data endpoints documented here
+- [Clock View](https://micschr0.github.io/ha-libre-glucose-mqtt/clock-view.html) — the visual display that consumes the data endpoints documented here
 - [Configuration](configuration.md) — add-on options including `poll_interval_secs`, `glucose_unit`, and `topic_prefix`
 
 ---

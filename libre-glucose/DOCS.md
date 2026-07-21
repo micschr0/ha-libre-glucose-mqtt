@@ -1,8 +1,16 @@
-<!-- doc-review: 2026-07-16 -->
+<!-- doc-review: 2026-07-21 -->
 
 # Libre Glucose MQTT Bridge — Documentation
 
 Install the add-on, set your LibreLink Up email, password, and region, and watch the **Glucose** sensor appear under **Settings → Devices & Services → MQTT** within minutes.
+
+## Quick start
+
+1. Install the **Mosquitto broker** add-on and configure the **MQTT** integration (see [Prerequisites](#prerequisites)).
+2. Add this repository to the add-on store and install **Libre Glucose MQTT Bridge** (see [Install](#install)).
+3. Set `llu_email`, `llu_password`, and `llu_region` in the **Configuration** tab.
+4. Click **Start** and wait ~30 seconds for the first reading.
+5. Find the **Glucose** sensor under **Settings → Devices & Services → MQTT → Gluco Hub**.
 
 ## Prerequisites
 
@@ -61,9 +69,16 @@ After **Start**, the add-on takes about 30 seconds to publish the first reading.
 - **Settings → Devices & Services → MQTT → Gluco Hub → Glucose** — a new sensor with the current mg/dL reading as the state.
 - The sensor entity ID is **`sensor.gluco_hub_ha_glucose`** by default. If you changed `client_id`, replace `ha` with your value.
 
-If the sensor does not appear, set `log_level: debug` in the add-on options, restart, then check the add-on log for `mqtt sink configured` and `discovery_enabled = true`.
+If the sensor does not appear, enable debug logging and check for key messages (see [Sensor never appears](#sensor-never-appears) below).
 
 ## Common failures
+
+| Symptom | Likely fix |
+|---|---|
+| Add-on refuses to start | Install Mosquitto broker + MQTT integration |
+| `[LLU003]` login error | Wrong credentials, region, or password escaping |
+| Sensor never appears | Mosquitto running? Check MQTT discovery messages |
+| Values are time-shifted | Set `llu_timezone` to patient's IANA timezone |
 
 ### Won't start — "No MQTT service available"
 

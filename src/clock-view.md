@@ -1,22 +1,27 @@
-<!-- doc-review: 2026-07-16 -->
+<!-- doc-review: 2026-07-21 -->
 
 # Clock View
 
 The Clock View is a full-screen, real-time glucose display served by upstream
 [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) (`clock.html`, baked into the upstream binary).
-This add-on only wires HA Ingress (`ingress: true`, `ingress_port: 8080`) so the Clock View appears in the
-Home Assistant sidebar. The `clock.html` file in this repository is a source-of-record reference copy and is
+This add-on wires HA Ingress (`ingress: true`, `ingress_port: 8080`) so the Clock View appears in the
+Home Assistant sidebar — no configuration needed.
+
+The `clock.html` file in this repository is a source-of-record reference copy and is
 **not** copied into the Docker image — the upstream binary serves its own bundled version.
 
-## Access
+![Clock View (mock data)](assets/clock-view.png)
+
+*Clock View — rendered with mock data (not a live reading)*
+
+## Quick access
 
 Open the Clock View from the Home Assistant sidebar — the add-on's Ingress panel serves it directly.
 Access is admin-only by default (as configured in `config.yaml`).
 
 Direct URL (via Ingress proxy): the sidebar panel opens `clock.html` relative to the Ingress root.
-Query parameters can be appended to tailor the display — see [Query parameters](#query-parameters) below.
+Query parameters can be appended to tailor the display:
 
-Example URL with common parameters:
 ```
 ?preset=phone&unit=mmol&lo=70&hi=180
 ```
@@ -84,7 +89,7 @@ Activated by `?kiosk` (presence flag). Optionally combined with `?pin=<digits>`.
 Kiosk mode is a display lock only, not an authentication layer — Home Assistant Ingress already authenticates the session before the page is served.
 ```
 
-## Data
+## Data endpoints
 
 The Clock View pulls live glucose data from three endpoints served by `gluco-hub-rs`:
 
@@ -95,15 +100,6 @@ The Clock View pulls live glucose data from three endpoints served by `gluco-hub
 | `/clock/history` | HTTP GET (JSON array) | Seed data — up to 3 h of `{ ts, mgdl }` history for the trend graph |
 
 See [HTTP Status API](status-api.md) for the route signatures and response shapes.
-
-## Screenshot
-
-The screenshot below was captured headless from `clock.html` with mock data (phone layout, mgdl, in-range,
-patient "Alex").
-
-![Clock View (mock data)](assets/clock-view.png)
-
-*Clock View — rendered with mock data (not a live reading)*
 
 ---
 

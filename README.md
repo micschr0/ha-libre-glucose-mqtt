@@ -1,4 +1,4 @@
-<!-- doc-review: 2026-07-16 -->
+<!-- doc-review: 2026-07-21 -->
 
 # ha-libre-glucose-mqtt — Home Assistant app repository
 
@@ -6,7 +6,7 @@
 
 This repository ships a single Home Assistant Supervisor app: **Libre Glucose MQTT Bridge** — a thin Bash wrapper around [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) that polls LibreLink Up glucose readings and publishes them to your MQTT broker with automatic sensor discovery.
 
-## Install
+## Quick start
 
 1. In Home Assistant, open **Settings → Add-ons → Add-on Store**.
 2. Click the **⋮** menu (top right) → **Repositories**.
@@ -36,13 +36,17 @@ LibreLink Up  ──►  Libre Glucose MQTT Bridge  ──►  Mosquitto  ──
 
 `amd64`, `aarch64`. RPi 3 in 64-bit mode works. 32-bit ARM (`armv7`, `armhf`, `i386`) is not supported — follow [gluco-hub-rs](https://github.com/micschr0/gluco-hub-rs) for status.
 
-## Maintenance — upgrading to a new gluco-hub release
+## Maintainer guide
+
+### Upgrading to a new gluco-hub release
 
 Three files carry the upstream tag and must stay in sync:
 
-- `libre-glucose/Dockerfile` — `ARG GLUCO_HUB_TAG=...`
-- `libre-glucose/build.yaml` — `args.GLUCO_HUB_TAG: "..."`
-- `libre-glucose/config.yaml` — `version: "..."` (mirrors the upstream tag exactly)
+| File | Key |
+|---|---|
+| `libre-glucose/Dockerfile` | `ARG GLUCO_HUB_TAG=...` |
+| `libre-glucose/build.yaml` | `args.GLUCO_HUB_TAG: "..."` |
+| `libre-glucose/config.yaml` | `version: "..."` (mirrors the upstream tag exactly) |
 
 **Automated:** Renovate watches `ghcr.io/micschr0/gluco-hub` and opens one PR (group `gluco-hub-upstream`) bumping all three atomically. The CI `version-consistency` job rejects any commit where they diverge. Renovate runs on a `"before 6am on monday"` schedule; requires the `RENOVATE_TOKEN` repo secret (fine-grained PAT: Contents / PRs / Workflows / Issues RW, Metadata RO).
 
@@ -50,7 +54,7 @@ Three files carry the upstream tag and must stay in sync:
 
 **New upstream config fields:** exposing them in the HA UI is a deliberate decision — not every field belongs in the options panel. When wiring one up, touch `config.yaml` (option + schema), `run.sh` (export), both `translations/*.yaml`, and `tests/`.
 
-## Releasing
+### Releasing
 
 The app uses CalVer: `YYYY.MMDD.PATCH` (e.g. `2026.515.0`). Tags are prefixed `v`.
 
@@ -72,7 +76,7 @@ Pushing a `v*` tag triggers `release.yml`, which builds for `linux/amd64` + `lin
 
 HA Supervisor pulls the image tag matching `config.yaml`'s `version:` field.
 
-## Reporting issues
+## Support
 
 - App-specific (manifest, install, run.sh): [ha-libre-glucose-mqtt issues](https://github.com/micschr0/ha-libre-glucose-mqtt/issues)
 - Polling / MQTT / LibreLink Up logic: [gluco-hub-rs issues](https://github.com/micschr0/gluco-hub-rs/issues)

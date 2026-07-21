@@ -1,4 +1,4 @@
-<!-- doc-review: 2026-07-16 -->
+<!-- doc-review: 2026-07-21 -->
 
 <!-- ACC-01 audit 2026-06-23: 13/13 config.yaml options covered; closed gaps: llu_version, glucose_unit, llu_accounts -->
 
@@ -6,18 +6,24 @@
 
 Configure the add-on by setting the three required fields — `llu_email`, `llu_password`, `llu_region` — and the **Glucose** sensor entity `sensor.gluco_hub_<client_id>_glucose` will appear in Home Assistant.
 
+## Quick start
+
+1. Set `llu_email` to your LibreLink Up account email.
+2. Set `llu_password` to your LibreLink Up account password.
+3. Set `llu_region` to your LibreView account region (e.g. `EU`).
+
+Save and start the add-on. Your sensor entity is `sensor.gluco_hub_ha_glucose` (with the default `client_id: ha`).
+
 > **Sensor entity naming.** Your sensor entity ID is `sensor.gluco_hub_<client_id>_glucose`. With the default `client_id: ha`, that is `sensor.gluco_hub_ha_glucose`. Use this ID in every automation and dashboard card.
-
-## Architecture
-
-The polling, MQTT publishing, MQTT discovery, and persistent retry queue are all implemented by the upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) binary. **This add-on configures and runs that binary** — it provides the `config.yaml` schema, the `run.sh` entrypoint, and HA Ingress wiring. No polling or MQTT logic lives in this repository.
-
-> **Don't paste your password into a troubleshooting trace.** The add-on never logs it; if you see it in a log, that is a bug — open an issue.
 
 > [!NOTE]
 > For every option below, default values are chosen so that a fresh install works once you provide `llu_email`, `llu_password`, and `llu_region`.
 
-## Configuration
+## How it works
+
+The polling, MQTT publishing, MQTT discovery, and persistent retry queue are all implemented by the upstream [`gluco-hub-rs`](https://github.com/micschr0/gluco-hub-rs) binary. **This add-on configures and runs that binary** — it provides the `config.yaml` schema, the `run.sh` entrypoint, and HA Ingress wiring. No polling or MQTT logic lives in this repository.
+
+## Option reference
 
 ### Quick reference
 
@@ -26,18 +32,18 @@ The polling, MQTT publishing, MQTT discovery, and persistent retry queue are all
 | `llu_email` | string | *required* | LibreLink Up account email. |
 | `llu_password` | string | *required* | LibreLink Up account password. Never written to MQTT or logs. |
 | `llu_region` | enum | `EU` | Regional API endpoint. Must match your LibreView account region, not your physical location. |
-| `llu_patient_id` | string | — | Patient UUID. Leave empty to use the first connection. |
 | `llu_timezone` | IANA TZ | `UTC` | Patient's local timezone. Without this, timestamps appear shifted. Example: `Europe/Berlin`. |
-| `llu_version` | string | — | LibreLink Up app-version header sent to the API. Leave empty to use the upstream default. |
 | `poll_interval_secs` | int (30–600) | `60` | Poll interval in seconds. |
-| `device_name` | string | — | Friendly device name in HA. Defaults to `Gluco Hub (<client_id>)`. |
 | `glucose_unit` | enum | `mgdl` | Sensor state unit: `mgdl` for mg/dL, `mmol` for mmol/L. |
+| `llu_patient_id` | string | — | Patient UUID. Leave empty to use the first connection. |
+| `device_name` | string | — | Friendly device name in HA. Defaults to `Gluco Hub (<client_id>)`. |
 | `topic_prefix` | string | `gluco-hub/ha` | MQTT topic prefix. Readings publish to `<prefix>/glucose`. |
 | `client_id` | string | `ha` | MQTT client ID (1–23 chars). Appears in the HA discovery unique ID. |
-| `llu_accounts` | list | `[]` | Named multi-account/multi-patient sources. See [multi-account setup](multi-account.md). |
+| `llu_version` | string | — | LibreLink Up app-version header sent to the API. Leave empty to use the upstream default. |
 | `log_level` | enum | `info` | Log verbosity. Use `debug` to troubleshoot. |
+| `llu_accounts` | list | `[]` | Named multi-account/multi-patient sources. See [multi-account setup](multi-account.md). |
 
-### Per-option reference
+### Required
 
 #### `llu_email`
 
@@ -51,6 +57,8 @@ Example: `anna@example.com`.
 
 Example: `correct-horse-battery-staple`.
 
+> **Don't paste your password into a troubleshooting trace.** The add-on never logs it; if you see it in a log, that is a bug — open an issue.
+
 #### `llu_region`
 
 Regional API endpoint. **Must match your LibreView account region** — not your physical location. Default: `EU`.
@@ -59,9 +67,7 @@ Valid values: `AE`, `AP`, `AU`, `CA`, `DE`, `EU`, `EU2`, `FR`, `JP`, `US`, `LA`,
 
 > **Don't set `llu_region` to your physical country.** Use the region of your LibreView account — they often differ. If unsure, open the LibreView app; the region is shown under **Account settings**.
 
-#### `llu_patient_id`
-
-Patient UUID. Required only if your account has multiple connections. Leave empty to use the first connection.
+### Recommended
 
 #### `llu_timezone`
 
@@ -69,23 +75,25 @@ IANA timezone name of the sensor wearer. Default: `UTC`. LibreLink Up timestamps
 
 Example: `Europe/Berlin`.
 
-#### `llu_version`
-
-LibreLink Up app-version header sent to the API. Leave empty to use the upstream default. Override only as a last resort when upstream's default is no longer accepted.
-
 #### `poll_interval_secs`
 
 Poll interval in seconds. Range: 30–600. Default: `60`. Values below 30 waste API calls; LibreLink Up updates every ~60 s.
 
 > **Don't set `poll_interval_secs` below 30.** LibreLink Up updates roughly every 60 seconds; faster polling wastes your API quota and can trigger rate limits.
 
-#### `device_name`
-
-Friendly device name shown in Home Assistant. Empty falls back to `Gluco Hub (<client_id>)`.
-
 #### `glucose_unit`
 
 Sensor state unit: `mgdl` for mg/dL, `mmol` for mmol/L. Default: `mgdl`. In multi-account mode (`llu_accounts`) this option does not affect MQTT discovery — discovery always advertises mg/dL regardless.
+
+#### `llu_patient_id`
+
+Patient UUID. Required only if your account has multiple connections. Leave empty to use the first connection.
+
+### Advanced
+
+#### `device_name`
+
+Friendly device name shown in Home Assistant. Empty falls back to `Gluco Hub (<client_id>)`.
 
 #### `topic_prefix`
 
@@ -97,15 +105,21 @@ MQTT client ID. 1–23 characters, alphanumeric, `-`, or `_`. Default: `ha`. App
 
 > **Don't set `client_id` in multi-account mode.** The generated TOML hard-codes `client_id = "ha"` and the option is silently ignored.
 
+#### `llu_version`
+
+LibreLink Up app-version header sent to the API. Leave empty to use the upstream default. Override only as a last resort when upstream's default is no longer accepted.
+
+#### `log_level`
+
+Log verbosity. Default: `info`. Use `debug` when troubleshooting LibreLink Up issues. Valid values: `trace`, `debug`, `info`, `warn`, `error`.
+
+### Multi-account
+
 #### `llu_accounts`
 
 List of named LibreLink Up sources for multi-account polling. Default: `[]` (empty). When non-empty, supersedes the single-account `llu_*` fields above. Full schema and a worked example are on the [multi-account setup](multi-account.md) page.
 
 > **Don't mix `llu_accounts` with single-account `llu_*` fields.** When `llu_accounts` is non-empty, the single-account fields above are superseded and any value you set there is ignored.
-
-#### `log_level`
-
-Log verbosity. Default: `info`. Use `debug` when troubleshooting LibreLink Up issues. Valid values: `trace`, `debug`, `info`, `warn`, `error`.
 
 ## Sensor
 
@@ -139,6 +153,11 @@ For non-default `topic_prefix` and `client_id`, substitute `<prefix>` and `<clie
 
 - Reading: `<prefix>/glucose`
 - Discovery: `homeassistant/sensor/gluco_hub_<client_id>_glucose/config`
+
+## Next steps
+
+- [Multi-account setup](multi-account.md) — configure multiple LibreLink Up accounts or patients.
+- [Examples](examples.md) — copy-paste configuration snippets.
 
 ---
 
