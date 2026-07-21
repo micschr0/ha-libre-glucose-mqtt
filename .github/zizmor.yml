@@ -3,14 +3,13 @@
 # Ignores are kept here (not as inline `# zizmor: ignore[...]` comments)
 # so the `uses:` lines stay clean for Renovate's version-comment parser
 # (helpers:pinGitHubActionDigestsToSemver in renovate.json).
-rules:
-  impostor-commit:
-    ignore:
-      # ci.yml: anchore/scan-action pin. False positive: the pinned SHA
-      # e1165082ffb1fe366ebaf02d8526e7c4989ea9d2 is a real commit in
-      # anchore/scan-action and is exactly what tag v7.4.0 points to
-      # (verified via the GitHub API). The finding stems from a transient
-      # API/cache lookup after the SHA was corrected in commit c1a34da.
-      # Pinned by line; if the line drifts, the (false) error simply
-      # resurfaces in CI rather than silently masking a real impostor.
-      - ci.yml:266
+#
+# Ignore paths MUST be bare filenames (e.g. `ci.yml`) — directory-
+# prefixed paths silently never match.
+#
+# No suppressions currently. The ci.yml zizmor job runs with
+# `online-audits: false`, so API-dependent audits (impostor-commit,
+# ref-version-mismatch online checks) are skipped deterministically —
+# the former impostor-commit suppression for anchore/scan-action
+# (false positive from GH API rate limiting) is no longer needed.
+rules: {}

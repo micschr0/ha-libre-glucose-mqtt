@@ -28,9 +28,13 @@ jobs:
   renovate:
     name: Renovate self-hosted
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
     steps:
+      # Renovate contacts arbitrary package registries (npm, Docker
+      # Hub, ghcr.io, crates.io, …) — a block list is not feasible, so
+      # audit policy with a documented exception.
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411  # v2.19.4
         with:
           egress-policy: audit

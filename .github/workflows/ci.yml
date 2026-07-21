@@ -21,14 +21,18 @@ jobs:
   addon-lint:
     name: Add-on linter
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: read
     steps:
+      # Docker-based action (frenck/action-addon-linter) → audit policy.
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       # Validates config.yaml against the HA add-on schema, checks
       # required files (icon.png / logo.png / DOCS.md / CHANGELOG.md
@@ -42,14 +46,24 @@ jobs:
   version-consistency:
     name: Version drift check
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: read
     steps:
+      # Pure-shell grep job — no network beyond checkout, so egress is
+      # blocked with an explicit endpoint allowlist.
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            codeload.github.com:443
+            objects.githubusercontent.com:443
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - name: Assert Dockerfile and build.yaml agree on upstream tag
         # Two places carry the upstream gluco-hub image tag: the
         # Dockerfile ARG and build.yaml's args.GLUCO_HUB_TAG. Both must
@@ -99,27 +113,37 @@ jobs:
   yamllint:
     name: YAML lint
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: read
     steps:
+      # Docker-based action (frenck/action-yamllint) → audit policy.
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - uses: frenck/action-yamllint@34b4bbcaeabedcfefad6adea8c5bbc42af0e2d47 # v1.5.0
 
   hadolint:
     name: Dockerfile lint
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: read
     steps:
+      # hadolint-action v3 is a Docker action (image FROM
+      # ghcr.io/hadolint/hadolint) → audit policy like every other
+      # containerized linter in this workflow.
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
         with:
           dockerfile: libre-glucose/Dockerfile
@@ -127,14 +151,18 @@ jobs:
   shellcheck:
     name: Shell lint (run.sh + tests)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: read
     steps:
+      # Docker-based action (ludeeus/action-shellcheck) → audit policy.
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # 2.0.0
         env:
           # run.sh is a bashio script (sourced /usr/bin/with-contenv
@@ -150,14 +178,20 @@ jobs:
   apparmor-syntax:
     name: AppArmor profile syntax
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: read
     steps:
+      # apt-get update fetches from http://azure.archive.ubuntu.com:80
+      # plus third-party repos preconfigured on ubuntu-latest — a block
+      # allowlist is not maintainable here → audit policy.
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - name: Install apparmor-parser
         run: |
           sudo apt-get update
@@ -171,15 +205,20 @@ jobs:
   docker-build:
     name: Docker build smoke (amd64)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
-      packages: read
+      packages: read        # pull base images from ghcr.io
     steps:
+      # Docker build pulls base images from ghcr.io → audit policy
+      # (registry egress is intrinsic to the job).
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
       - name: Build addon image (amd64)
         uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
@@ -207,15 +246,20 @@ jobs:
   env-mapping-smoke:
     name: run.sh ENV mapping + check-config
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
-      packages: read
+      packages: read        # pull base images from ghcr.io
     steps:
+      # Test scripts docker-pull the upstream gluco-hub image from
+      # ghcr.io → audit policy.
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - name: Unit-test run.sh ENV mapping (mocked bashio)
         run: bash tests/test-run-sh.sh
       - name: Smoke-test gluco-hub check-config with the mocked env
@@ -228,35 +272,49 @@ jobs:
   zizmor:
     name: GitHub Actions security scan
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: read
-      security-events: write
-      actions: read
+      security-events: write  # upload zizmor SARIF to code scanning
+      actions: read           # zizmor workflow metadata
     steps:
+      # zizmor-action is Docker-based → audit policy (per hardening
+      # convention for containerized scanners).
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - uses: zizmorcore/zizmor-action@192e21d79ab29983730a13d1382995c2307fbcaa # v0.5.7
         with:
           min-severity: medium
           min-confidence: medium
+          # Skip API-dependent audits (impostor-commit et al.): the GH
+          # API rate limit previously caused implicit-offline false
+          # positives. Offline mode is deterministic.
+          online-audits: false
 
   scan:
     name: Container CVE scan
     needs: docker-build
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
-      security-events: write
+      security-events: write  # upload grype SARIF to code scanning
     steps:
+      # Docker build (ghcr.io pulls) + grype downloads its
+      # vulnerability DB from toolbox-data.anchore.io → audit policy.
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
 
