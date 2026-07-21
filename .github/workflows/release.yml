@@ -47,6 +47,7 @@ jobs:
   build:
     name: build (${{ matrix.platform }})
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
     permissions:
       contents: read
       packages: write       # push image layers by digest (no-op on PRs)
@@ -61,19 +62,25 @@ jobs:
             runner: ubuntu-24.04-arm
             build_from: ghcr.io/home-assistant/aarch64-base-debian:bookworm
     steps:
+      # Docker build + push to ghcr.io → audit policy (registry egress
+      # is intrinsic to the job).
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Compute env
         run: |
-          echo "BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
-          # "linux/arm64" → "linux-arm64", used as artifact suffix
-          echo "PLATFORM_PAIR=${PLATFORM//\//-}" >> "$GITHUB_ENV"
-          # Parse "linux/amd64" → "amd64" for the HA add-on BUILD_ARCH label
-          echo "BUILD_ARCH=${PLATFORM##*/}" >> "$GITHUB_ENV"
+          {
+            echo "BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            # "linux/arm64" → "linux-arm64", used as artifact suffix
+            echo "PLATFORM_PAIR=${PLATFORM//\//-}"
+            # Parse "linux/amd64" → "amd64" for the HA add-on BUILD_ARCH label
+            echo "BUILD_ARCH=${PLATFORM##*/}"
+          } >> "$GITHUB_ENV"
         env:
           PLATFORM: ${{ matrix.platform }}
 
@@ -138,10 +145,11 @@ jobs:
 
       - name: Export digest
         if: github.event_name != 'pull_request'
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
         run: |
           mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
+          touch "/tmp/digests/${DIGEST#sha256:}"
 
       - name: Upload digest
         if: github.event_name != 'pull_request'
@@ -157,12 +165,15 @@ jobs:
     if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       packages: write       # push manifest list to GHCR
       id-token: write       # cosign keyless OIDC + attestation signing
       attestations: write   # GitHub Artifact Attestations
     steps:
+      # Docker push to ghcr.io + cosign keyless signing (Sigstore:
+      # fulcio/rekor) + attestation → audit policy.
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
@@ -239,15 +250,18 @@ jobs:
           docker buildx imagetools create "${args[@]}"
 
       - name: Inspect manifest
+        env:
+          IMAGE_REF: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
         run: |
-          docker buildx imagetools inspect \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
+          docker buildx imagetools inspect "$IMAGE_REF"
 
       - name: Resolve manifest digest
         id: manifest
+        env:
+          IMAGE_REF: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
         run: |
           digest=$(docker buildx imagetools inspect \
-            "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}" \
+            "$IMAGE_REF" \
             --format '{{json .Manifest.Digest}}' | tr -d '"')
           echo "digest=${digest}" >> "$GITHUB_OUTPUT"
 
@@ -295,14 +309,24 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: merge
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: write       # create the Release object + upload notes
     steps:
+      # gh CLI against github.com / api.github.com only → egress
+      # blocked to GitHub endpoints.
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            codeload.github.com:443
+            objects.githubusercontent.com:443
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Extract changelog section
         id: notes

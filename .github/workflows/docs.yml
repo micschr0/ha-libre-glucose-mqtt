@@ -8,17 +8,35 @@ on:
 # actually needs. Mirrors the hardening posture of ci.yml.
 permissions: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   deploy:
+    name: Deploy docs to gh-pages
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: write   # narrowest scope for gh-pages push
     steps:
+      # cargo install from crates.io + gh-pages push to github.com →
+      # egress blocked to GitHub and crates.io endpoints.
       - uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
-          egress-policy: audit
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+            api.github.com:443
+            codeload.github.com:443
+            objects.githubusercontent.com:443
+            crates.io:443
+            index.crates.io:443
+            static.crates.io:443
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Install mdbook
         run: |
