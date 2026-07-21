@@ -179,24 +179,19 @@
 
                 <div id="content" class="content">
                     <main>
-                        <!-- doc-review: 2026-07-16 -->
+                        <!-- doc-review: 2026-07-21 -->
 <h1 id="multi-account-setup"><a class="header" href="#multi-account-setup">Multi-account setup</a></h1>
-<p>The <code>llu_accounts</code> option lets you poll <strong>multiple LibreLink Up accounts or patients</strong> from a single add-on instance. Each entry in the list is a named source. When <code>llu_accounts</code> is non-empty it <strong>supersedes</strong> the single-account <code>llu_email</code>, <code>llu_password</code>, <code>llu_region</code>, <code>llu_patient_id</code>, <code>llu_timezone</code>, and <code>llu_version</code> fields.</p>
-<p>See <a href="configuration.html">Configuration</a> for the full single-account option reference.</p>
-<h2 id="account-fields"><a class="header" href="#account-fields">Account fields</a></h2>
-<p>Each entry in <code>llu_accounts</code> accepts the following fields:</p>
-<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>name</code></td><td>string</td><td>yes</td><td>Source label. Used as the per-source MQTT topic segment — see <a href="#mqtt-topics-per-source">MQTT topics (per-source)</a> below. Must be unique within the list.</td></tr>
-<tr><td><code>email</code></td><td>string (email)</td><td>yes</td><td>LibreLink Up account email for this patient.</td></tr>
-<tr><td><code>password</code></td><td>string</td><td>yes</td><td>LibreLink Up account password. Never written to MQTT or logs.</td></tr>
-<tr><td><code>region</code></td><td>enum</td><td>yes</td><td>Regional API endpoint. Must match the LibreView account region. Options: <code>AE</code>, <code>AP</code>, <code>AU</code>, <code>CA</code>, <code>DE</code>, <code>EU</code>, <code>EU2</code>, <code>FR</code>, <code>JP</code>, <code>US</code>, <code>LA</code>, <code>RU</code>, <code>CN</code>.</td></tr>
-<tr><td><code>patient_id</code></td><td>string</td><td>no</td><td>Patient UUID. Required only if the account has multiple connections. Leave empty to use the first connection.</td></tr>
-<tr><td><code>timezone</code></td><td>IANA TZ string</td><td>yes</td><td>The patient's local timezone (e.g. <code>Europe/Berlin</code>). LibreLink Up timestamps are in local wall-clock time with no UTC offset; without this, times appear shifted.</td></tr>
-<tr><td><code>version</code></td><td>string</td><td>no</td><td>LibreLink Up app-version header sent to the API. Leave empty to use the upstream default.</td></tr>
-</tbody></table>
-</div>
-<h2 id="worked-example"><a class="header" href="#worked-example">Worked example</a></h2>
-<p>Add-on options panel (<code>llu_accounts</code> YAML):</p>
+<p>Poll <strong>multiple LibreLink Up accounts or patients</strong> from a single add-on instance. Use this when you follow more than one person with LibreLink Up, or manage multiple LibreView accounts across different regions. Each account becomes a named source with its own MQTT topic path.</p>
+<p>Single account? Use the <a href="configuration.html">single-account options</a> — <code>llu_accounts</code> is for two or more. When <code>llu_accounts</code> is non-empty it <strong>supersedes</strong> the single-account <code>llu_email</code>, <code>llu_password</code>, <code>llu_region</code>, <code>llu_patient_id</code>, <code>llu_timezone</code>, and <code>llu_version</code> fields.</p>
+<h2 id="quick-start"><a class="header" href="#quick-start">Quick start</a></h2>
+<ol>
+<li>Add <code>llu_accounts</code> to the add-on options panel.</li>
+<li>For each account, set a unique <code>name</code>, <code>email</code>, <code>password</code>, <code>region</code>, and <code>timezone</code>.</li>
+<li>Set <code>patient_id</code> only if the account has multiple patient connections — leave it empty otherwise.</li>
+<li>Update your Home Assistant automations and dashboard cards to target <code>&lt;prefix&gt;/&lt;name&gt;/glucose</code> instead of the shared <code>&lt;prefix&gt;/glucose</code>.</li>
+<li>Restart the add-on.</li>
+</ol>
+<p>Minimal two-account config:</p>
 <pre><code class="language-yaml">llu_accounts:
   - name: alex
     email: alex@example.com
@@ -211,7 +206,19 @@
     patient_id: "00000000-0000-0000-0000-000000000001"
 </code></pre>
 <p>This is an <strong>illustrative</strong> example — credentials and UUIDs are placeholders. For a <code>gluco-hub check-config</code>-validated example with copy-paste automation YAML, see the <a href="examples.html">Examples</a> page.</p>
-<h2 id="mqtt-topics-per-source"><a class="header" href="#mqtt-topics-per-source">MQTT topics (per-source)</a></h2>
+<h2 id="account-fields"><a class="header" href="#account-fields">Account fields</a></h2>
+<p>Each entry in <code>llu_accounts</code> accepts the following fields:</p>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>name</code></td><td>string</td><td>yes</td><td>Source label. Used as the per-source MQTT topic segment — see <a href="#mqtt-topics">MQTT topics</a> below. Must be unique within the list.</td></tr>
+<tr><td><code>email</code></td><td>string (email)</td><td>yes</td><td>LibreLink Up account email for this patient.</td></tr>
+<tr><td><code>password</code></td><td>string</td><td>yes</td><td>LibreLink Up account password. Never written to MQTT or logs.</td></tr>
+<tr><td><code>region</code></td><td>enum</td><td>yes</td><td>Regional API endpoint. Must match the LibreView account region. Options: <code>AE</code>, <code>AP</code>, <code>AU</code>, <code>CA</code>, <code>DE</code>, <code>EU</code>, <code>EU2</code>, <code>FR</code>, <code>JP</code>, <code>US</code>, <code>LA</code>, <code>RU</code>, <code>CN</code>.</td></tr>
+<tr><td><code>patient_id</code></td><td>string</td><td>no</td><td>Patient UUID. Required only if the account has multiple connections. Leave empty to use the first connection.</td></tr>
+<tr><td><code>timezone</code></td><td>IANA TZ string</td><td>yes</td><td>The patient's local timezone (e.g. <code>Europe/Berlin</code>). LibreLink Up timestamps are in local wall-clock time with no UTC offset; without this, times appear shifted.</td></tr>
+<tr><td><code>version</code></td><td>string</td><td>no</td><td>LibreLink Up app-version header sent to the API. Leave empty to use the upstream default.</td></tr>
+</tbody></table>
+</div>
+<h2 id="mqtt-topics"><a class="header" href="#mqtt-topics">MQTT topics</a></h2>
 <div id="admonition-warning" class="admonition admonish-warning" role="note" aria-labelledby="admonition-warning-title">
 <div class="admonition-title">
 <div id="admonition-warning-title">
@@ -231,9 +238,11 @@
 </div>
 <p>Your Home Assistant automations and dashboard cards must target the per-source topic for the patient you want. The shared <code>&lt;prefix&gt;/glucose</code> topic is not published in multi-account mode.</p>
 <p>The health, stats, and discovery topics remain at the prefix level (<code>&lt;prefix&gt;/_health</code>, <code>&lt;prefix&gt;/_stats</code>).</p>
-<blockquote>
-<p><strong>Note:</strong> Two single-account options do not carry over to multi-account mode. The generated TOML hard-codes <code>client_id = "ha"</code> and does not pass <code>glucose_unit</code> to discovery — readings are always published in mg/dL regardless of the <code>glucose_unit</code> add-on option.</p>
-</blockquote>
+<h2 id="multi-account-specifics"><a class="header" href="#multi-account-specifics">Multi-account specifics</a></h2>
+<h3 id="region-per-account"><a class="header" href="#region-per-account">Region per account</a></h3>
+<p>Each entry specifies its own <code>region</code>. Different accounts can target different regional API endpoints — useful when patients are registered in different countries. The region <strong>must</strong> match the account's LibreView region, not necessarily the patient's physical location.</p>
+<h3 id="options-that-dont-carry-over"><a class="header" href="#options-that-dont-carry-over">Options that don't carry over</a></h3>
+<p>Two single-account options do not carry over to multi-account mode. The generated TOML hard-codes <code>client_id = "ha"</code> and does not pass <code>glucose_unit</code> to discovery — readings are always published in <strong>mg/dL</strong> regardless of the <code>glucose_unit</code> add-on option.</p>
 <h2 id="status-api"><a class="header" href="#status-api">Status API</a></h2>
 <p>Each source also appears in the HTTP Status API. See <a href="status-api.html">Status API</a> for the <code>/clock/state</code> and <code>/clock/events</code> endpoints.</p>
 <h2 id="attribution"><a class="header" href="#attribution">Attribution</a></h2>

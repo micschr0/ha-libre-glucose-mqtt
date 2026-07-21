@@ -179,10 +179,52 @@
 
                 <div id="content" class="content">
                     <main>
-                        <!-- doc-review: 2026-07-16 -->
+                        <!-- doc-review: 2026-07-21 -->
 <p><img src="assets/logo.png" alt="Libre Glucose MQTT Bridge" /></p>
 <h1 id="libre-glucose-mqtt-bridge"><a class="header" href="#libre-glucose-mqtt-bridge">Libre Glucose MQTT Bridge</a></h1>
 <p>A Home Assistant add-on that polls your <strong>LibreLink Up</strong> glucose readings and publishes them to MQTT with automatic sensor discovery — your <strong>Glucose</strong> sensor appears in Home Assistant within minutes of starting the add-on. Powered by <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a>.</p>
+<h2 id="quick-start"><a class="header" href="#quick-start">Quick start</a></h2>
+<ol>
+<li>In Home Assistant, open <strong>Settings → Add-ons → Add-on Store</strong>.</li>
+<li>Click the <strong>⋮</strong> menu (top right) → <strong>Repositories</strong>.</li>
+<li>Add:
+<pre><code>https://github.com/micschr0/ha-libre-glucose-mqtt
+</code></pre>
+</li>
+<li>Refresh the store; <strong>Libre Glucose MQTT Bridge</strong> appears in a new section.</li>
+<li>Click it → <strong>Install</strong>. Enter your LibreLink Up email and password (and your <strong>region</strong>, if outside the <code>EU</code> default), then <strong>Start</strong>.</li>
+</ol>
+<p>Once running, the add-on creates a <strong>Glucose</strong> sensor under the <strong>Gluco Hub</strong> device (Settings → Devices &amp; Services → MQTT). The state holds the current reading in mg/dL by default (mmol/L if you configure it); entity attributes carry the full payload — mg/dL, mmol/L, trend arrow, and timestamp.</p>
+<p>For every option, the sensor attributes, and MQTT topics, see <a href="configuration.html">Configuration</a>. For troubleshooting and architecture detail, see <a href="troubleshooting.html">Troubleshooting</a>.</p>
+<h2 id="why-use-it"><a class="header" href="#why-use-it">Why use it?</a></h2>
+<p>Abbott's apps lock your glucose data inside LibreLink Up. This add-on turns that reading into <strong>a normal Home Assistant sensor</strong> — an entity you fully control:</p>
+<ul>
+<li><strong>Automations &amp; alerts</strong> — notify, flash a light, or sound an alarm on highs and lows, with your own thresholds and quiet hours.</li>
+<li><strong>Dashboards &amp; history</strong> — chart your glucose beside everything else in your home, with long-term history stored locally.</li>
+<li><strong>Your data, your home</strong> — the reading stays on your own broker and HA instance. No cloud dashboard, no subscription, no third party.</li>
+<li><strong>Build on it</strong> — as an MQTT entity, the reading drives Node-RED, scripts, voice assistants, and any other integration.</li>
+<li><strong>Set-and-forget</strong> — auto-discovery creates the sensor, the add-on reconnects on its own, and missed readings queue, then flush when the connection returns.</li>
+</ul>
+<p>The add-on is a thin, auditable wrapper around the open-source <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a>: all polling and MQTT logic lives upstream in gluco-hub-rs.</p>
+<h2 id="requirements"><a class="header" href="#requirements">Requirements</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Requirement</th><th>Notes</th></tr></thead><tbody>
+<tr><td><strong>Home Assistant OS or Supervised</strong></td><td>Supervisor required; Container installs cannot run add-ons.</td></tr>
+<tr><td><strong>Mosquitto broker</strong> add-on + <strong>MQTT</strong> integration</td><td>The add-on requires an MQTT service to start.</td></tr>
+<tr><td><strong>LibreLink Up account</strong></td><td>At least one active connection (typically a family-share invitation from a Libre 2 or Libre 3 sensor wearer).</td></tr>
+<tr><td><strong>Architecture</strong></td><td><code>amd64</code>, <code>aarch64</code> (RPi 3 in 64-bit works). 32-bit ARM (<code>armv7</code>, <code>armhf</code>) and <code>i386</code> are not supported.</td></tr>
+</tbody></table>
+</div>
+<h2 id="getting-help"><a class="header" href="#getting-help">Getting help</a></h2>
+<ul>
+<li>Add-on-specific issues (install, configuration, run): <a href="https://github.com/micschr0/ha-libre-glucose-mqtt/issues">ha-libre-glucose-mqtt issues</a></li>
+<li>Polling / MQTT / LibreLink Up logic: <a href="https://github.com/micschr0/gluco-hub-rs/issues">gluco-hub-rs issues</a></li>
+</ul>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next steps</a></h2>
+<ul>
+<li><a href="configuration.html">Configure</a> units, regions, MQTT topics, and advanced options.</li>
+<li><a href="troubleshooting.html">Troubleshoot</a> common problems and understand the add-on's architecture.</li>
+<li>Try the <a href="clock-view.html">Clock View</a> — a real-time full-screen display accessible from the HA sidebar.</li>
+</ul>
 <div id="admonition-disclaimer" class="admonition admonish-tip" role="note" aria-labelledby="admonition-disclaimer-title">
 <div class="admonition-title">
 <div id="admonition-disclaimer-title">
@@ -195,44 +237,6 @@
 <p>LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.</p>
 </div>
 </div>
-<p><a href="configuration.html">Get started</a></p>
-<h2 id="why-use-it"><a class="header" href="#why-use-it">Why use it?</a></h2>
-<p>Abbott's apps lock your glucose data inside LibreLink Up. This add-on turns that reading into <strong>a normal Home Assistant sensor</strong> — an entity you fully control:</p>
-<ul>
-<li><strong>Automations &amp; alerts</strong> — notify, flash a light, or sound an alarm on highs and lows, with your own thresholds and quiet hours.</li>
-<li><strong>Dashboards &amp; history</strong> — chart your glucose beside everything else in your home, with long-term history stored locally.</li>
-<li><strong>Your data, your home</strong> — the reading stays on your own broker and HA instance. No cloud dashboard, no subscription, no third party.</li>
-<li><strong>Build on it</strong> — as an MQTT entity, the reading drives Node-RED, scripts, voice assistants, and any other integration.</li>
-<li><strong>Set-and-forget</strong> — auto-discovery creates the sensor, the add-on reconnects on its own, and missed readings queue, then flush when the connection returns.</li>
-</ul>
-<p>The add-on is a thin, auditable wrapper around the open-source <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a>: all polling and MQTT logic lives upstream in gluco-hub-rs.</p>
-<h2 id="install"><a class="header" href="#install">Install</a></h2>
-<ol>
-<li>In Home Assistant, open <strong>Settings → Add-ons → Add-on Store</strong>.</li>
-<li>Click the <strong>⋮</strong> menu (top right) → <strong>Repositories</strong>.</li>
-<li>Add:
-<pre><code>https://github.com/micschr0/ha-libre-glucose-mqtt
-</code></pre>
-</li>
-<li>Refresh the store; <strong>Libre Glucose MQTT Bridge</strong> appears in a new section.</li>
-<li>Click it → <strong>Install</strong>. Enter your LibreLink Up email and password (and your <strong>region</strong>, if outside the <code>EU</code> default), then <strong>Start</strong>.</li>
-</ol>
-<h2 id="requirements"><a class="header" href="#requirements">Requirements</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>Requirement</th><th>Notes</th></tr></thead><tbody>
-<tr><td><strong>Home Assistant OS or Supervised</strong></td><td>Supervisor required; Container installs cannot run add-ons.</td></tr>
-<tr><td><strong>Mosquitto broker</strong> add-on + <strong>MQTT</strong> integration</td><td>The add-on requires an MQTT service to start.</td></tr>
-<tr><td><strong>LibreLink Up account</strong></td><td>At least one active connection (typically a family-share invitation from a Libre 2 or Libre 3 sensor wearer).</td></tr>
-<tr><td><strong>Architecture</strong></td><td><code>amd64</code>, <code>aarch64</code> (RPi 3 in 64-bit works). 32-bit ARM (<code>armv7</code>, <code>armhf</code>) and <code>i386</code> are not supported.</td></tr>
-</tbody></table>
-</div>
-<h2 id="your-sensor"><a class="header" href="#your-sensor">Your sensor</a></h2>
-<p>Once running, the add-on creates a <strong>Glucose</strong> sensor under the <strong>Gluco Hub</strong> device (Settings → Devices &amp; Services → MQTT). The state holds the current reading in mg/dL by default (mmol/L if you configure it); entity attributes carry the full payload — mg/dL, mmol/L, trend arrow, and timestamp.</p>
-<p>For every option, the sensor attributes, and MQTT topics, see <a href="configuration.html">Configuration</a>. For troubleshooting and architecture detail, see <a href="troubleshooting.html">Troubleshooting</a>.</p>
-<h2 id="getting-help"><a class="header" href="#getting-help">Getting help</a></h2>
-<ul>
-<li>Add-on-specific issues (install, configuration, run): <a href="https://github.com/micschr0/ha-libre-glucose-mqtt/issues">ha-libre-glucose-mqtt issues</a></li>
-<li>Polling / MQTT / LibreLink Up logic: <a href="https://github.com/micschr0/gluco-hub-rs/issues">gluco-hub-rs issues</a></li>
-</ul>
 
                     </main>
 

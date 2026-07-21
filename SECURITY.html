@@ -179,19 +179,8 @@
 
                 <div id="content" class="content">
                     <main>
-                        <!-- doc-review: 2026-07-16 -->
+                        <!-- doc-review: 2026-07-21 -->
 <h1 id="security-policy"><a class="header" href="#security-policy">Security Policy</a></h1>
-<h2 id="scope"><a class="header" href="#scope">Scope</a></h2>
-<p>This repository ships the Home Assistant <strong>app</strong> wrapper (formerly
-known as an add-on) around the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a>
-Rust binary. Two repositories are relevant when reporting security
-issues, and you should pick the right one:</p>
-<div class="table-wrapper"><table><thead><tr><th>Symptom</th><th>Report here</th></tr></thead><tbody>
-<tr><td>Glucose-data parsing / LibreLink-Up authentication / MQTT publish logic / Nightscout / DLQ / HTTP API</td><td><a href="https://github.com/micschr0/gluco-hub-rs/blob/main/SECURITY.md"><code>gluco-hub-rs</code> SECURITY.md</a> — these are upstream concerns</td></tr>
-<tr><td>HA Supervisor wrapper: app manifest (<code>config.yaml</code>), AppArmor profile (<code>apparmor.txt</code>), <code>run.sh</code> entrypoint, Dockerfile, CI workflows</td><td>This repo (see below)</td></tr>
-</tbody></table>
-</div>
-<p>If you are unsure, file here — we'll route upstream as needed.</p>
 <h2 id="reporting-a-vulnerability"><a class="header" href="#reporting-a-vulnerability">Reporting a vulnerability</a></h2>
 <p><strong>Do not open a public GitHub issue for security-sensitive reports.</strong></p>
 <p>Use GitHub's <a href="https://github.com/micschr0/ha-libre-glucose-mqtt/security/advisories/new">private vulnerability reporting</a> — the discussion stays auditable in-platform and triggers a GitHub Security Advisory on confirmation.</p>
@@ -203,6 +192,17 @@ Supervisor versions involved.</li>
 <li>Whether the issue is exploitable from outside the Mosquitto add-on's
 internal network (<code>hassio</code> bridge) or only from co-located add-ons.</li>
 </ul>
+<h2 id="scope"><a class="header" href="#scope">Scope</a></h2>
+<p>This repository ships the Home Assistant <strong>app</strong> wrapper (formerly
+known as an add-on) around the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a>
+Rust binary. Two repositories are relevant when reporting security
+issues, and you should pick the right one:</p>
+<div class="table-wrapper"><table><thead><tr><th>Symptom</th><th>Report here</th></tr></thead><tbody>
+<tr><td>Glucose-data parsing / LibreLink-Up authentication / MQTT publish logic / Nightscout / DLQ / HTTP API</td><td><a href="https://github.com/micschr0/gluco-hub-rs/blob/main/SECURITY.md"><code>gluco-hub-rs</code> SECURITY.md</a> — these are upstream concerns</td></tr>
+<tr><td>HA Supervisor wrapper: app manifest (<code>config.yaml</code>), AppArmor profile (<code>apparmor.txt</code>), <code>run.sh</code> entrypoint, Dockerfile, CI workflows</td><td>This repo (see below)</td></tr>
+</tbody></table>
+</div>
+<p>If you are unsure, file here — we'll route upstream as needed.</p>
 <h2 id="disclosure"><a class="header" href="#disclosure">Disclosure</a></h2>
 <p>We aim to acknowledge reports within 5 working days and to ship a fix
 or a documented mitigation within 30 days for confirmed issues.

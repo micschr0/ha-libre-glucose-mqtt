@@ -179,11 +179,23 @@
 
                 <div id="content" class="content">
                     <main>
-                        <!-- doc-review: 2026-07-16 -->
+                        <!-- doc-review: 2026-07-21 -->
 <h1 id="examples"><a class="header" href="#examples">Examples</a></h1>
 <p>Copy-paste examples for the MQTT-discovered Glucose sensor. See <a href="configuration.html">Configuration</a> for the full sensor and attribute reference.</p>
+<blockquote>
+<p><strong>Attribution.</strong> The <code>sensor.gluco_hub_*_glucose</code> entity is published by the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> bridge via MQTT discovery. This add-on wires HA Ingress and translates add-on options into the upstream config.</p>
+</blockquote>
+<h2 id="quick-reference"><a class="header" href="#quick-reference">Quick reference</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Example</th><th>What you'll build</th></tr></thead><tbody>
+<tr><td><a href="#ex-01--alert-automation">EX-01</a></td><td>High/low glucose alert with mobile push notification</td></tr>
+<tr><td><a href="#ex-02--dashboard-gauge-card">EX-02</a></td><td>Lovelace gauge card with severity color bands</td></tr>
+<tr><td><a href="#ex-03--multi-account-configuration">EX-03</a></td><td>Multi-account LibreLink Up polling with per-source topics</td></tr>
+</tbody></table>
+</div>
 <h2 id="ex-01--alert-automation"><a class="header" href="#ex-01--alert-automation">EX-01 — Alert automation</a></h2>
-<p>The automation below fires a persistent notification and a mobile push when glucose drops below 70 or rises above 180. Both triggers watch the sensor <strong>state</strong> — the current glucose reading in your configured unit.</p>
+<h3 id="what-it-does"><a class="header" href="#what-it-does">What it does</a></h3>
+<p>Fires a persistent notification and mobile push when glucose drops below 70 or rises above 180 mg/dL. Both triggers watch the sensor <strong>state</strong> — the current glucose reading in your configured unit.</p>
+<h3 id="code"><a class="header" href="#code">Code</a></h3>
 <pre><code class="language-yaml">alias: Glucose high / low alert
 description: &gt;
   Fires a persistent notification and mobile push when glucose
@@ -231,7 +243,11 @@ action:
                 {{ states('sensor.gluco_hub_ha_glucose') }} — above 180
 mode: single
 </code></pre>
-<p><code>sensor.gluco_hub_ha_glucose</code> uses the default <code>client_id: ha</code>. Replace <code>ha</code> with your configured <code>client_id</code> value — the entity name follows the pattern <code>sensor.gluco_hub_&lt;client_id&gt;_glucose</code>. Replace <code>notify.mobile_app_your_phone</code> with your device's notify service (Settings → Devices &amp; Services → Mobile App).</p>
+<h3 id="notes"><a class="header" href="#notes">Notes</a></h3>
+<ul>
+<li><strong>Entity naming.</strong> <code>sensor.gluco_hub_ha_glucose</code> uses the default <code>client_id: ha</code>. Replace <code>ha</code> with your configured <code>client_id</code> value — the entity name follows the pattern <code>sensor.gluco_hub_&lt;client_id&gt;_glucose</code>.</li>
+<li><strong>Notify service.</strong> Replace <code>notify.mobile_app_your_phone</code> with your device's notify service (Settings → Devices &amp; Services → Mobile App).</li>
+</ul>
 <div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
 <div class="admonition-title">
 <div id="admonition-note-title">
@@ -243,12 +259,13 @@ mode: single
 <p>The sensor state is in your configured unit (<code>mgdl</code> by default; <code>mmol</code> if <code>glucose_unit: mmol</code>). If you use mmol/L, adjust the thresholds: <code>below: 3.9</code> (low) and <code>above: 10.0</code> (high) are the mmol/L equivalents.</p>
 </div>
 </div>
-<p>The triggers fire on the sensor <strong>state</strong> — the current glucose reading. Do not use <code>attribute: mgdl</code> in the trigger; the state already holds the value in your configured unit.</p>
-<blockquote>
-<p><strong>Attribution.</strong> The <code>sensor.gluco_hub_*_glucose</code> entity is published by the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> bridge via MQTT discovery. This add-on wires HA Ingress and translates add-on options into the upstream config.</p>
-</blockquote>
+<ul>
+<li><strong>Trigger targets the state, not attributes.</strong> Do not use <code>attribute: mgdl</code> in the trigger; the state already holds the value in your configured unit.</li>
+</ul>
 <h2 id="ex-02--dashboard-gauge-card"><a class="header" href="#ex-02--dashboard-gauge-card">EX-02 — Dashboard gauge card</a></h2>
-<p>Add this to a Lovelace dashboard view with the <strong>+ Add card</strong> button (no HACS or custom card required).</p>
+<h3 id="what-it-does-1"><a class="header" href="#what-it-does-1">What it does</a></h3>
+<p>A Lovelace gauge card with color-coded severity bands. Add with the <strong>+ Add card</strong> button — no HACS or custom card required.</p>
+<h3 id="code-1"><a class="header" href="#code-1">Code</a></h3>
 <pre><code class="language-yaml">type: gauge
 entity: sensor.gluco_hub_ha_glucose
 name: Glucose
@@ -260,13 +277,15 @@ severity:
   yellow: 180
   red: 40
 </code></pre>
-<p>The <code>severity</code> map sets the <strong>lower bound</strong> of each colored band. With the values above the gauge shows: red from 40 → 70, green from 70 → 180, yellow from 180 → 300. Replace <code>sensor.gluco_hub_ha_glucose</code> using the same <code>&lt;client_id&gt;</code> convention as in EX-01.</p>
-<blockquote>
-<p><strong>Attribution.</strong> The Glucose sensor is published by the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> bridge via MQTT discovery. This add-on wires HA Ingress and translates add-on options into the upstream config.</p>
-</blockquote>
+<h3 id="notes-1"><a class="header" href="#notes-1">Notes</a></h3>
+<ul>
+<li><strong>Severity colors.</strong> The <code>severity</code> map sets the <strong>lower bound</strong> of each colored band. With the values above the gauge shows: red from 40 → 70, green from 70 → 180, yellow from 180 → 300.</li>
+<li><strong>Entity.</strong> Replace <code>sensor.gluco_hub_ha_glucose</code> using the same <code>&lt;client_id&gt;</code> convention as in EX-01.</li>
+</ul>
 <h2 id="ex-03--multi-account-configuration"><a class="header" href="#ex-03--multi-account-configuration">EX-03 — Multi-account configuration</a></h2>
-<p>For polling multiple LibreLink Up accounts, use the <code>llu_accounts</code> list. See <a href="multi-account.html">Multi-account setup</a> for the full field reference.</p>
-<p><strong>Add-on options (<code>llu_accounts</code> YAML):</strong></p>
+<h3 id="what-it-does-2"><a class="header" href="#what-it-does-2">What it does</a></h3>
+<p>Polls multiple LibreLink Up accounts simultaneously with per-source MQTT topics. See <a href="multi-account.html">Multi-account setup</a> for the full field reference.</p>
+<h3 id="add-on-options-llu_accounts"><a class="header" href="#add-on-options-llu_accounts">Add-on options (<code>llu_accounts</code>)</a></h3>
 <pre><code class="language-yaml">llu_accounts:
   - name: alex
     email: alex@example.com
@@ -280,14 +299,16 @@ severity:
     timezone: America/New_York
     patient_id: "00000000-0000-0000-0000-000000000001"
 </code></pre>
-<p><strong>Per-source topic topology.</strong> With <code>llu_accounts</code> the add-on sets <code>per_source = true</code> in the upstream config. Each source publishes to its own path:</p>
+<h3 id="per-source-topic-topology"><a class="header" href="#per-source-topic-topology">Per-source topic topology</a></h3>
+<p>With <code>llu_accounts</code> the add-on sets <code>per_source = true</code> in the upstream config. Each source publishes to its own path:</p>
 <div class="table-wrapper"><table><thead><tr><th>Source</th><th>Reading topic</th></tr></thead><tbody>
 <tr><td><code>alex</code></td><td><code>gluco-hub/ha/alex/glucose</code></td></tr>
 <tr><td><code>sam</code></td><td><code>gluco-hub/ha/sam/glucose</code></td></tr>
 </tbody></table>
 </div>
 <p>The shared <code>&lt;prefix&gt;/glucose</code> topic is <strong>not</strong> published in multi-account mode. Target the per-source entity in your automations and dashboard cards (e.g. <code>sensor.gluco_hub_ha_alex_glucose</code>).</p>
-<p><strong>Resulting validated TOML</strong> (generated by the add-on at startup):</p>
+<h3 id="generated-toml"><a class="header" href="#generated-toml">Generated TOML</a></h3>
+<p>Generated by the add-on at startup and validated with <code>gluco-hub check-config</code>:</p>
 <pre><code class="language-toml">[poller]
 interval_secs = 60
 
@@ -320,6 +341,7 @@ region = "US"
 timezone = "America/New_York"
 patient_id = "00000000-0000-0000-0000-000000000001"
 </code></pre>
+<h3 id="notes-2"><a class="header" href="#notes-2">Notes</a></h3>
 <div id="admonition-warning" class="admonition admonish-warning" role="note" aria-labelledby="admonition-warning-title">
 <div class="admonition-title">
 <div id="admonition-warning-title">
@@ -331,8 +353,10 @@ patient_id = "00000000-0000-0000-0000-000000000001"
 <p>The MQTT sink section uses <code>broker_host</code> / <code>broker_port</code> — these are the field names required by the <code>gluco-hub</code> config loader. Bare <code>host</code> / <code>port</code> keys are rejected by <code>check-config</code> with <code>[CFG001] missing configuration field "sink.mqtt.broker_host"</code>.</p>
 </div>
 </div>
-<p><strong>Multi-account limitations.</strong> The generated TOML hard-codes <code>client_id = "ha"</code> and does not include <code>discovery_unit</code> — so MQTT discovery always advertises mg/dL regardless of your <code>glucose_unit</code> setting. The <code>client_id</code> and <code>discovery_unit</code> single-account options are not carried into multi-account mode.</p>
-<p><strong>Validation.</strong> The TOML above was validated with <code>gluco-hub check-config</code> against the pinned upstream image <code>ghcr.io/micschr0/gluco-hub:2026.621.0</code> and returned <strong>configuration ok</strong>.</p>
+<ul>
+<li><strong>Multi-account limitations.</strong> The generated TOML hard-codes <code>client_id = "ha"</code> and does not include <code>discovery_unit</code> — so MQTT discovery always advertises mg/dL regardless of your <code>glucose_unit</code> setting. The <code>client_id</code> and <code>discovery_unit</code> single-account options are not carried into multi-account mode.</li>
+<li><strong>Validation.</strong> Validated against the pinned upstream image <code>ghcr.io/micschr0/gluco-hub:2026.621.0</code> and returned <strong>configuration ok</strong>.</li>
+</ul>
 <hr />
 <div id="admonition-disclaimer" class="admonition admonish-tip" role="note" aria-labelledby="admonition-disclaimer-title">
 <div class="admonition-title">

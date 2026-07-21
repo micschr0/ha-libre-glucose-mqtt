@@ -179,24 +179,30 @@
 
                 <div id="content" class="content">
                     <main>
-                        <!-- doc-review: 2026-07-16 -->
+                        <!-- doc-review: 2026-07-21 -->
 <h1 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h1>
-<p><strong>Add-on refuses to start — <code>No MQTT service available</code>.</strong>
-Install the <strong>Mosquitto broker</strong> add-on and configure the MQTT integration (Settings → Devices &amp; Services → Add Integration → MQTT). Then restart this add-on.</p>
-<p><strong>Sensor never appears.</strong></p>
+<p>Quick-lookup reference for common issues. Each section gives the fix first, then diagnostics.</p>
+<h2 id="add-on-refuses-to-start"><a class="header" href="#add-on-refuses-to-start">Add-on refuses to start</a></h2>
+<p><strong>Fix:</strong> Install the <strong>Mosquitto broker</strong> add-on and configure the MQTT integration (Settings → Devices &amp; Services → Add Integration → MQTT). Then restart this add-on.</p>
+<p>The add-on exits with <code>No MQTT service available</code> when no MQTT service is registered with the Supervisor — the Mosquitto broker add-on is missing or the MQTT integration is not configured.</p>
+<h2 id="sensor-never-appears"><a class="header" href="#sensor-never-appears">Sensor never appears</a></h2>
+<p><strong>Fix:</strong> Confirm Mosquitto is running and restart the add-on.</p>
+<p><strong>Diagnose:</strong></p>
 <ol>
-<li>Confirm Mosquitto is running.</li>
 <li>Set <code>log_level: debug</code> and look for <code>mqtt sink configured</code> and <code>discovery_enabled = true</code> in the log.</li>
 <li>Use MQTT's <em>Listen to topic</em> feature: subscribe to <code>homeassistant/sensor/+/config</code>. The discovery message should arrive within ~10 seconds of starting.</li>
 </ol>
-<p><strong>LibreLink Up login fails with <code>[LLU003]</code>.</strong>
-Wrong credentials, wrong region, or the password was escaped incorrectly by the HA UI. The region must match your LibreView account, not your physical location.</p>
-<p><strong>Sensor values are time-shifted.</strong>
-Set <code>llu_timezone</code> to the patient's IANA timezone (e.g. <code>Europe/Berlin</code>). LibreLink Up timestamps are in local wall-clock time with no UTC offset.</p>
-<p><strong>My platform is not in the install dropdown.</strong>
-V1 supports <code>amd64</code> and <code>aarch64</code>. 32-bit ARM (<code>armv7</code>, <code>armhf</code>) and <code>i386</code> are not supported — follow <a href="https://github.com/micschr0/gluco-hub-rs">gluco-hub-rs</a> for status.</p>
+<h2 id="librelink-up-login-fails"><a class="header" href="#librelink-up-login-fails">LibreLink Up login fails</a></h2>
+<p><strong>Fix:</strong> Verify your LibreLink Up credentials and region. The region must match your LibreView account, not your physical location.</p>
+<p>Error code <code>[LLU003]</code> means wrong credentials, wrong region, or the password was escaped incorrectly by the HA UI.</p>
+<h2 id="sensor-values-are-time-shifted"><a class="header" href="#sensor-values-are-time-shifted">Sensor values are time-shifted</a></h2>
+<p><strong>Fix:</strong> Set <code>llu_timezone</code> to the patient's IANA timezone (e.g. <code>Europe/Berlin</code>).</p>
+<p>LibreLink Up timestamps are in local wall-clock time with no UTC offset. Without the correct timezone the add-on interprets them as UTC.</p>
+<h2 id="platform-not-in-install-dropdown"><a class="header" href="#platform-not-in-install-dropdown">Platform not in install dropdown</a></h2>
+<p><strong>Fix:</strong> V1 supports <code>amd64</code> and <code>aarch64</code>. 32-bit ARM (<code>armv7</code>, <code>armhf</code>) and <code>i386</code> are not supported — follow <a href="https://github.com/micschr0/gluco-hub-rs">gluco-hub-rs</a> for status.</p>
+<h2 id="architecture"><a class="header" href="#architecture">Architecture</a></h2>
 <details>
-<summary>Architecture</summary>
+<summary>How the pieces fit together</summary>
 <pre><code class="language-text">LibreLink Up API
        │ HTTPS
        ▼

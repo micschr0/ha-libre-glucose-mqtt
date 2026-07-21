@@ -180,10 +180,52 @@
 
                 <div id="content" class="content">
                     <main>
-                        <!-- doc-review: 2026-07-16 -->
+                        <!-- doc-review: 2026-07-21 -->
 <p><img src="assets/logo.png" alt="Libre Glucose MQTT Bridge" /></p>
 <h1 id="libre-glucose-mqtt-bridge"><a class="header" href="#libre-glucose-mqtt-bridge">Libre Glucose MQTT Bridge</a></h1>
 <p>A Home Assistant add-on that polls your <strong>LibreLink Up</strong> glucose readings and publishes them to MQTT with automatic sensor discovery — your <strong>Glucose</strong> sensor appears in Home Assistant within minutes of starting the add-on. Powered by <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a>.</p>
+<h2 id="quick-start"><a class="header" href="#quick-start">Quick start</a></h2>
+<ol>
+<li>In Home Assistant, open <strong>Settings → Add-ons → Add-on Store</strong>.</li>
+<li>Click the <strong>⋮</strong> menu (top right) → <strong>Repositories</strong>.</li>
+<li>Add:
+<pre><code>https://github.com/micschr0/ha-libre-glucose-mqtt
+</code></pre>
+</li>
+<li>Refresh the store; <strong>Libre Glucose MQTT Bridge</strong> appears in a new section.</li>
+<li>Click it → <strong>Install</strong>. Enter your LibreLink Up email and password (and your <strong>region</strong>, if outside the <code>EU</code> default), then <strong>Start</strong>.</li>
+</ol>
+<p>Once running, the add-on creates a <strong>Glucose</strong> sensor under the <strong>Gluco Hub</strong> device (Settings → Devices &amp; Services → MQTT). The state holds the current reading in mg/dL by default (mmol/L if you configure it); entity attributes carry the full payload — mg/dL, mmol/L, trend arrow, and timestamp.</p>
+<p>For every option, the sensor attributes, and MQTT topics, see <a href="configuration.html">Configuration</a>. For troubleshooting and architecture detail, see <a href="troubleshooting.html">Troubleshooting</a>.</p>
+<h2 id="why-use-it"><a class="header" href="#why-use-it">Why use it?</a></h2>
+<p>Abbott's apps lock your glucose data inside LibreLink Up. This add-on turns that reading into <strong>a normal Home Assistant sensor</strong> — an entity you fully control:</p>
+<ul>
+<li><strong>Automations &amp; alerts</strong> — notify, flash a light, or sound an alarm on highs and lows, with your own thresholds and quiet hours.</li>
+<li><strong>Dashboards &amp; history</strong> — chart your glucose beside everything else in your home, with long-term history stored locally.</li>
+<li><strong>Your data, your home</strong> — the reading stays on your own broker and HA instance. No cloud dashboard, no subscription, no third party.</li>
+<li><strong>Build on it</strong> — as an MQTT entity, the reading drives Node-RED, scripts, voice assistants, and any other integration.</li>
+<li><strong>Set-and-forget</strong> — auto-discovery creates the sensor, the add-on reconnects on its own, and missed readings queue, then flush when the connection returns.</li>
+</ul>
+<p>The add-on is a thin, auditable wrapper around the open-source <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a>: all polling and MQTT logic lives upstream in gluco-hub-rs.</p>
+<h2 id="requirements"><a class="header" href="#requirements">Requirements</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Requirement</th><th>Notes</th></tr></thead><tbody>
+<tr><td><strong>Home Assistant OS or Supervised</strong></td><td>Supervisor required; Container installs cannot run add-ons.</td></tr>
+<tr><td><strong>Mosquitto broker</strong> add-on + <strong>MQTT</strong> integration</td><td>The add-on requires an MQTT service to start.</td></tr>
+<tr><td><strong>LibreLink Up account</strong></td><td>At least one active connection (typically a family-share invitation from a Libre 2 or Libre 3 sensor wearer).</td></tr>
+<tr><td><strong>Architecture</strong></td><td><code>amd64</code>, <code>aarch64</code> (RPi 3 in 64-bit works). 32-bit ARM (<code>armv7</code>, <code>armhf</code>) and <code>i386</code> are not supported.</td></tr>
+</tbody></table>
+</div>
+<h2 id="getting-help"><a class="header" href="#getting-help">Getting help</a></h2>
+<ul>
+<li>Add-on-specific issues (install, configuration, run): <a href="https://github.com/micschr0/ha-libre-glucose-mqtt/issues">ha-libre-glucose-mqtt issues</a></li>
+<li>Polling / MQTT / LibreLink Up logic: <a href="https://github.com/micschr0/gluco-hub-rs/issues">gluco-hub-rs issues</a></li>
+</ul>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next steps</a></h2>
+<ul>
+<li><a href="configuration.html">Configure</a> units, regions, MQTT topics, and advanced options.</li>
+<li><a href="troubleshooting.html">Troubleshoot</a> common problems and understand the add-on's architecture.</li>
+<li>Try the <a href="clock-view.html">Clock View</a> — a real-time full-screen display accessible from the HA sidebar.</li>
+</ul>
 <div id="admonition-disclaimer" class="admonition admonish-tip" role="note" aria-labelledby="admonition-disclaimer-title">
 <div class="admonition-title">
 <div id="admonition-disclaimer-title">
@@ -196,48 +238,17 @@
 <p>LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.</p>
 </div>
 </div>
-<p><a href="configuration.html">Get started</a></p>
-<h2 id="why-use-it"><a class="header" href="#why-use-it">Why use it?</a></h2>
-<p>Abbott's apps lock your glucose data inside LibreLink Up. This add-on turns that reading into <strong>a normal Home Assistant sensor</strong> — an entity you fully control:</p>
-<ul>
-<li><strong>Automations &amp; alerts</strong> — notify, flash a light, or sound an alarm on highs and lows, with your own thresholds and quiet hours.</li>
-<li><strong>Dashboards &amp; history</strong> — chart your glucose beside everything else in your home, with long-term history stored locally.</li>
-<li><strong>Your data, your home</strong> — the reading stays on your own broker and HA instance. No cloud dashboard, no subscription, no third party.</li>
-<li><strong>Build on it</strong> — as an MQTT entity, the reading drives Node-RED, scripts, voice assistants, and any other integration.</li>
-<li><strong>Set-and-forget</strong> — auto-discovery creates the sensor, the add-on reconnects on its own, and missed readings queue, then flush when the connection returns.</li>
-</ul>
-<p>The add-on is a thin, auditable wrapper around the open-source <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a>: all polling and MQTT logic lives upstream in gluco-hub-rs.</p>
-<h2 id="install"><a class="header" href="#install">Install</a></h2>
-<ol>
-<li>In Home Assistant, open <strong>Settings → Add-ons → Add-on Store</strong>.</li>
-<li>Click the <strong>⋮</strong> menu (top right) → <strong>Repositories</strong>.</li>
-<li>Add:
-<pre><code>https://github.com/micschr0/ha-libre-glucose-mqtt
-</code></pre>
-</li>
-<li>Refresh the store; <strong>Libre Glucose MQTT Bridge</strong> appears in a new section.</li>
-<li>Click it → <strong>Install</strong>. Enter your LibreLink Up email and password (and your <strong>region</strong>, if outside the <code>EU</code> default), then <strong>Start</strong>.</li>
-</ol>
-<h2 id="requirements"><a class="header" href="#requirements">Requirements</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>Requirement</th><th>Notes</th></tr></thead><tbody>
-<tr><td><strong>Home Assistant OS or Supervised</strong></td><td>Supervisor required; Container installs cannot run add-ons.</td></tr>
-<tr><td><strong>Mosquitto broker</strong> add-on + <strong>MQTT</strong> integration</td><td>The add-on requires an MQTT service to start.</td></tr>
-<tr><td><strong>LibreLink Up account</strong></td><td>At least one active connection (typically a family-share invitation from a Libre 2 or Libre 3 sensor wearer).</td></tr>
-<tr><td><strong>Architecture</strong></td><td><code>amd64</code>, <code>aarch64</code> (RPi 3 in 64-bit works). 32-bit ARM (<code>armv7</code>, <code>armhf</code>) and <code>i386</code> are not supported.</td></tr>
-</tbody></table>
-</div>
-<h2 id="your-sensor"><a class="header" href="#your-sensor">Your sensor</a></h2>
-<p>Once running, the add-on creates a <strong>Glucose</strong> sensor under the <strong>Gluco Hub</strong> device (Settings → Devices &amp; Services → MQTT). The state holds the current reading in mg/dL by default (mmol/L if you configure it); entity attributes carry the full payload — mg/dL, mmol/L, trend arrow, and timestamp.</p>
-<p>For every option, the sensor attributes, and MQTT topics, see <a href="configuration.html">Configuration</a>. For troubleshooting and architecture detail, see <a href="troubleshooting.html">Troubleshooting</a>.</p>
-<h2 id="getting-help"><a class="header" href="#getting-help">Getting help</a></h2>
-<ul>
-<li>Add-on-specific issues (install, configuration, run): <a href="https://github.com/micschr0/ha-libre-glucose-mqtt/issues">ha-libre-glucose-mqtt issues</a></li>
-<li>Polling / MQTT / LibreLink Up logic: <a href="https://github.com/micschr0/gluco-hub-rs/issues">gluco-hub-rs issues</a></li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-16 -->
+<div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-21 -->
 <!-- ACC-01 audit 2026-06-23: 13/13 config.yaml options covered; closed gaps: llu_version, glucose_unit, llu_accounts -->
 <h1 id="configuration"><a class="header" href="#configuration">Configuration</a></h1>
 <p>Configure the add-on by setting the three required fields — <code>llu_email</code>, <code>llu_password</code>, <code>llu_region</code> — and the <strong>Glucose</strong> sensor entity <code>sensor.gluco_hub_&lt;client_id&gt;_glucose</code> will appear in Home Assistant.</p>
+<h2 id="quick-start-1"><a class="header" href="#quick-start-1">Quick start</a></h2>
+<ol>
+<li>Set <code>llu_email</code> to your LibreLink Up account email.</li>
+<li>Set <code>llu_password</code> to your LibreLink Up account password.</li>
+<li>Set <code>llu_region</code> to your LibreView account region (e.g. <code>EU</code>).</li>
+</ol>
+<p>Save and start the add-on. Your sensor entity is <code>sensor.gluco_hub_ha_glucose</code> (with the default <code>client_id: ha</code>).</p>
 <div id="admonition-sensor-entity-naming" class="admonition admonish-note" role="note" aria-labelledby="admonition-sensor-entity-naming-title">
 <div class="admonition-title">
 <div id="admonition-sensor-entity-naming-title">
@@ -247,19 +258,6 @@
 </div>
 <div>
 <p>Your sensor entity ID is <code>sensor.gluco_hub_&lt;client_id&gt;_glucose</code>. With the default <code>client_id: ha</code>, that is <code>sensor.gluco_hub_ha_glucose</code>. Use this ID in every automation and dashboard card.</p>
-</div>
-</div>
-<h2 id="architecture"><a class="header" href="#architecture">Architecture</a></h2>
-<p>The polling, MQTT publishing, MQTT discovery, and persistent retry queue are all implemented by the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> binary. <strong>This add-on configures and runs that binary</strong> — it provides the <code>config.yaml</code> schema, the <code>run.sh</code> entrypoint, and HA Ingress wiring. No polling or MQTT logic lives in this repository.</p>
-<div id="admonition-dont-paste-your-password-into-a-troubleshooting-trace" class="admonition admonish-warning" role="note" aria-labelledby="admonition-dont-paste-your-password-into-a-troubleshooting-trace-title">
-<div class="admonition-title">
-<div id="admonition-dont-paste-your-password-into-a-troubleshooting-trace-title">
-<p>Don't paste your password into a troubleshooting trace</p>
-</div>
-<a class="admonition-anchor-link" href="configuration.html#admonition-dont-paste-your-password-into-a-troubleshooting-trace"></a>
-</div>
-<div>
-<p>The add-on never logs it; if you see it in a log, that is a bug — open an issue.</p>
 </div>
 </div>
 <div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
@@ -273,31 +271,44 @@
 <p>For every option below, default values are chosen so that a fresh install works once you provide <code>llu_email</code>, <code>llu_password</code>, and <code>llu_region</code>.</p>
 </div>
 </div>
-<h2 id="configuration-1"><a class="header" href="#configuration-1">Configuration</a></h2>
+<h2 id="how-it-works"><a class="header" href="#how-it-works">How it works</a></h2>
+<p>The polling, MQTT publishing, MQTT discovery, and persistent retry queue are all implemented by the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> binary. <strong>This add-on configures and runs that binary</strong> — it provides the <code>config.yaml</code> schema, the <code>run.sh</code> entrypoint, and HA Ingress wiring. No polling or MQTT logic lives in this repository.</p>
+<h2 id="option-reference"><a class="header" href="#option-reference">Option reference</a></h2>
 <h3 id="quick-reference"><a class="header" href="#quick-reference">Quick reference</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>llu_email</code></td><td>string</td><td><em>required</em></td><td>LibreLink Up account email.</td></tr>
 <tr><td><code>llu_password</code></td><td>string</td><td><em>required</em></td><td>LibreLink Up account password. Never written to MQTT or logs.</td></tr>
 <tr><td><code>llu_region</code></td><td>enum</td><td><code>EU</code></td><td>Regional API endpoint. Must match your LibreView account region, not your physical location.</td></tr>
-<tr><td><code>llu_patient_id</code></td><td>string</td><td>—</td><td>Patient UUID. Leave empty to use the first connection.</td></tr>
 <tr><td><code>llu_timezone</code></td><td>IANA TZ</td><td><code>UTC</code></td><td>Patient's local timezone. Without this, timestamps appear shifted. Example: <code>Europe/Berlin</code>.</td></tr>
-<tr><td><code>llu_version</code></td><td>string</td><td>—</td><td>LibreLink Up app-version header sent to the API. Leave empty to use the upstream default.</td></tr>
 <tr><td><code>poll_interval_secs</code></td><td>int (30–600)</td><td><code>60</code></td><td>Poll interval in seconds.</td></tr>
-<tr><td><code>device_name</code></td><td>string</td><td>—</td><td>Friendly device name in HA. Defaults to <code>Gluco Hub (&lt;client_id&gt;)</code>.</td></tr>
 <tr><td><code>glucose_unit</code></td><td>enum</td><td><code>mgdl</code></td><td>Sensor state unit: <code>mgdl</code> for mg/dL, <code>mmol</code> for mmol/L.</td></tr>
+<tr><td><code>llu_patient_id</code></td><td>string</td><td>—</td><td>Patient UUID. Leave empty to use the first connection.</td></tr>
+<tr><td><code>device_name</code></td><td>string</td><td>—</td><td>Friendly device name in HA. Defaults to <code>Gluco Hub (&lt;client_id&gt;)</code>.</td></tr>
 <tr><td><code>topic_prefix</code></td><td>string</td><td><code>gluco-hub/ha</code></td><td>MQTT topic prefix. Readings publish to <code>&lt;prefix&gt;/glucose</code>.</td></tr>
 <tr><td><code>client_id</code></td><td>string</td><td><code>ha</code></td><td>MQTT client ID (1–23 chars). Appears in the HA discovery unique ID.</td></tr>
-<tr><td><code>llu_accounts</code></td><td>list</td><td><code>[]</code></td><td>Named multi-account/multi-patient sources. See <a href="multi-account.html">multi-account setup</a>.</td></tr>
+<tr><td><code>llu_version</code></td><td>string</td><td>—</td><td>LibreLink Up app-version header sent to the API. Leave empty to use the upstream default.</td></tr>
 <tr><td><code>log_level</code></td><td>enum</td><td><code>info</code></td><td>Log verbosity. Use <code>debug</code> to troubleshoot.</td></tr>
+<tr><td><code>llu_accounts</code></td><td>list</td><td><code>[]</code></td><td>Named multi-account/multi-patient sources. See <a href="multi-account.html">multi-account setup</a>.</td></tr>
 </tbody></table>
 </div>
-<h3 id="per-option-reference"><a class="header" href="#per-option-reference">Per-option reference</a></h3>
+<h3 id="required"><a class="header" href="#required">Required</a></h3>
 <h4 id="llu_email"><a class="header" href="#llu_email"><code>llu_email</code></a></h4>
 <p><strong>Required.</strong> LibreLink Up account email. The account that holds the family-share invitation. No default — the add-on refuses to start without this.</p>
 <p>Example: <code>anna@example.com</code>.</p>
 <h4 id="llu_password"><a class="header" href="#llu_password"><code>llu_password</code></a></h4>
 <p><strong>Required.</strong> LibreLink Up account password. Stored only in the add-on options database; never written to MQTT or logs. No default.</p>
 <p>Example: <code>correct-horse-battery-staple</code>.</p>
+<div id="admonition-dont-paste-your-password-into-a-troubleshooting-trace" class="admonition admonish-warning" role="note" aria-labelledby="admonition-dont-paste-your-password-into-a-troubleshooting-trace-title">
+<div class="admonition-title">
+<div id="admonition-dont-paste-your-password-into-a-troubleshooting-trace-title">
+<p>Don't paste your password into a troubleshooting trace</p>
+</div>
+<a class="admonition-anchor-link" href="configuration.html#admonition-dont-paste-your-password-into-a-troubleshooting-trace"></a>
+</div>
+<div>
+<p>The add-on never logs it; if you see it in a log, that is a bug — open an issue.</p>
+</div>
+</div>
 <h4 id="llu_region"><a class="header" href="#llu_region"><code>llu_region</code></a></h4>
 <p>Regional API endpoint. <strong>Must match your LibreView account region</strong> — not your physical location. Default: <code>EU</code>.</p>
 <p>Valid values: <code>AE</code>, <code>AP</code>, <code>AU</code>, <code>CA</code>, <code>DE</code>, <code>EU</code>, <code>EU2</code>, <code>FR</code>, <code>JP</code>, <code>US</code>, <code>LA</code>, <code>RU</code>, <code>CN</code>.</p>
@@ -312,13 +323,10 @@
 <p>Use the region of your LibreView account — they often differ. If unsure, open the LibreView app; the region is shown under <strong>Account settings</strong>.</p>
 </div>
 </div>
-<h4 id="llu_patient_id"><a class="header" href="#llu_patient_id"><code>llu_patient_id</code></a></h4>
-<p>Patient UUID. Required only if your account has multiple connections. Leave empty to use the first connection.</p>
+<h3 id="recommended"><a class="header" href="#recommended">Recommended</a></h3>
 <h4 id="llu_timezone"><a class="header" href="#llu_timezone"><code>llu_timezone</code></a></h4>
 <p>IANA timezone name of the sensor wearer. Default: <code>UTC</code>. LibreLink Up timestamps are local wall-clock time with no UTC offset; without this, your readings appear time-shifted.</p>
 <p>Example: <code>Europe/Berlin</code>.</p>
-<h4 id="llu_version"><a class="header" href="#llu_version"><code>llu_version</code></a></h4>
-<p>LibreLink Up app-version header sent to the API. Leave empty to use the upstream default. Override only as a last resort when upstream's default is no longer accepted.</p>
 <h4 id="poll_interval_secs"><a class="header" href="#poll_interval_secs"><code>poll_interval_secs</code></a></h4>
 <p>Poll interval in seconds. Range: 30–600. Default: <code>60</code>. Values below 30 waste API calls; LibreLink Up updates every ~60 s.</p>
 <div id="admonition-dont-set-poll_interval_secs-below-30" class="admonition admonish-warning" role="note" aria-labelledby="admonition-dont-set-poll_interval_secs-below-30-title">
@@ -332,10 +340,13 @@
 <p>LibreLink Up updates roughly every 60 seconds; faster polling wastes your API quota and can trigger rate limits.</p>
 </div>
 </div>
-<h4 id="device_name"><a class="header" href="#device_name"><code>device_name</code></a></h4>
-<p>Friendly device name shown in Home Assistant. Empty falls back to <code>Gluco Hub (&lt;client_id&gt;)</code>.</p>
 <h4 id="glucose_unit"><a class="header" href="#glucose_unit"><code>glucose_unit</code></a></h4>
 <p>Sensor state unit: <code>mgdl</code> for mg/dL, <code>mmol</code> for mmol/L. Default: <code>mgdl</code>. In multi-account mode (<code>llu_accounts</code>) this option does not affect MQTT discovery — discovery always advertises mg/dL regardless.</p>
+<h4 id="llu_patient_id"><a class="header" href="#llu_patient_id"><code>llu_patient_id</code></a></h4>
+<p>Patient UUID. Required only if your account has multiple connections. Leave empty to use the first connection.</p>
+<h3 id="advanced"><a class="header" href="#advanced">Advanced</a></h3>
+<h4 id="device_name"><a class="header" href="#device_name"><code>device_name</code></a></h4>
+<p>Friendly device name shown in Home Assistant. Empty falls back to <code>Gluco Hub (&lt;client_id&gt;)</code>.</p>
 <h4 id="topic_prefix"><a class="header" href="#topic_prefix"><code>topic_prefix</code></a></h4>
 <p>MQTT topic prefix. Default: <code>gluco-hub/ha</code>. Readings publish to <code>&lt;prefix&gt;/glucose</code>. With the default, your reading topic is <code>gluco-hub/ha/glucose</code>.</p>
 <h4 id="client_id"><a class="header" href="#client_id"><code>client_id</code></a></h4>
@@ -351,6 +362,11 @@
 <p>The generated TOML hard-codes <code>client_id = "ha"</code> and the option is silently ignored.</p>
 </div>
 </div>
+<h4 id="llu_version"><a class="header" href="#llu_version"><code>llu_version</code></a></h4>
+<p>LibreLink Up app-version header sent to the API. Leave empty to use the upstream default. Override only as a last resort when upstream's default is no longer accepted.</p>
+<h4 id="log_level"><a class="header" href="#log_level"><code>log_level</code></a></h4>
+<p>Log verbosity. Default: <code>info</code>. Use <code>debug</code> when troubleshooting LibreLink Up issues. Valid values: <code>trace</code>, <code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code>.</p>
+<h3 id="multi-account"><a class="header" href="#multi-account">Multi-account</a></h3>
 <h4 id="llu_accounts"><a class="header" href="#llu_accounts"><code>llu_accounts</code></a></h4>
 <p>List of named LibreLink Up sources for multi-account polling. Default: <code>[]</code> (empty). When non-empty, supersedes the single-account <code>llu_*</code> fields above. Full schema and a worked example are on the <a href="multi-account.html">multi-account setup</a> page.</p>
 <div id="admonition-dont-mix-llu_accounts-with-single-account-llu_-fields" class="admonition admonish-warning" role="note" aria-labelledby="admonition-dont-mix-llu_accounts-with-single-account-llu_-fields-title">
@@ -364,8 +380,6 @@
 <p>When <code>llu_accounts</code> is non-empty, the single-account fields above are superseded and any value you set there is ignored.</p>
 </div>
 </div>
-<h4 id="log_level"><a class="header" href="#log_level"><code>log_level</code></a></h4>
-<p>Log verbosity. Default: <code>info</code>. Use <code>debug</code> when troubleshooting LibreLink Up issues. Valid values: <code>trace</code>, <code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code>.</p>
 <h2 id="sensor"><a class="header" href="#sensor">Sensor</a></h2>
 <p>The <strong>Glucose</strong> sensor appears under the <strong>Gluco Hub</strong> device in Home Assistant (Settings → Devices &amp; Services → MQTT).</p>
 <p><strong>State:</strong> current reading in mg/dL (or mmol/L if configured).</p>
@@ -393,6 +407,11 @@
 <li>Reading: <code>&lt;prefix&gt;/glucose</code></li>
 <li>Discovery: <code>homeassistant/sensor/gluco_hub_&lt;client_id&gt;_glucose/config</code></li>
 </ul>
+<h2 id="next-steps-1"><a class="header" href="#next-steps-1">Next steps</a></h2>
+<ul>
+<li><a href="multi-account.html">Multi-account setup</a> — configure multiple LibreLink Up accounts or patients.</li>
+<li><a href="examples.html">Examples</a> — copy-paste configuration snippets.</li>
+</ul>
 <hr />
 <div id="admonition-disclaimer" class="admonition admonish-tip" role="note" aria-labelledby="admonition-disclaimer-title">
 <div class="admonition-title">
@@ -405,24 +424,20 @@
 <p><strong>Not affiliated with Abbott Laboratories.</strong> Unofficial research and self-hosting tool. Use may violate Abbott's LibreLink Up Terms of Service. No warranty. Not for medical decisions, therapy, dosing, or diagnosis.</p>
 <p>LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.</p>
 </div>
-</div><div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-16 -->
-<h1 id="multi-account-setup"><a class="header" href="#multi-account-setup">Multi-account setup</a></h1>
-<p>The <code>llu_accounts</code> option lets you poll <strong>multiple LibreLink Up accounts or patients</strong> from a single add-on instance. Each entry in the list is a named source. When <code>llu_accounts</code> is non-empty it <strong>supersedes</strong> the single-account <code>llu_email</code>, <code>llu_password</code>, <code>llu_region</code>, <code>llu_patient_id</code>, <code>llu_timezone</code>, and <code>llu_version</code> fields.</p>
-<p>See <a href="configuration.html">Configuration</a> for the full single-account option reference.</p>
-<h2 id="account-fields"><a class="header" href="#account-fields">Account fields</a></h2>
-<p>Each entry in <code>llu_accounts</code> accepts the following fields:</p>
-<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>name</code></td><td>string</td><td>yes</td><td>Source label. Used as the per-source MQTT topic segment — see <a href="multi-account.html#mqtt-topics-per-source">MQTT topics (per-source)</a> below. Must be unique within the list.</td></tr>
-<tr><td><code>email</code></td><td>string (email)</td><td>yes</td><td>LibreLink Up account email for this patient.</td></tr>
-<tr><td><code>password</code></td><td>string</td><td>yes</td><td>LibreLink Up account password. Never written to MQTT or logs.</td></tr>
-<tr><td><code>region</code></td><td>enum</td><td>yes</td><td>Regional API endpoint. Must match the LibreView account region. Options: <code>AE</code>, <code>AP</code>, <code>AU</code>, <code>CA</code>, <code>DE</code>, <code>EU</code>, <code>EU2</code>, <code>FR</code>, <code>JP</code>, <code>US</code>, <code>LA</code>, <code>RU</code>, <code>CN</code>.</td></tr>
-<tr><td><code>patient_id</code></td><td>string</td><td>no</td><td>Patient UUID. Required only if the account has multiple connections. Leave empty to use the first connection.</td></tr>
-<tr><td><code>timezone</code></td><td>IANA TZ string</td><td>yes</td><td>The patient's local timezone (e.g. <code>Europe/Berlin</code>). LibreLink Up timestamps are in local wall-clock time with no UTC offset; without this, times appear shifted.</td></tr>
-<tr><td><code>version</code></td><td>string</td><td>no</td><td>LibreLink Up app-version header sent to the API. Leave empty to use the upstream default.</td></tr>
-</tbody></table>
 </div>
-<h2 id="worked-example"><a class="header" href="#worked-example">Worked example</a></h2>
-<p>Add-on options panel (<code>llu_accounts</code> YAML):</p>
+<div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-21 -->
+<h1 id="multi-account-setup"><a class="header" href="#multi-account-setup">Multi-account setup</a></h1>
+<p>Poll <strong>multiple LibreLink Up accounts or patients</strong> from a single add-on instance. Use this when you follow more than one person with LibreLink Up, or manage multiple LibreView accounts across different regions. Each account becomes a named source with its own MQTT topic path.</p>
+<p>Single account? Use the <a href="configuration.html">single-account options</a> — <code>llu_accounts</code> is for two or more. When <code>llu_accounts</code> is non-empty it <strong>supersedes</strong> the single-account <code>llu_email</code>, <code>llu_password</code>, <code>llu_region</code>, <code>llu_patient_id</code>, <code>llu_timezone</code>, and <code>llu_version</code> fields.</p>
+<h2 id="quick-start-2"><a class="header" href="#quick-start-2">Quick start</a></h2>
+<ol>
+<li>Add <code>llu_accounts</code> to the add-on options panel.</li>
+<li>For each account, set a unique <code>name</code>, <code>email</code>, <code>password</code>, <code>region</code>, and <code>timezone</code>.</li>
+<li>Set <code>patient_id</code> only if the account has multiple patient connections — leave it empty otherwise.</li>
+<li>Update your Home Assistant automations and dashboard cards to target <code>&lt;prefix&gt;/&lt;name&gt;/glucose</code> instead of the shared <code>&lt;prefix&gt;/glucose</code>.</li>
+<li>Restart the add-on.</li>
+</ol>
+<p>Minimal two-account config:</p>
 <pre><code class="language-yaml">llu_accounts:
   - name: alex
     email: alex@example.com
@@ -437,7 +452,19 @@
     patient_id: "00000000-0000-0000-0000-000000000001"
 </code></pre>
 <p>This is an <strong>illustrative</strong> example — credentials and UUIDs are placeholders. For a <code>gluco-hub check-config</code>-validated example with copy-paste automation YAML, see the <a href="examples.html">Examples</a> page.</p>
-<h2 id="mqtt-topics-per-source"><a class="header" href="#mqtt-topics-per-source">MQTT topics (per-source)</a></h2>
+<h2 id="account-fields"><a class="header" href="#account-fields">Account fields</a></h2>
+<p>Each entry in <code>llu_accounts</code> accepts the following fields:</p>
+<div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>name</code></td><td>string</td><td>yes</td><td>Source label. Used as the per-source MQTT topic segment — see <a href="multi-account.html#mqtt-topics">MQTT topics</a> below. Must be unique within the list.</td></tr>
+<tr><td><code>email</code></td><td>string (email)</td><td>yes</td><td>LibreLink Up account email for this patient.</td></tr>
+<tr><td><code>password</code></td><td>string</td><td>yes</td><td>LibreLink Up account password. Never written to MQTT or logs.</td></tr>
+<tr><td><code>region</code></td><td>enum</td><td>yes</td><td>Regional API endpoint. Must match the LibreView account region. Options: <code>AE</code>, <code>AP</code>, <code>AU</code>, <code>CA</code>, <code>DE</code>, <code>EU</code>, <code>EU2</code>, <code>FR</code>, <code>JP</code>, <code>US</code>, <code>LA</code>, <code>RU</code>, <code>CN</code>.</td></tr>
+<tr><td><code>patient_id</code></td><td>string</td><td>no</td><td>Patient UUID. Required only if the account has multiple connections. Leave empty to use the first connection.</td></tr>
+<tr><td><code>timezone</code></td><td>IANA TZ string</td><td>yes</td><td>The patient's local timezone (e.g. <code>Europe/Berlin</code>). LibreLink Up timestamps are in local wall-clock time with no UTC offset; without this, times appear shifted.</td></tr>
+<tr><td><code>version</code></td><td>string</td><td>no</td><td>LibreLink Up app-version header sent to the API. Leave empty to use the upstream default.</td></tr>
+</tbody></table>
+</div>
+<h2 id="mqtt-topics-1"><a class="header" href="#mqtt-topics-1">MQTT topics</a></h2>
 <div id="admonition-warning" class="admonition admonish-warning" role="note" aria-labelledby="admonition-warning-title">
 <div class="admonition-title">
 <div id="admonition-warning-title">
@@ -457,9 +484,11 @@
 </div>
 <p>Your Home Assistant automations and dashboard cards must target the per-source topic for the patient you want. The shared <code>&lt;prefix&gt;/glucose</code> topic is not published in multi-account mode.</p>
 <p>The health, stats, and discovery topics remain at the prefix level (<code>&lt;prefix&gt;/_health</code>, <code>&lt;prefix&gt;/_stats</code>).</p>
-<blockquote>
-<p><strong>Note:</strong> Two single-account options do not carry over to multi-account mode. The generated TOML hard-codes <code>client_id = "ha"</code> and does not pass <code>glucose_unit</code> to discovery — readings are always published in mg/dL regardless of the <code>glucose_unit</code> add-on option.</p>
-</blockquote>
+<h2 id="multi-account-specifics"><a class="header" href="#multi-account-specifics">Multi-account specifics</a></h2>
+<h3 id="region-per-account"><a class="header" href="#region-per-account">Region per account</a></h3>
+<p>Each entry specifies its own <code>region</code>. Different accounts can target different regional API endpoints — useful when patients are registered in different countries. The region <strong>must</strong> match the account's LibreView region, not necessarily the patient's physical location.</p>
+<h3 id="options-that-dont-carry-over"><a class="header" href="#options-that-dont-carry-over">Options that don't carry over</a></h3>
+<p>Two single-account options do not carry over to multi-account mode. The generated TOML hard-codes <code>client_id = "ha"</code> and does not pass <code>glucose_unit</code> to discovery — readings are always published in <strong>mg/dL</strong> regardless of the <code>glucose_unit</code> add-on option.</p>
 <h2 id="status-api"><a class="header" href="#status-api">Status API</a></h2>
 <p>Each source also appears in the HTTP Status API. See <a href="status-api.html">Status API</a> for the <code>/clock/state</code> and <code>/clock/events</code> endpoints.</p>
 <h2 id="attribution"><a class="header" href="#attribution">Attribution</a></h2>
@@ -477,19 +506,21 @@
 <p>LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.</p>
 </div>
 </div>
-<div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-16 -->
+<div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-21 -->
 <h1 id="clock-view"><a class="header" href="#clock-view">Clock View</a></h1>
 <p>The Clock View is a full-screen, real-time glucose display served by upstream
 <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> (<code>clock.html</code>, baked into the upstream binary).
-This add-on only wires HA Ingress (<code>ingress: true</code>, <code>ingress_port: 8080</code>) so the Clock View appears in the
-Home Assistant sidebar. The <code>clock.html</code> file in this repository is a source-of-record reference copy and is
+This add-on wires HA Ingress (<code>ingress: true</code>, <code>ingress_port: 8080</code>) so the Clock View appears in the
+Home Assistant sidebar — no configuration needed.</p>
+<p>The <code>clock.html</code> file in this repository is a source-of-record reference copy and is
 <strong>not</strong> copied into the Docker image — the upstream binary serves its own bundled version.</p>
-<h2 id="access"><a class="header" href="#access">Access</a></h2>
+<p><img src="assets/clock-view.png" alt="Clock View (mock data)" /></p>
+<p><em>Clock View — rendered with mock data (not a live reading)</em></p>
+<h2 id="quick-access"><a class="header" href="#quick-access">Quick access</a></h2>
 <p>Open the Clock View from the Home Assistant sidebar — the add-on's Ingress panel serves it directly.
 Access is admin-only by default (as configured in <code>config.yaml</code>).</p>
 <p>Direct URL (via Ingress proxy): the sidebar panel opens <code>clock.html</code> relative to the Ingress root.
-Query parameters can be appended to tailor the display — see <a href="clock-view.html#query-parameters">Query parameters</a> below.</p>
-<p>Example URL with common parameters:</p>
+Query parameters can be appended to tailor the display:</p>
 <pre><code>?preset=phone&amp;unit=mmol&amp;lo=70&amp;hi=180
 </code></pre>
 <h2 id="query-parameters"><a class="header" href="#query-parameters">Query parameters</a></h2>
@@ -552,7 +583,7 @@ after the correct PIN is entered (e.g. <code>?kiosk&amp;pin=4321</code>).</li>
 <p>Kiosk mode is a display lock only, not an authentication layer — Home Assistant Ingress already authenticates the session before the page is served.</p>
 </div>
 </div>
-<h2 id="data"><a class="header" href="#data">Data</a></h2>
+<h2 id="data-endpoints"><a class="header" href="#data-endpoints">Data endpoints</a></h2>
 <p>The Clock View pulls live glucose data from three endpoints served by <code>gluco-hub-rs</code>:</p>
 <div class="table-wrapper"><table><thead><tr><th>Endpoint</th><th>Protocol</th><th>Purpose</th></tr></thead><tbody>
 <tr><td><code>/clock/state</code></td><td>HTTP GET (JSON)</td><td>Initial snapshot — polled once on page load to populate the display immediately</td></tr>
@@ -561,11 +592,6 @@ after the correct PIN is entered (e.g. <code>?kiosk&amp;pin=4321</code>).</li>
 </tbody></table>
 </div>
 <p>See <a href="status-api.html">HTTP Status API</a> for the route signatures and response shapes.</p>
-<h2 id="screenshot"><a class="header" href="#screenshot">Screenshot</a></h2>
-<p>The screenshot below was captured headless from <code>clock.html</code> with mock data (phone layout, mgdl, in-range,
-patient "Alex").</p>
-<p><img src="assets/clock-view.png" alt="Clock View (mock data)" /></p>
-<p><em>Clock View — rendered with mock data (not a live reading)</em></p>
 <hr />
 <div id="admonition-disclaimer" class="admonition admonish-tip" role="note" aria-labelledby="admonition-disclaimer-title">
 <div class="admonition-title">
@@ -579,11 +605,21 @@ patient "Alex").</p>
 <p>LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.</p>
 </div>
 </div>
-<div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-16 -->
+<div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-21 -->
 <h1 id="http-status-api"><a class="header" href="#http-status-api">HTTP Status API</a></h1>
 <p>The upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> binary serves the HTTP Status API, binding to <code>0.0.0.0:8080</code> (set via <code>GLUCO_HUB__HTTP__BIND</code> in <code>run.sh</code>). This add-on only wires HA Ingress (<code>ingress: true</code>, <code>ingress_port: 8080</code> in <code>config.yaml</code>) to that listener.</p>
 <p>The HA Supervisor Ingress proxy intercepts all requests — routes are not directly reachable from the host. You access them via the add-on's panel in the HA UI, or through the Supervisor-issued Ingress URL.</p>
-<h2 id="data-endpoints"><a class="header" href="#data-endpoints">Data endpoints</a></h2>
+<h2 id="endpoint-reference"><a class="header" href="#endpoint-reference">Endpoint reference</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Response</th></tr></thead><tbody>
+<tr><td><code>GET</code></td><td><code>/healthz</code></td><td>public</td><td><code>{"status":"ok","version":"…"}</code></td></tr>
+<tr><td><code>GET</code></td><td><code>/metrics</code></td><td>public</td><td>Prometheus text exposition format</td></tr>
+<tr><td><code>GET</code></td><td><code>/glucose/latest</code></td><td>optional Bearer</td><td>Latest cached reading, or <code>503</code> + <code>API001</code> if no reading is available</td></tr>
+<tr><td><code>GET</code></td><td><code>/clock/state</code></td><td>public</td><td>JSON snapshot of latest reading</td></tr>
+<tr><td><code>GET</code></td><td><code>/clock/events</code></td><td>public</td><td>Server-Sent Events stream</td></tr>
+<tr><td><code>GET</code></td><td><code>/clock/history</code></td><td>public</td><td>JSON array of recent readings</td></tr>
+</tbody></table>
+</div>
+<h2 id="clock-endpoints"><a class="header" href="#clock-endpoints">Clock endpoints</a></h2>
 <p>These three routes power the <a href="clock-view.html">Clock View</a>. They are not protected by Bearer auth.</p>
 <h3 id="get-clockstate"><a class="header" href="#get-clockstate"><code>GET /clock/state</code></a></h3>
 <p>Returns a JSON snapshot of the latest glucose reading. The Clock View fetches this once at startup to populate the display before the SSE stream delivers its first event.</p>
@@ -634,19 +670,12 @@ Accept: text/event-stream
 </tbody></table>
 </div>
 <p>The array covers approximately the last 3 hours (up to 180 points at 1-minute intervals).</p>
-<h2 id="caching"><a class="header" href="#caching">Caching</a></h2>
-<p>All data endpoint responses carry <code>Cache-Control: no-store</code>. This prevents browsers and intermediate proxies from ever serving a stale glucose value — every request goes to the live server.</p>
-<h2 id="other-endpoints"><a class="header" href="#other-endpoints">Other endpoints</a></h2>
-<p>The following endpoints are confirmed from the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> README:</p>
-<div class="table-wrapper"><table><thead><tr><th>Path</th><th>Auth</th><th>Response</th></tr></thead><tbody>
-<tr><td><code>GET /healthz</code></td><td>public</td><td><code>{"status":"ok","version":"…"}</code></td></tr>
-<tr><td><code>GET /metrics</code></td><td>public</td><td>Prometheus text exposition format</td></tr>
-<tr><td><code>GET /glucose/latest</code></td><td>optional Bearer</td><td>Latest cached reading, or <code>503</code> + <code>API001</code> if no reading is available</td></tr>
-</tbody></table>
-</div>
-<p><strong>Bearer auth:</strong> set <code>GLUCO_HUB__HTTP__BEARER_TOKEN</code> in the add-on configuration to require a token for <code>/glucose/*</code> routes. The <code>/healthz</code> and <code>/metrics</code> endpoints remain public regardless.</p>
-<p><strong><code>X-Disclaimer</code> header:</strong> every response from gluco-hub-rs carries <code>X-Disclaimer: not-for-medical-use</code> — the canonical machine-readable disclaimer signal.</p>
-<p><strong><code>GET /glucose/latest</code> response shape (upstream-confirmed):</strong></p>
+<h2 id="utility-endpoints"><a class="header" href="#utility-endpoints">Utility endpoints</a></h2>
+<h3 id="get-healthz-and-get-metrics"><a class="header" href="#get-healthz-and-get-metrics"><code>GET /healthz</code> and <code>GET /metrics</code></a></h3>
+<p>Always public. No auth required.</p>
+<h3 id="get-glucoselatest"><a class="header" href="#get-glucoselatest"><code>GET /glucose/latest</code></a></h3>
+<p>Bearer auth is optional — set <code>GLUCO_HUB__HTTP__BEARER_TOKEN</code> in the add-on configuration to require a token for <code>/glucose/*</code> routes. The <code>/healthz</code> and <code>/metrics</code> endpoints remain public regardless.</p>
+<p>Returns latest cached reading, or <code>503</code> + error code <code>API001</code> if no reading is available.</p>
 <pre><code class="language-json">{
   "patient_id": "00000000-0000-0000-0000-000000000000",
   "source_id": "llu",
@@ -655,8 +684,15 @@ Accept: text/event-stream
   "trend": "Flat"
 }
 </code></pre>
-<p>Note: the <code>/clock/*</code> routes use an internal shape (<code>mgdl</code>, <code>ts</code> as Unix-ms, <code>delta</code>, <code>patient</code>) optimised for the Clock View, while <code>/glucose/latest</code> uses the public API shape (<code>glucose_mgdl</code>, ISO 8601 <code>timestamp</code>, <code>patient_id</code>).</p>
+<blockquote>
+<p><strong>Note:</strong> The <code>/clock/*</code> routes use an internal shape (<code>mgdl</code>, <code>ts</code> as Unix-ms, <code>delta</code>, <code>patient</code>) optimised for the Clock View, while <code>/glucose/latest</code> uses the public API shape (<code>glucose_mgdl</code>, ISO 8601 <code>timestamp</code>, <code>patient_id</code>).</p>
+</blockquote>
 <p>For the full and authoritative endpoint list, see the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> documentation.</p>
+<h2 id="response-headers"><a class="header" href="#response-headers">Response headers</a></h2>
+<ul>
+<li><strong><code>Cache-Control: no-store</code></strong> — all data endpoint responses carry this header. Prevents browsers and intermediate proxies from serving a stale glucose value; every request goes to the live server.</li>
+<li><strong><code>X-Disclaimer: not-for-medical-use</code></strong> — every response from gluco-hub-rs carries this header as the canonical machine-readable disclaimer signal.</li>
+</ul>
 <h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
 <ul>
 <li><a href="clock-view.html">Clock View</a> — the visual display that consumes the data endpoints documented here</li>
@@ -675,11 +711,23 @@ Accept: text/event-stream
 <p>LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.</p>
 </div>
 </div>
-<div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-16 -->
+<div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-21 -->
 <h1 id="examples"><a class="header" href="#examples">Examples</a></h1>
 <p>Copy-paste examples for the MQTT-discovered Glucose sensor. See <a href="configuration.html">Configuration</a> for the full sensor and attribute reference.</p>
+<blockquote>
+<p><strong>Attribution.</strong> The <code>sensor.gluco_hub_*_glucose</code> entity is published by the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> bridge via MQTT discovery. This add-on wires HA Ingress and translates add-on options into the upstream config.</p>
+</blockquote>
+<h2 id="quick-reference-1"><a class="header" href="#quick-reference-1">Quick reference</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Example</th><th>What you'll build</th></tr></thead><tbody>
+<tr><td><a href="examples.html#ex-01--alert-automation">EX-01</a></td><td>High/low glucose alert with mobile push notification</td></tr>
+<tr><td><a href="examples.html#ex-02--dashboard-gauge-card">EX-02</a></td><td>Lovelace gauge card with severity color bands</td></tr>
+<tr><td><a href="examples.html#ex-03--multi-account-configuration">EX-03</a></td><td>Multi-account LibreLink Up polling with per-source topics</td></tr>
+</tbody></table>
+</div>
 <h2 id="ex-01--alert-automation"><a class="header" href="#ex-01--alert-automation">EX-01 — Alert automation</a></h2>
-<p>The automation below fires a persistent notification and a mobile push when glucose drops below 70 or rises above 180. Both triggers watch the sensor <strong>state</strong> — the current glucose reading in your configured unit.</p>
+<h3 id="what-it-does"><a class="header" href="#what-it-does">What it does</a></h3>
+<p>Fires a persistent notification and mobile push when glucose drops below 70 or rises above 180 mg/dL. Both triggers watch the sensor <strong>state</strong> — the current glucose reading in your configured unit.</p>
+<h3 id="code"><a class="header" href="#code">Code</a></h3>
 <pre><code class="language-yaml">alias: Glucose high / low alert
 description: &gt;
   Fires a persistent notification and mobile push when glucose
@@ -727,7 +775,11 @@ action:
                 {{ states('sensor.gluco_hub_ha_glucose') }} — above 180
 mode: single
 </code></pre>
-<p><code>sensor.gluco_hub_ha_glucose</code> uses the default <code>client_id: ha</code>. Replace <code>ha</code> with your configured <code>client_id</code> value — the entity name follows the pattern <code>sensor.gluco_hub_&lt;client_id&gt;_glucose</code>. Replace <code>notify.mobile_app_your_phone</code> with your device's notify service (Settings → Devices &amp; Services → Mobile App).</p>
+<h3 id="notes"><a class="header" href="#notes">Notes</a></h3>
+<ul>
+<li><strong>Entity naming.</strong> <code>sensor.gluco_hub_ha_glucose</code> uses the default <code>client_id: ha</code>. Replace <code>ha</code> with your configured <code>client_id</code> value — the entity name follows the pattern <code>sensor.gluco_hub_&lt;client_id&gt;_glucose</code>.</li>
+<li><strong>Notify service.</strong> Replace <code>notify.mobile_app_your_phone</code> with your device's notify service (Settings → Devices &amp; Services → Mobile App).</li>
+</ul>
 <div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
 <div class="admonition-title">
 <div id="admonition-note-title">
@@ -739,12 +791,13 @@ mode: single
 <p>The sensor state is in your configured unit (<code>mgdl</code> by default; <code>mmol</code> if <code>glucose_unit: mmol</code>). If you use mmol/L, adjust the thresholds: <code>below: 3.9</code> (low) and <code>above: 10.0</code> (high) are the mmol/L equivalents.</p>
 </div>
 </div>
-<p>The triggers fire on the sensor <strong>state</strong> — the current glucose reading. Do not use <code>attribute: mgdl</code> in the trigger; the state already holds the value in your configured unit.</p>
-<blockquote>
-<p><strong>Attribution.</strong> The <code>sensor.gluco_hub_*_glucose</code> entity is published by the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> bridge via MQTT discovery. This add-on wires HA Ingress and translates add-on options into the upstream config.</p>
-</blockquote>
+<ul>
+<li><strong>Trigger targets the state, not attributes.</strong> Do not use <code>attribute: mgdl</code> in the trigger; the state already holds the value in your configured unit.</li>
+</ul>
 <h2 id="ex-02--dashboard-gauge-card"><a class="header" href="#ex-02--dashboard-gauge-card">EX-02 — Dashboard gauge card</a></h2>
-<p>Add this to a Lovelace dashboard view with the <strong>+ Add card</strong> button (no HACS or custom card required).</p>
+<h3 id="what-it-does-1"><a class="header" href="#what-it-does-1">What it does</a></h3>
+<p>A Lovelace gauge card with color-coded severity bands. Add with the <strong>+ Add card</strong> button — no HACS or custom card required.</p>
+<h3 id="code-1"><a class="header" href="#code-1">Code</a></h3>
 <pre><code class="language-yaml">type: gauge
 entity: sensor.gluco_hub_ha_glucose
 name: Glucose
@@ -756,13 +809,15 @@ severity:
   yellow: 180
   red: 40
 </code></pre>
-<p>The <code>severity</code> map sets the <strong>lower bound</strong> of each colored band. With the values above the gauge shows: red from 40 → 70, green from 70 → 180, yellow from 180 → 300. Replace <code>sensor.gluco_hub_ha_glucose</code> using the same <code>&lt;client_id&gt;</code> convention as in EX-01.</p>
-<blockquote>
-<p><strong>Attribution.</strong> The Glucose sensor is published by the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> bridge via MQTT discovery. This add-on wires HA Ingress and translates add-on options into the upstream config.</p>
-</blockquote>
+<h3 id="notes-1"><a class="header" href="#notes-1">Notes</a></h3>
+<ul>
+<li><strong>Severity colors.</strong> The <code>severity</code> map sets the <strong>lower bound</strong> of each colored band. With the values above the gauge shows: red from 40 → 70, green from 70 → 180, yellow from 180 → 300.</li>
+<li><strong>Entity.</strong> Replace <code>sensor.gluco_hub_ha_glucose</code> using the same <code>&lt;client_id&gt;</code> convention as in EX-01.</li>
+</ul>
 <h2 id="ex-03--multi-account-configuration"><a class="header" href="#ex-03--multi-account-configuration">EX-03 — Multi-account configuration</a></h2>
-<p>For polling multiple LibreLink Up accounts, use the <code>llu_accounts</code> list. See <a href="multi-account.html">Multi-account setup</a> for the full field reference.</p>
-<p><strong>Add-on options (<code>llu_accounts</code> YAML):</strong></p>
+<h3 id="what-it-does-2"><a class="header" href="#what-it-does-2">What it does</a></h3>
+<p>Polls multiple LibreLink Up accounts simultaneously with per-source MQTT topics. See <a href="multi-account.html">Multi-account setup</a> for the full field reference.</p>
+<h3 id="add-on-options-llu_accounts"><a class="header" href="#add-on-options-llu_accounts">Add-on options (<code>llu_accounts</code>)</a></h3>
 <pre><code class="language-yaml">llu_accounts:
   - name: alex
     email: alex@example.com
@@ -776,14 +831,16 @@ severity:
     timezone: America/New_York
     patient_id: "00000000-0000-0000-0000-000000000001"
 </code></pre>
-<p><strong>Per-source topic topology.</strong> With <code>llu_accounts</code> the add-on sets <code>per_source = true</code> in the upstream config. Each source publishes to its own path:</p>
+<h3 id="per-source-topic-topology"><a class="header" href="#per-source-topic-topology">Per-source topic topology</a></h3>
+<p>With <code>llu_accounts</code> the add-on sets <code>per_source = true</code> in the upstream config. Each source publishes to its own path:</p>
 <div class="table-wrapper"><table><thead><tr><th>Source</th><th>Reading topic</th></tr></thead><tbody>
 <tr><td><code>alex</code></td><td><code>gluco-hub/ha/alex/glucose</code></td></tr>
 <tr><td><code>sam</code></td><td><code>gluco-hub/ha/sam/glucose</code></td></tr>
 </tbody></table>
 </div>
 <p>The shared <code>&lt;prefix&gt;/glucose</code> topic is <strong>not</strong> published in multi-account mode. Target the per-source entity in your automations and dashboard cards (e.g. <code>sensor.gluco_hub_ha_alex_glucose</code>).</p>
-<p><strong>Resulting validated TOML</strong> (generated by the add-on at startup):</p>
+<h3 id="generated-toml"><a class="header" href="#generated-toml">Generated TOML</a></h3>
+<p>Generated by the add-on at startup and validated with <code>gluco-hub check-config</code>:</p>
 <pre><code class="language-toml">[poller]
 interval_secs = 60
 
@@ -816,6 +873,7 @@ region = "US"
 timezone = "America/New_York"
 patient_id = "00000000-0000-0000-0000-000000000001"
 </code></pre>
+<h3 id="notes-2"><a class="header" href="#notes-2">Notes</a></h3>
 <div id="admonition-warning" class="admonition admonish-warning" role="note" aria-labelledby="admonition-warning-title">
 <div class="admonition-title">
 <div id="admonition-warning-title">
@@ -827,8 +885,10 @@ patient_id = "00000000-0000-0000-0000-000000000001"
 <p>The MQTT sink section uses <code>broker_host</code> / <code>broker_port</code> — these are the field names required by the <code>gluco-hub</code> config loader. Bare <code>host</code> / <code>port</code> keys are rejected by <code>check-config</code> with <code>[CFG001] missing configuration field "sink.mqtt.broker_host"</code>.</p>
 </div>
 </div>
-<p><strong>Multi-account limitations.</strong> The generated TOML hard-codes <code>client_id = "ha"</code> and does not include <code>discovery_unit</code> — so MQTT discovery always advertises mg/dL regardless of your <code>glucose_unit</code> setting. The <code>client_id</code> and <code>discovery_unit</code> single-account options are not carried into multi-account mode.</p>
-<p><strong>Validation.</strong> The TOML above was validated with <code>gluco-hub check-config</code> against the pinned upstream image <code>ghcr.io/micschr0/gluco-hub:2026.621.0</code> and returned <strong>configuration ok</strong>.</p>
+<ul>
+<li><strong>Multi-account limitations.</strong> The generated TOML hard-codes <code>client_id = "ha"</code> and does not include <code>discovery_unit</code> — so MQTT discovery always advertises mg/dL regardless of your <code>glucose_unit</code> setting. The <code>client_id</code> and <code>discovery_unit</code> single-account options are not carried into multi-account mode.</li>
+<li><strong>Validation.</strong> Validated against the pinned upstream image <code>ghcr.io/micschr0/gluco-hub:2026.621.0</code> and returned <strong>configuration ok</strong>.</li>
+</ul>
 <hr />
 <div id="admonition-disclaimer" class="admonition admonish-tip" role="note" aria-labelledby="admonition-disclaimer-title">
 <div class="admonition-title">
@@ -842,24 +902,30 @@ patient_id = "00000000-0000-0000-0000-000000000001"
 <p>LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.</p>
 </div>
 </div>
-<div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-16 -->
+<div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-21 -->
 <h1 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h1>
-<p><strong>Add-on refuses to start — <code>No MQTT service available</code>.</strong>
-Install the <strong>Mosquitto broker</strong> add-on and configure the MQTT integration (Settings → Devices &amp; Services → Add Integration → MQTT). Then restart this add-on.</p>
-<p><strong>Sensor never appears.</strong></p>
+<p>Quick-lookup reference for common issues. Each section gives the fix first, then diagnostics.</p>
+<h2 id="add-on-refuses-to-start"><a class="header" href="#add-on-refuses-to-start">Add-on refuses to start</a></h2>
+<p><strong>Fix:</strong> Install the <strong>Mosquitto broker</strong> add-on and configure the MQTT integration (Settings → Devices &amp; Services → Add Integration → MQTT). Then restart this add-on.</p>
+<p>The add-on exits with <code>No MQTT service available</code> when no MQTT service is registered with the Supervisor — the Mosquitto broker add-on is missing or the MQTT integration is not configured.</p>
+<h2 id="sensor-never-appears"><a class="header" href="#sensor-never-appears">Sensor never appears</a></h2>
+<p><strong>Fix:</strong> Confirm Mosquitto is running and restart the add-on.</p>
+<p><strong>Diagnose:</strong></p>
 <ol>
-<li>Confirm Mosquitto is running.</li>
 <li>Set <code>log_level: debug</code> and look for <code>mqtt sink configured</code> and <code>discovery_enabled = true</code> in the log.</li>
 <li>Use MQTT's <em>Listen to topic</em> feature: subscribe to <code>homeassistant/sensor/+/config</code>. The discovery message should arrive within ~10 seconds of starting.</li>
 </ol>
-<p><strong>LibreLink Up login fails with <code>[LLU003]</code>.</strong>
-Wrong credentials, wrong region, or the password was escaped incorrectly by the HA UI. The region must match your LibreView account, not your physical location.</p>
-<p><strong>Sensor values are time-shifted.</strong>
-Set <code>llu_timezone</code> to the patient's IANA timezone (e.g. <code>Europe/Berlin</code>). LibreLink Up timestamps are in local wall-clock time with no UTC offset.</p>
-<p><strong>My platform is not in the install dropdown.</strong>
-V1 supports <code>amd64</code> and <code>aarch64</code>. 32-bit ARM (<code>armv7</code>, <code>armhf</code>) and <code>i386</code> are not supported — follow <a href="https://github.com/micschr0/gluco-hub-rs">gluco-hub-rs</a> for status.</p>
+<h2 id="librelink-up-login-fails"><a class="header" href="#librelink-up-login-fails">LibreLink Up login fails</a></h2>
+<p><strong>Fix:</strong> Verify your LibreLink Up credentials and region. The region must match your LibreView account, not your physical location.</p>
+<p>Error code <code>[LLU003]</code> means wrong credentials, wrong region, or the password was escaped incorrectly by the HA UI.</p>
+<h2 id="sensor-values-are-time-shifted"><a class="header" href="#sensor-values-are-time-shifted">Sensor values are time-shifted</a></h2>
+<p><strong>Fix:</strong> Set <code>llu_timezone</code> to the patient's IANA timezone (e.g. <code>Europe/Berlin</code>).</p>
+<p>LibreLink Up timestamps are in local wall-clock time with no UTC offset. Without the correct timezone the add-on interprets them as UTC.</p>
+<h2 id="platform-not-in-install-dropdown"><a class="header" href="#platform-not-in-install-dropdown">Platform not in install dropdown</a></h2>
+<p><strong>Fix:</strong> V1 supports <code>amd64</code> and <code>aarch64</code>. 32-bit ARM (<code>armv7</code>, <code>armhf</code>) and <code>i386</code> are not supported — follow <a href="https://github.com/micschr0/gluco-hub-rs">gluco-hub-rs</a> for status.</p>
+<h2 id="architecture"><a class="header" href="#architecture">Architecture</a></h2>
 <details>
-<summary>Architecture</summary>
+<summary>How the pieces fit together</summary>
 <pre><code class="language-text">LibreLink Up API
        │ HTTPS
        ▼
@@ -902,19 +968,8 @@ V1 supports <code>amd64</code> and <code>aarch64</code>. 32-bit ARM (<code>armv7
 <h1 id="changelog"><a class="header" href="#changelog">Changelog</a></h1>
 <p>The full changelog is maintained alongside the add-on source at
 <a href="https://github.com/micschr0/ha-libre-glucose-mqtt/blob/main/libre-glucose/CHANGELOG.md"><code>libre-glucose/CHANGELOG.md</code></a>.</p>
-<div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-16 -->
+<div style="break-before: page; page-break-before: always;"></div><!-- doc-review: 2026-07-21 -->
 <h1 id="security-policy"><a class="header" href="#security-policy">Security Policy</a></h1>
-<h2 id="scope"><a class="header" href="#scope">Scope</a></h2>
-<p>This repository ships the Home Assistant <strong>app</strong> wrapper (formerly
-known as an add-on) around the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a>
-Rust binary. Two repositories are relevant when reporting security
-issues, and you should pick the right one:</p>
-<div class="table-wrapper"><table><thead><tr><th>Symptom</th><th>Report here</th></tr></thead><tbody>
-<tr><td>Glucose-data parsing / LibreLink-Up authentication / MQTT publish logic / Nightscout / DLQ / HTTP API</td><td><a href="https://github.com/micschr0/gluco-hub-rs/blob/main/SECURITY.md"><code>gluco-hub-rs</code> SECURITY.md</a> — these are upstream concerns</td></tr>
-<tr><td>HA Supervisor wrapper: app manifest (<code>config.yaml</code>), AppArmor profile (<code>apparmor.txt</code>), <code>run.sh</code> entrypoint, Dockerfile, CI workflows</td><td>This repo (see below)</td></tr>
-</tbody></table>
-</div>
-<p>If you are unsure, file here — we'll route upstream as needed.</p>
 <h2 id="reporting-a-vulnerability"><a class="header" href="#reporting-a-vulnerability">Reporting a vulnerability</a></h2>
 <p><strong>Do not open a public GitHub issue for security-sensitive reports.</strong></p>
 <p>Use GitHub's <a href="https://github.com/micschr0/ha-libre-glucose-mqtt/security/advisories/new">private vulnerability reporting</a> — the discussion stays auditable in-platform and triggers a GitHub Security Advisory on confirmation.</p>
@@ -926,6 +981,17 @@ Supervisor versions involved.</li>
 <li>Whether the issue is exploitable from outside the Mosquitto add-on's
 internal network (<code>hassio</code> bridge) or only from co-located add-ons.</li>
 </ul>
+<h2 id="scope"><a class="header" href="#scope">Scope</a></h2>
+<p>This repository ships the Home Assistant <strong>app</strong> wrapper (formerly
+known as an add-on) around the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a>
+Rust binary. Two repositories are relevant when reporting security
+issues, and you should pick the right one:</p>
+<div class="table-wrapper"><table><thead><tr><th>Symptom</th><th>Report here</th></tr></thead><tbody>
+<tr><td>Glucose-data parsing / LibreLink-Up authentication / MQTT publish logic / Nightscout / DLQ / HTTP API</td><td><a href="https://github.com/micschr0/gluco-hub-rs/blob/main/SECURITY.md"><code>gluco-hub-rs</code> SECURITY.md</a> — these are upstream concerns</td></tr>
+<tr><td>HA Supervisor wrapper: app manifest (<code>config.yaml</code>), AppArmor profile (<code>apparmor.txt</code>), <code>run.sh</code> entrypoint, Dockerfile, CI workflows</td><td>This repo (see below)</td></tr>
+</tbody></table>
+</div>
+<p>If you are unsure, file here — we'll route upstream as needed.</p>
 <h2 id="disclosure"><a class="header" href="#disclosure">Disclosure</a></h2>
 <p>We aim to acknowledge reports within 5 working days and to ship a fix
 or a documented mitigation within 30 days for confirmed issues.

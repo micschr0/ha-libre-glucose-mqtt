@@ -179,10 +179,17 @@
 
                 <div id="content" class="content">
                     <main>
-                        <!-- doc-review: 2026-07-16 -->
+                        <!-- doc-review: 2026-07-21 -->
 <!-- ACC-01 audit 2026-06-23: 13/13 config.yaml options covered; closed gaps: llu_version, glucose_unit, llu_accounts -->
 <h1 id="configuration"><a class="header" href="#configuration">Configuration</a></h1>
 <p>Configure the add-on by setting the three required fields — <code>llu_email</code>, <code>llu_password</code>, <code>llu_region</code> — and the <strong>Glucose</strong> sensor entity <code>sensor.gluco_hub_&lt;client_id&gt;_glucose</code> will appear in Home Assistant.</p>
+<h2 id="quick-start"><a class="header" href="#quick-start">Quick start</a></h2>
+<ol>
+<li>Set <code>llu_email</code> to your LibreLink Up account email.</li>
+<li>Set <code>llu_password</code> to your LibreLink Up account password.</li>
+<li>Set <code>llu_region</code> to your LibreView account region (e.g. <code>EU</code>).</li>
+</ol>
+<p>Save and start the add-on. Your sensor entity is <code>sensor.gluco_hub_ha_glucose</code> (with the default <code>client_id: ha</code>).</p>
 <div id="admonition-sensor-entity-naming" class="admonition admonish-note" role="note" aria-labelledby="admonition-sensor-entity-naming-title">
 <div class="admonition-title">
 <div id="admonition-sensor-entity-naming-title">
@@ -192,19 +199,6 @@
 </div>
 <div>
 <p>Your sensor entity ID is <code>sensor.gluco_hub_&lt;client_id&gt;_glucose</code>. With the default <code>client_id: ha</code>, that is <code>sensor.gluco_hub_ha_glucose</code>. Use this ID in every automation and dashboard card.</p>
-</div>
-</div>
-<h2 id="architecture"><a class="header" href="#architecture">Architecture</a></h2>
-<p>The polling, MQTT publishing, MQTT discovery, and persistent retry queue are all implemented by the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> binary. <strong>This add-on configures and runs that binary</strong> — it provides the <code>config.yaml</code> schema, the <code>run.sh</code> entrypoint, and HA Ingress wiring. No polling or MQTT logic lives in this repository.</p>
-<div id="admonition-dont-paste-your-password-into-a-troubleshooting-trace" class="admonition admonish-warning" role="note" aria-labelledby="admonition-dont-paste-your-password-into-a-troubleshooting-trace-title">
-<div class="admonition-title">
-<div id="admonition-dont-paste-your-password-into-a-troubleshooting-trace-title">
-<p>Don't paste your password into a troubleshooting trace</p>
-</div>
-<a class="admonition-anchor-link" href="#admonition-dont-paste-your-password-into-a-troubleshooting-trace"></a>
-</div>
-<div>
-<p>The add-on never logs it; if you see it in a log, that is a bug — open an issue.</p>
 </div>
 </div>
 <div id="admonition-note" class="admonition admonish-note" role="note" aria-labelledby="admonition-note-title">
@@ -218,31 +212,44 @@
 <p>For every option below, default values are chosen so that a fresh install works once you provide <code>llu_email</code>, <code>llu_password</code>, and <code>llu_region</code>.</p>
 </div>
 </div>
-<h2 id="configuration-1"><a class="header" href="#configuration-1">Configuration</a></h2>
+<h2 id="how-it-works"><a class="header" href="#how-it-works">How it works</a></h2>
+<p>The polling, MQTT publishing, MQTT discovery, and persistent retry queue are all implemented by the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> binary. <strong>This add-on configures and runs that binary</strong> — it provides the <code>config.yaml</code> schema, the <code>run.sh</code> entrypoint, and HA Ingress wiring. No polling or MQTT logic lives in this repository.</p>
+<h2 id="option-reference"><a class="header" href="#option-reference">Option reference</a></h2>
 <h3 id="quick-reference"><a class="header" href="#quick-reference">Quick reference</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>llu_email</code></td><td>string</td><td><em>required</em></td><td>LibreLink Up account email.</td></tr>
 <tr><td><code>llu_password</code></td><td>string</td><td><em>required</em></td><td>LibreLink Up account password. Never written to MQTT or logs.</td></tr>
 <tr><td><code>llu_region</code></td><td>enum</td><td><code>EU</code></td><td>Regional API endpoint. Must match your LibreView account region, not your physical location.</td></tr>
-<tr><td><code>llu_patient_id</code></td><td>string</td><td>—</td><td>Patient UUID. Leave empty to use the first connection.</td></tr>
 <tr><td><code>llu_timezone</code></td><td>IANA TZ</td><td><code>UTC</code></td><td>Patient's local timezone. Without this, timestamps appear shifted. Example: <code>Europe/Berlin</code>.</td></tr>
-<tr><td><code>llu_version</code></td><td>string</td><td>—</td><td>LibreLink Up app-version header sent to the API. Leave empty to use the upstream default.</td></tr>
 <tr><td><code>poll_interval_secs</code></td><td>int (30–600)</td><td><code>60</code></td><td>Poll interval in seconds.</td></tr>
-<tr><td><code>device_name</code></td><td>string</td><td>—</td><td>Friendly device name in HA. Defaults to <code>Gluco Hub (&lt;client_id&gt;)</code>.</td></tr>
 <tr><td><code>glucose_unit</code></td><td>enum</td><td><code>mgdl</code></td><td>Sensor state unit: <code>mgdl</code> for mg/dL, <code>mmol</code> for mmol/L.</td></tr>
+<tr><td><code>llu_patient_id</code></td><td>string</td><td>—</td><td>Patient UUID. Leave empty to use the first connection.</td></tr>
+<tr><td><code>device_name</code></td><td>string</td><td>—</td><td>Friendly device name in HA. Defaults to <code>Gluco Hub (&lt;client_id&gt;)</code>.</td></tr>
 <tr><td><code>topic_prefix</code></td><td>string</td><td><code>gluco-hub/ha</code></td><td>MQTT topic prefix. Readings publish to <code>&lt;prefix&gt;/glucose</code>.</td></tr>
 <tr><td><code>client_id</code></td><td>string</td><td><code>ha</code></td><td>MQTT client ID (1–23 chars). Appears in the HA discovery unique ID.</td></tr>
-<tr><td><code>llu_accounts</code></td><td>list</td><td><code>[]</code></td><td>Named multi-account/multi-patient sources. See <a href="multi-account.html">multi-account setup</a>.</td></tr>
+<tr><td><code>llu_version</code></td><td>string</td><td>—</td><td>LibreLink Up app-version header sent to the API. Leave empty to use the upstream default.</td></tr>
 <tr><td><code>log_level</code></td><td>enum</td><td><code>info</code></td><td>Log verbosity. Use <code>debug</code> to troubleshoot.</td></tr>
+<tr><td><code>llu_accounts</code></td><td>list</td><td><code>[]</code></td><td>Named multi-account/multi-patient sources. See <a href="multi-account.html">multi-account setup</a>.</td></tr>
 </tbody></table>
 </div>
-<h3 id="per-option-reference"><a class="header" href="#per-option-reference">Per-option reference</a></h3>
+<h3 id="required"><a class="header" href="#required">Required</a></h3>
 <h4 id="llu_email"><a class="header" href="#llu_email"><code>llu_email</code></a></h4>
 <p><strong>Required.</strong> LibreLink Up account email. The account that holds the family-share invitation. No default — the add-on refuses to start without this.</p>
 <p>Example: <code>anna@example.com</code>.</p>
 <h4 id="llu_password"><a class="header" href="#llu_password"><code>llu_password</code></a></h4>
 <p><strong>Required.</strong> LibreLink Up account password. Stored only in the add-on options database; never written to MQTT or logs. No default.</p>
 <p>Example: <code>correct-horse-battery-staple</code>.</p>
+<div id="admonition-dont-paste-your-password-into-a-troubleshooting-trace" class="admonition admonish-warning" role="note" aria-labelledby="admonition-dont-paste-your-password-into-a-troubleshooting-trace-title">
+<div class="admonition-title">
+<div id="admonition-dont-paste-your-password-into-a-troubleshooting-trace-title">
+<p>Don't paste your password into a troubleshooting trace</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-dont-paste-your-password-into-a-troubleshooting-trace"></a>
+</div>
+<div>
+<p>The add-on never logs it; if you see it in a log, that is a bug — open an issue.</p>
+</div>
+</div>
 <h4 id="llu_region"><a class="header" href="#llu_region"><code>llu_region</code></a></h4>
 <p>Regional API endpoint. <strong>Must match your LibreView account region</strong> — not your physical location. Default: <code>EU</code>.</p>
 <p>Valid values: <code>AE</code>, <code>AP</code>, <code>AU</code>, <code>CA</code>, <code>DE</code>, <code>EU</code>, <code>EU2</code>, <code>FR</code>, <code>JP</code>, <code>US</code>, <code>LA</code>, <code>RU</code>, <code>CN</code>.</p>
@@ -257,13 +264,10 @@
 <p>Use the region of your LibreView account — they often differ. If unsure, open the LibreView app; the region is shown under <strong>Account settings</strong>.</p>
 </div>
 </div>
-<h4 id="llu_patient_id"><a class="header" href="#llu_patient_id"><code>llu_patient_id</code></a></h4>
-<p>Patient UUID. Required only if your account has multiple connections. Leave empty to use the first connection.</p>
+<h3 id="recommended"><a class="header" href="#recommended">Recommended</a></h3>
 <h4 id="llu_timezone"><a class="header" href="#llu_timezone"><code>llu_timezone</code></a></h4>
 <p>IANA timezone name of the sensor wearer. Default: <code>UTC</code>. LibreLink Up timestamps are local wall-clock time with no UTC offset; without this, your readings appear time-shifted.</p>
 <p>Example: <code>Europe/Berlin</code>.</p>
-<h4 id="llu_version"><a class="header" href="#llu_version"><code>llu_version</code></a></h4>
-<p>LibreLink Up app-version header sent to the API. Leave empty to use the upstream default. Override only as a last resort when upstream's default is no longer accepted.</p>
 <h4 id="poll_interval_secs"><a class="header" href="#poll_interval_secs"><code>poll_interval_secs</code></a></h4>
 <p>Poll interval in seconds. Range: 30–600. Default: <code>60</code>. Values below 30 waste API calls; LibreLink Up updates every ~60 s.</p>
 <div id="admonition-dont-set-poll_interval_secs-below-30" class="admonition admonish-warning" role="note" aria-labelledby="admonition-dont-set-poll_interval_secs-below-30-title">
@@ -277,10 +281,13 @@
 <p>LibreLink Up updates roughly every 60 seconds; faster polling wastes your API quota and can trigger rate limits.</p>
 </div>
 </div>
-<h4 id="device_name"><a class="header" href="#device_name"><code>device_name</code></a></h4>
-<p>Friendly device name shown in Home Assistant. Empty falls back to <code>Gluco Hub (&lt;client_id&gt;)</code>.</p>
 <h4 id="glucose_unit"><a class="header" href="#glucose_unit"><code>glucose_unit</code></a></h4>
 <p>Sensor state unit: <code>mgdl</code> for mg/dL, <code>mmol</code> for mmol/L. Default: <code>mgdl</code>. In multi-account mode (<code>llu_accounts</code>) this option does not affect MQTT discovery — discovery always advertises mg/dL regardless.</p>
+<h4 id="llu_patient_id"><a class="header" href="#llu_patient_id"><code>llu_patient_id</code></a></h4>
+<p>Patient UUID. Required only if your account has multiple connections. Leave empty to use the first connection.</p>
+<h3 id="advanced"><a class="header" href="#advanced">Advanced</a></h3>
+<h4 id="device_name"><a class="header" href="#device_name"><code>device_name</code></a></h4>
+<p>Friendly device name shown in Home Assistant. Empty falls back to <code>Gluco Hub (&lt;client_id&gt;)</code>.</p>
 <h4 id="topic_prefix"><a class="header" href="#topic_prefix"><code>topic_prefix</code></a></h4>
 <p>MQTT topic prefix. Default: <code>gluco-hub/ha</code>. Readings publish to <code>&lt;prefix&gt;/glucose</code>. With the default, your reading topic is <code>gluco-hub/ha/glucose</code>.</p>
 <h4 id="client_id"><a class="header" href="#client_id"><code>client_id</code></a></h4>
@@ -296,6 +303,11 @@
 <p>The generated TOML hard-codes <code>client_id = "ha"</code> and the option is silently ignored.</p>
 </div>
 </div>
+<h4 id="llu_version"><a class="header" href="#llu_version"><code>llu_version</code></a></h4>
+<p>LibreLink Up app-version header sent to the API. Leave empty to use the upstream default. Override only as a last resort when upstream's default is no longer accepted.</p>
+<h4 id="log_level"><a class="header" href="#log_level"><code>log_level</code></a></h4>
+<p>Log verbosity. Default: <code>info</code>. Use <code>debug</code> when troubleshooting LibreLink Up issues. Valid values: <code>trace</code>, <code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code>.</p>
+<h3 id="multi-account"><a class="header" href="#multi-account">Multi-account</a></h3>
 <h4 id="llu_accounts"><a class="header" href="#llu_accounts"><code>llu_accounts</code></a></h4>
 <p>List of named LibreLink Up sources for multi-account polling. Default: <code>[]</code> (empty). When non-empty, supersedes the single-account <code>llu_*</code> fields above. Full schema and a worked example are on the <a href="multi-account.html">multi-account setup</a> page.</p>
 <div id="admonition-dont-mix-llu_accounts-with-single-account-llu_-fields" class="admonition admonish-warning" role="note" aria-labelledby="admonition-dont-mix-llu_accounts-with-single-account-llu_-fields-title">
@@ -309,8 +321,6 @@
 <p>When <code>llu_accounts</code> is non-empty, the single-account fields above are superseded and any value you set there is ignored.</p>
 </div>
 </div>
-<h4 id="log_level"><a class="header" href="#log_level"><code>log_level</code></a></h4>
-<p>Log verbosity. Default: <code>info</code>. Use <code>debug</code> when troubleshooting LibreLink Up issues. Valid values: <code>trace</code>, <code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code>.</p>
 <h2 id="sensor"><a class="header" href="#sensor">Sensor</a></h2>
 <p>The <strong>Glucose</strong> sensor appears under the <strong>Gluco Hub</strong> device in Home Assistant (Settings → Devices &amp; Services → MQTT).</p>
 <p><strong>State:</strong> current reading in mg/dL (or mmol/L if configured).</p>
@@ -338,6 +348,11 @@
 <li>Reading: <code>&lt;prefix&gt;/glucose</code></li>
 <li>Discovery: <code>homeassistant/sensor/gluco_hub_&lt;client_id&gt;_glucose/config</code></li>
 </ul>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next steps</a></h2>
+<ul>
+<li><a href="multi-account.html">Multi-account setup</a> — configure multiple LibreLink Up accounts or patients.</li>
+<li><a href="examples.html">Examples</a> — copy-paste configuration snippets.</li>
+</ul>
 <hr />
 <div id="admonition-disclaimer" class="admonition admonish-tip" role="note" aria-labelledby="admonition-disclaimer-title">
 <div class="admonition-title">
@@ -351,6 +366,7 @@
 <p>LibreLink, LibreView, FreeStyle Libre, Libre 2, and Libre 3 are trademarks of Abbott.</p>
 </div>
 </div>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">

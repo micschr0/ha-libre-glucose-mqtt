@@ -179,11 +179,21 @@
 
                 <div id="content" class="content">
                     <main>
-                        <!-- doc-review: 2026-07-16 -->
+                        <!-- doc-review: 2026-07-21 -->
 <h1 id="http-status-api"><a class="header" href="#http-status-api">HTTP Status API</a></h1>
 <p>The upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> binary serves the HTTP Status API, binding to <code>0.0.0.0:8080</code> (set via <code>GLUCO_HUB__HTTP__BIND</code> in <code>run.sh</code>). This add-on only wires HA Ingress (<code>ingress: true</code>, <code>ingress_port: 8080</code> in <code>config.yaml</code>) to that listener.</p>
 <p>The HA Supervisor Ingress proxy intercepts all requests — routes are not directly reachable from the host. You access them via the add-on's panel in the HA UI, or through the Supervisor-issued Ingress URL.</p>
-<h2 id="data-endpoints"><a class="header" href="#data-endpoints">Data endpoints</a></h2>
+<h2 id="endpoint-reference"><a class="header" href="#endpoint-reference">Endpoint reference</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Response</th></tr></thead><tbody>
+<tr><td><code>GET</code></td><td><code>/healthz</code></td><td>public</td><td><code>{"status":"ok","version":"…"}</code></td></tr>
+<tr><td><code>GET</code></td><td><code>/metrics</code></td><td>public</td><td>Prometheus text exposition format</td></tr>
+<tr><td><code>GET</code></td><td><code>/glucose/latest</code></td><td>optional Bearer</td><td>Latest cached reading, or <code>503</code> + <code>API001</code> if no reading is available</td></tr>
+<tr><td><code>GET</code></td><td><code>/clock/state</code></td><td>public</td><td>JSON snapshot of latest reading</td></tr>
+<tr><td><code>GET</code></td><td><code>/clock/events</code></td><td>public</td><td>Server-Sent Events stream</td></tr>
+<tr><td><code>GET</code></td><td><code>/clock/history</code></td><td>public</td><td>JSON array of recent readings</td></tr>
+</tbody></table>
+</div>
+<h2 id="clock-endpoints"><a class="header" href="#clock-endpoints">Clock endpoints</a></h2>
 <p>These three routes power the <a href="clock-view.html">Clock View</a>. They are not protected by Bearer auth.</p>
 <h3 id="get-clockstate"><a class="header" href="#get-clockstate"><code>GET /clock/state</code></a></h3>
 <p>Returns a JSON snapshot of the latest glucose reading. The Clock View fetches this once at startup to populate the display before the SSE stream delivers its first event.</p>
@@ -234,19 +244,12 @@ Accept: text/event-stream
 </tbody></table>
 </div>
 <p>The array covers approximately the last 3 hours (up to 180 points at 1-minute intervals).</p>
-<h2 id="caching"><a class="header" href="#caching">Caching</a></h2>
-<p>All data endpoint responses carry <code>Cache-Control: no-store</code>. This prevents browsers and intermediate proxies from ever serving a stale glucose value — every request goes to the live server.</p>
-<h2 id="other-endpoints"><a class="header" href="#other-endpoints">Other endpoints</a></h2>
-<p>The following endpoints are confirmed from the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> README:</p>
-<div class="table-wrapper"><table><thead><tr><th>Path</th><th>Auth</th><th>Response</th></tr></thead><tbody>
-<tr><td><code>GET /healthz</code></td><td>public</td><td><code>{"status":"ok","version":"…"}</code></td></tr>
-<tr><td><code>GET /metrics</code></td><td>public</td><td>Prometheus text exposition format</td></tr>
-<tr><td><code>GET /glucose/latest</code></td><td>optional Bearer</td><td>Latest cached reading, or <code>503</code> + <code>API001</code> if no reading is available</td></tr>
-</tbody></table>
-</div>
-<p><strong>Bearer auth:</strong> set <code>GLUCO_HUB__HTTP__BEARER_TOKEN</code> in the add-on configuration to require a token for <code>/glucose/*</code> routes. The <code>/healthz</code> and <code>/metrics</code> endpoints remain public regardless.</p>
-<p><strong><code>X-Disclaimer</code> header:</strong> every response from gluco-hub-rs carries <code>X-Disclaimer: not-for-medical-use</code> — the canonical machine-readable disclaimer signal.</p>
-<p><strong><code>GET /glucose/latest</code> response shape (upstream-confirmed):</strong></p>
+<h2 id="utility-endpoints"><a class="header" href="#utility-endpoints">Utility endpoints</a></h2>
+<h3 id="get-healthz-and-get-metrics"><a class="header" href="#get-healthz-and-get-metrics"><code>GET /healthz</code> and <code>GET /metrics</code></a></h3>
+<p>Always public. No auth required.</p>
+<h3 id="get-glucoselatest"><a class="header" href="#get-glucoselatest"><code>GET /glucose/latest</code></a></h3>
+<p>Bearer auth is optional — set <code>GLUCO_HUB__HTTP__BEARER_TOKEN</code> in the add-on configuration to require a token for <code>/glucose/*</code> routes. The <code>/healthz</code> and <code>/metrics</code> endpoints remain public regardless.</p>
+<p>Returns latest cached reading, or <code>503</code> + error code <code>API001</code> if no reading is available.</p>
 <pre><code class="language-json">{
   "patient_id": "00000000-0000-0000-0000-000000000000",
   "source_id": "llu",
@@ -255,8 +258,15 @@ Accept: text/event-stream
   "trend": "Flat"
 }
 </code></pre>
-<p>Note: the <code>/clock/*</code> routes use an internal shape (<code>mgdl</code>, <code>ts</code> as Unix-ms, <code>delta</code>, <code>patient</code>) optimised for the Clock View, while <code>/glucose/latest</code> uses the public API shape (<code>glucose_mgdl</code>, ISO 8601 <code>timestamp</code>, <code>patient_id</code>).</p>
+<blockquote>
+<p><strong>Note:</strong> The <code>/clock/*</code> routes use an internal shape (<code>mgdl</code>, <code>ts</code> as Unix-ms, <code>delta</code>, <code>patient</code>) optimised for the Clock View, while <code>/glucose/latest</code> uses the public API shape (<code>glucose_mgdl</code>, ISO 8601 <code>timestamp</code>, <code>patient_id</code>).</p>
+</blockquote>
 <p>For the full and authoritative endpoint list, see the upstream <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> documentation.</p>
+<h2 id="response-headers"><a class="header" href="#response-headers">Response headers</a></h2>
+<ul>
+<li><strong><code>Cache-Control: no-store</code></strong> — all data endpoint responses carry this header. Prevents browsers and intermediate proxies from serving a stale glucose value; every request goes to the live server.</li>
+<li><strong><code>X-Disclaimer: not-for-medical-use</code></strong> — every response from gluco-hub-rs carries this header as the canonical machine-readable disclaimer signal.</li>
+</ul>
 <h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
 <ul>
 <li><a href="clock-view.html">Clock View</a> — the visual display that consumes the data endpoints documented here</li>

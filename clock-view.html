@@ -179,19 +179,21 @@
 
                 <div id="content" class="content">
                     <main>
-                        <!-- doc-review: 2026-07-16 -->
+                        <!-- doc-review: 2026-07-21 -->
 <h1 id="clock-view"><a class="header" href="#clock-view">Clock View</a></h1>
 <p>The Clock View is a full-screen, real-time glucose display served by upstream
 <a href="https://github.com/micschr0/gluco-hub-rs"><code>gluco-hub-rs</code></a> (<code>clock.html</code>, baked into the upstream binary).
-This add-on only wires HA Ingress (<code>ingress: true</code>, <code>ingress_port: 8080</code>) so the Clock View appears in the
-Home Assistant sidebar. The <code>clock.html</code> file in this repository is a source-of-record reference copy and is
+This add-on wires HA Ingress (<code>ingress: true</code>, <code>ingress_port: 8080</code>) so the Clock View appears in the
+Home Assistant sidebar — no configuration needed.</p>
+<p>The <code>clock.html</code> file in this repository is a source-of-record reference copy and is
 <strong>not</strong> copied into the Docker image — the upstream binary serves its own bundled version.</p>
-<h2 id="access"><a class="header" href="#access">Access</a></h2>
+<p><img src="assets/clock-view.png" alt="Clock View (mock data)" /></p>
+<p><em>Clock View — rendered with mock data (not a live reading)</em></p>
+<h2 id="quick-access"><a class="header" href="#quick-access">Quick access</a></h2>
 <p>Open the Clock View from the Home Assistant sidebar — the add-on's Ingress panel serves it directly.
 Access is admin-only by default (as configured in <code>config.yaml</code>).</p>
 <p>Direct URL (via Ingress proxy): the sidebar panel opens <code>clock.html</code> relative to the Ingress root.
-Query parameters can be appended to tailor the display — see <a href="#query-parameters">Query parameters</a> below.</p>
-<p>Example URL with common parameters:</p>
+Query parameters can be appended to tailor the display:</p>
 <pre><code>?preset=phone&amp;unit=mmol&amp;lo=70&amp;hi=180
 </code></pre>
 <h2 id="query-parameters"><a class="header" href="#query-parameters">Query parameters</a></h2>
@@ -254,7 +256,7 @@ after the correct PIN is entered (e.g. <code>?kiosk&amp;pin=4321</code>).</li>
 <p>Kiosk mode is a display lock only, not an authentication layer — Home Assistant Ingress already authenticates the session before the page is served.</p>
 </div>
 </div>
-<h2 id="data"><a class="header" href="#data">Data</a></h2>
+<h2 id="data-endpoints"><a class="header" href="#data-endpoints">Data endpoints</a></h2>
 <p>The Clock View pulls live glucose data from three endpoints served by <code>gluco-hub-rs</code>:</p>
 <div class="table-wrapper"><table><thead><tr><th>Endpoint</th><th>Protocol</th><th>Purpose</th></tr></thead><tbody>
 <tr><td><code>/clock/state</code></td><td>HTTP GET (JSON)</td><td>Initial snapshot — polled once on page load to populate the display immediately</td></tr>
@@ -263,11 +265,6 @@ after the correct PIN is entered (e.g. <code>?kiosk&amp;pin=4321</code>).</li>
 </tbody></table>
 </div>
 <p>See <a href="status-api.html">HTTP Status API</a> for the route signatures and response shapes.</p>
-<h2 id="screenshot"><a class="header" href="#screenshot">Screenshot</a></h2>
-<p>The screenshot below was captured headless from <code>clock.html</code> with mock data (phone layout, mgdl, in-range,
-patient "Alex").</p>
-<p><img src="assets/clock-view.png" alt="Clock View (mock data)" /></p>
-<p><em>Clock View — rendered with mock data (not a live reading)</em></p>
 <hr />
 <div id="admonition-disclaimer" class="admonition admonish-tip" role="note" aria-labelledby="admonition-disclaimer-title">
 <div class="admonition-title">
