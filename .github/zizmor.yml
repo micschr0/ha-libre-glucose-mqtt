@@ -9,7 +9,5 @@
 #
 # No suppressions currently. The ci.yml zizmor job runs with
 # `online-audits: false`, so API-dependent audits (impostor-commit,
-# ref-version-mismatch online checks) are skipped deterministically —
-# the former impostor-commit suppression for anchore/scan-action
-# (false positive from GH API rate limiting) is no longer needed.
+# ref-version-mismatch online checks) are skipped deterministically.
 rules: {}
