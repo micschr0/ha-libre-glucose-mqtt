@@ -6,9 +6,6 @@
     ":semanticCommits"
   ],
   "timezone": "Europe/Berlin",
-  "schedule": [
-    "before 6am on monday"
-  ],
   "labels": [
     "dependencies"
   ],
